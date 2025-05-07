@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { FaUserCircle } from 'react-icons/fa';
 import '../styles/MenuPage.css';
+import { FaRegHospital, FaMapMarkedAlt } from 'react-icons/fa';
+import { FaRegFileLines } from "react-icons/fa6";
+
 
 const MenuPage = () => {
   const [codEmpresa, setCodEmpresa] = useState('');
@@ -23,45 +25,51 @@ const MenuPage = () => {
     alert(`Registrando visita para empresa com Cód: ${codEmpresa}`);
   };
 
+  const getFormattedDate = () => {
+    const today = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    let formattedDate = today.toLocaleDateString('pt-BR', options);
+    formattedDate = formattedDate.replace(/\b\w/g, char => char.toUpperCase());
+    return formattedDate;
+  };
+
   return (
-    <div className="menu-page">
-      <header className="menu-header">
-        <div className="colaborador-info">
-          <FaUserCircle className="colaborador-icon" />
-          <span>NOME COLABORADOR</span>
-        </div>
-        <h1 className="menu-title">MENU</h1>
+    <div className="new-menu-page">
+      <header className="new-menu-banner-section">
+        <div className="avatar-placeholder"></div>
+        <div className="greeting-text">Olá, Gabriel Gonzales</div>
+        <div className="date-text">{getFormattedDate()}</div>
       </header>
 
-      <main className="menu-content">
-        <div className="input-container">
-          <label htmlFor="codEmpresaInput" className="cod-empresa-label">
-            Cód. da Empresa
-          </label>
+      <main className="new-menu-content-area">
+        <p className="question-text">Qual é o código da empresa?</p>
+        <div className="new-input-container">
           <input
             type="text"
-            id="codEmpresaInput"
-            className="cod-empresa-input"
+            className="new-cod-empresa-input"
             value={codEmpresa}
             onChange={(e) => setCodEmpresa(e.target.value)}
             placeholder="Digite o código"
           />
         </div>
 
-        <div className="actions-container">
+        <div className="new-actions-container">
           <button
             type="button"
-            className="action-button dados-empresa-button"
+            className="new-action-button"
             onClick={handleDadosEmpresa}
           >
-            Dados empresa
+            <FaRegFileLines className="button-icon" />
+            <span>Dados da empresa</span>
+ 
           </button>
           <button
             type="button"
-            className="action-button registrar-visita-button"
+            className="new-action-button"
             onClick={handleRegistrarVisita}
           >
-            Registrar Visita
+            <FaMapMarkedAlt className="button-icon" />
+            <span>Registrar visita</span>
           </button>
         </div>
       </main>

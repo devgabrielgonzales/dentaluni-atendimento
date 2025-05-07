@@ -28,7 +28,6 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
-
   background-color: #fff;
   padding: 30px;
   border-radius: 8px;
@@ -109,6 +108,12 @@
   margin-top: 10px;
 }
 
+.login-button a {
+  color: #fff;
+  text-decoration: none;
+}
+
+
 .login-button:hover {
   background-color: #8c1310;
 }
@@ -151,7 +156,7 @@
 
   .login-container {
     padding: 20px;
-    width: 90%;
+    width: 80%;
     max-width: 360px;
   }
 
@@ -172,7 +177,6 @@
   }
   .options {
     font-size: 12px;
-    flex-direction: column;
     gap: 10px;
   }
 }

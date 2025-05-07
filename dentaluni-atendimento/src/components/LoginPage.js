@@ -52,8 +52,8 @@ const LoginPage = () => {
               required
             />
           </div>
-          <button type="submit" className="login-button">
-            Login
+          <button type="button" className="login-button">
+             <a href="/menu" className="">Login</a>
           </button>
           <div className="options">
             <label htmlFor="rememberMe" className="remember-me">
