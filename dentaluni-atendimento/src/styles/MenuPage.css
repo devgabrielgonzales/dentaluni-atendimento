@@ -1,0 +1,114 @@
+.menu-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.menu-header {
+  background-color: #ac1815;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+}
+
+.colaborador-info {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+}
+
+.colaborador-icon {
+  font-size: 32px;
+  margin-right: 10px;
+}
+
+.menu-title {
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  flex-grow: 1;
+  margin: 0;
+}
+
+.menu-content {
+  flex-grow: 1;
+  padding: 30px 20px;
+  background-color: #f5f5f7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.input-container {
+  margin-bottom: 30px;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cod-empresa-label {
+  font-size: 16px;
+  color: #0c0101;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.cod-empresa-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.cod-empresa-input:focus {
+  border-color: #ac1815;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(172, 24, 21, 0.2);
+}
+
+.actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+  max-width: 350px;
+}
+
+.action-button {
+  padding: 15px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.1s ease;
+  text-align: center;
+}
+
+.action-button:active {
+  transform: translateY(1px);
+}
+
+.dados-empresa-button {
+  background-color: #606060;
+  color: white;
+}
+
+.dados-empresa-button:hover {
+  background-color: #4a4a4a;
+}
+
+.registrar-visita-button {
+  background-color: #0c0101;
+  color: white;
+}
+
+.registrar-visita-button:hover {
+  background-color: #2c2c2c;
+}
