@@ -1,0 +1,318 @@
+.register-visit-page {
+  max-width: 950px;
+  margin: 30px auto;
+  padding: 25px 30px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  font-family: 'Inter', sans-serif;
+}
+
+.register-visit-page h1 {
+  text-align: center;
+  color: #0c0101;
+  margin-bottom: 35px;
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.visit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+}
+
+.form-section {
+  border: 1px solid #e8e8e8;
+  padding: 25px;
+  border-radius: 8px;
+  background-color: #fdfdfd;
+}
+
+.form-section legend {
+  font-weight: 600;
+  font-size: 18px;
+  color: #ac1815;
+  padding: 0 10px;
+  margin-left: 5px;
+}
+
+.form-section label,
+.form-grid label,
+.select-label {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  color: #606060;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+/* Estilos para Inputs e Select */
+.form-section input[type="text"],
+.form-section input[type="email"],
+.form-section input[type="tel"],
+.form-section input[type="number"],
+.form-section input[type="datetime-local"],
+.form-section textarea,
+.form-section select.select-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+  font-family: inherit;
+  background-color: white;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-section select.select-input {
+   appearance: none;
+   background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23606060%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.6-3.6%205.4-7.9%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
+   background-repeat: no-repeat;
+   background-position: right 15px center;
+   background-size: 10px auto;
+   padding-right: 40px;
+   cursor: pointer;
+}
+
+/* Estilos de Foco */
+.form-section input:focus,
+.form-section textarea:focus,
+.form-section select.select-input:focus {
+   border-color: #ac1815;
+   outline: none;
+   box-shadow: 0 0 0 3px rgba(172, 24, 21, 0.15);
+}
+
+.form-section textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Input condicional 'Outros' */
+.detail-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+  font-family: inherit;
+  margin-top: 8px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.detail-input:focus {
+   border-color: #ac1815;
+   outline: none;
+   box-shadow: 0 0 0 3px rgba(172, 24, 21, 0.15);
+}
+
+/* Estilos para GRUPOS de Radio/Checkbox */
+.radio-group-vertical, /* Usado para Ocorrências, Critérios, Canais */
+.checkbox-group /* Usado para Canais (se ainda houver) */
+ {
+  display: flex;
+  flex-direction: column; /* Faz opções ficarem em coluna */
+  gap: 12px; /* Espaço vertical entre opções */
+  align-items: flex-start; /* Alinha à esquerda */
+}
+
+/* Estilo unificado para labels de radio E checkbox */
+.radio-group-vertical label,
+.checkbox-group label,
+.ocorrencia-coluna .radio-group-vertical label, /* Mais específico se necessário */
+.criteria-section .radio-group-vertical label
+{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 0;
+  color: #333;
+  flex-direction: row;
+  padding: 2px 0;
+}
+
+/* Estilo unificado para inputs radio E checkbox */
+.radio-group-vertical label input[type="radio"],
+.checkbox-group label input[type="checkbox"],
+.criteria-section label input[type="checkbox"]
+{
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #ac1815;
+    margin: 0;
+    flex-shrink: 0;
+}
+
+/* Estilo para o texto dentro do label */
+.radio-group-vertical label span,
+.checkbox-group label span,
+.criteria-section label span
+{
+   line-height: 1.2;
+}
+
+/* Grid de Ocorrências */
+.ocorrencias-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+}
+
+.ocorrencia-coluna {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ocorrencia-titulo {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #555;
+  font-size: 15px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+
+/* Pesquisa e Atualizações */
+.pesquisa-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px 25px;
+}
+.pesquisa-grid label.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Critérios e Nota */
+.side-by-side-grids {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 35px;
+    align-items: flex-start;
+}
+
+.criteria-section { /* Fieldset dos critérios */
+    /* O .radio-group-vertical dentro dele controla o layout dos radios */
+}
+
+.percent-input {
+    width: 80px !important;
+    margin-left: 10px;
+    padding: 8px 10px !important;
+    font-size: 14px !important;
+    text-align: center;
+}
+
+.nota-section {
+   padding-top: 0;
+}
+.rating-stars.explicit-rating {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.rating-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 8px 5px;
+    transition: background-color 0.2s ease;
+}
+.rating-row:hover {
+    background-color: #f9f9f9;
+}
+.rating-row span {
+    font-weight: 500;
+    color: #333;
+    font-size: 15px;
+}
+.rating-row svg {
+  font-size: 26px;
+  cursor: pointer;
+  color: #e0e0e0;
+  transition: color 0.2s ease;
+}
+.rating-row svg:hover {
+   color: #ffe082;
+}
+.rating-row svg.star-selected {
+  color: #ffb300;
+}
+
+/* Botões */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 20px;
+  padding-top: 25px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.button-primary,
+.button-secondary {
+  padding: 12px 30px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.button-primary {
+  background-color: #ac1815;
+  color: white;
+  border-color: #ac1815;
+}
+.button-primary:hover {
+  background-color: #8c1310;
+  border-color: #8c1310;
+}
+
+.button-secondary {
+  background-color: #f0f0f0;
+  color: #555;
+  border-color: #ccc;
+}
+.button-secondary:hover {
+  background-color: #e0e0e0;
+  border-color: #bbb;
+  color: #333;
+}
+
+/* --- Media Queries --- */
+@media (max-width: 960px) {
+  .register-visit-page { margin: 20px; padding: 20px; }
+  .ocorrencias-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .pesquisa-grid { grid-template-columns: 1fr; }
+  .side-by-side-grids { grid-template-columns: 1fr; gap: 25px; }
+}
+
+@media (max-width: 600px) {
+   .register-visit-page { margin: 10px; padding: 15px; border-radius: 8px; }
+   .register-visit-page h1 { font-size: 22px; margin-bottom: 25px; }
+   .visit-form { gap: 25px; }
+   .form-section { padding: 20px; }
+   .form-section legend { font-size: 17px; }
+   .ocorrencias-grid { grid-template-columns: 1fr; }
+   .ocorrencia-coluna { margin-bottom: 10px; }
+   .pesquisa-grid, .side-by-side-grids { grid-template-columns: 1fr; }
+   .side-by-side-grids { gap: 20px; }
+   .form-actions { flex-direction: column-reverse; gap: 12px; align-items: stretch; }
+   .button-primary, .button-secondary { padding: 12px 20px; }
+   .radio-group-vertical label, /* Aplicar a radios */
+   .checkbox-group label,
+   .ocorrencia-coluna .radio-group-vertical label, /* Aplicar a radios */
+   .criteria-section .radio-group-vertical label /* Aplicar a radios */
+   {
+      font-size: 15px;
+      gap: 10px;
+   }
+}

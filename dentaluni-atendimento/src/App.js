@@ -7,6 +7,8 @@ const LoginPage = lazy(() => import('./components/LoginPage'));
 const MenuPage = lazy(() => import('./components/MenuPage'));
 const ForgotPasswordPage = lazy(() => import('./components/ForgotPasswordPage'));
 const CompanyDataPage = lazy(() => import('./components/CompanyDataPage'));
+const RegisterVisitPage = lazy(() => import('./components/RegisterVisitPage'));
+
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/company-data/:companyId" element={<CompanyDataPage />} />
           <Route path="/company-data" element={<CompanyDataPage />} />
+          <Route path="/visit" element={<RegisterVisitPage />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Suspense>

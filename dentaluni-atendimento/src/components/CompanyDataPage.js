@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  FaUserCircle,
   FaListAlt,
   FaUsers,
   FaChartLine,
@@ -35,7 +34,7 @@ const CompanyDataPage = () => {
     { label: "Empresa", icon: FaBuilding, action: "company_info" },
     { label: "Cobertura", icon: FaShieldAlt, action: "coverage" },
     { label: "Guias", icon: FaFileInvoice, action: "guides" },
-    { label: "Faturamento", icon: FaReceipt, action: "billing" }, // Ajustado de Faturamento/Duplicatas
+    { label: "Faturamento", icon: FaReceipt, action: "billing" }, 
     { label: "Protocolos", icon: FaClipboardList, action: "protocols" },
   ];
 

@@ -3,13 +3,13 @@ import "../styles/LoginPage.css";
 import { FaUser, FaLock } from "react-icons/fa";
 import LogoImage from "../img/logo.png";
 import HeroImage from "../img/hero-banner-bg.png";
-// import { useNavigate } from 'react-router-dom';
+
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  // const navigate = useNavigate();
+  
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -17,7 +17,7 @@ const LoginPage = () => {
     console.log("Senha:", password);
     console.log("Lembrar:", rememberMe);
     alert("Tentativa de login!");
-    // navigate('/menu');
+    
   };
 
   return (
@@ -25,10 +25,8 @@ const LoginPage = () => {
       <div className="hero-section">
         <img src={HeroImage} alt="Hero background" className="hero-image" />
       </div>
-      {/* login-container-wrapper foi removido */}
       <div className="login-container">
         {" "}
-        {/* Agora filho direto de login-page */}
         <img src={LogoImage} alt="Logo da Empresa" className="login-logo" />
         <h1>Bem-vindo de volta!</h1>
         <p className="subtitle">
