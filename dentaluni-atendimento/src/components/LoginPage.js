@@ -40,7 +40,7 @@ const LoginPage = () => {
             <FaUser className="input-icon" />
             <input
               type="text"
-              placeholder="Usuário ou E-mail"
+              placeholder="Código de acesso"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
