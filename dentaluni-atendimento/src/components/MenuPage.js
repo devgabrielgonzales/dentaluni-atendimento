@@ -24,7 +24,7 @@ const MenuPage = () => {
       return;
     }
     console.log('Botão Registrar Visita clicado com o Cód:', codEmpresa);
-    alert(`Registrando visita para empresa com Cód: ${codEmpresa}`);
+    navigate(`/visit`);
   };
 
   const getFormattedDate = () => {
