@@ -151,7 +151,7 @@
 
 @media (max-width: 600px) {
   .hero-section {
-    height: 200px;
+    height: 320px;
   }
 
   .hero-section::after {
