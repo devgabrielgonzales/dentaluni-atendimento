@@ -82,7 +82,7 @@
 
 .options-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+ 
   gap: 15px;
 }
 
@@ -144,9 +144,7 @@
     margin: -25px 15px 15px 15px;
     padding: 20px;
   }
-  .options-grid {
-    gap: 12px;
-  }
+
   .option-button {
     font-size: 13px;
     padding: 10px 12px;
