@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/MenuPage.css';
-import { FaRegHospital, FaMapMarkedAlt } from 'react-icons/fa';
+import { FaMapMarkedAlt } from 'react-icons/fa';
 import { FaRegFileLines } from "react-icons/fa6";
 
 
 const MenuPage = () => {
   const [codEmpresa, setCodEmpresa] = useState('');
+  const navigate = useNavigate();
 
   const handleDadosEmpresa = () => {
     if (!codEmpresa) {
@@ -13,7 +15,7 @@ const MenuPage = () => {
       return;
     }
     console.log('Botão Dados Empresa clicado com o Cód:', codEmpresa);
-    alert(`Buscando dados da empresa com Cód: ${codEmpresa}`);
+    navigate(`/company-data/${codEmpresa}`);
   };
 
   const handleRegistrarVisita = () => {
