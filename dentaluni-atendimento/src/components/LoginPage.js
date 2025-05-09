@@ -107,7 +107,6 @@ const SigninPage = () => {
               />
               Lembrar
             </label>
-            {/* Usando Link do react-router-dom */}
             <Link to="/forgot-password" className="forgot-password-link">
               Esqueceu a sua senha?
             </Link>
