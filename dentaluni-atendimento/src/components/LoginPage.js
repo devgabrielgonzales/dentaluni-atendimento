@@ -1,62 +1,75 @@
 import React, { useState } from "react";
-import "../styles/LoginPage.css";
-import { FaUser, FaLock } from "react-icons/fa";
-import LogoImage from "../img/logo.png";
-import HeroImage from "../img/hero-banner-bg.png";
+import { Link, useNavigate } from "react-router-dom";
+import "../styles/LoginPage.css"; 
+import { FaEye, FaEyeSlash } from "react-icons/fa"; 
+import nomeDoSeuLogo from '../img/logo.png'
 
-
-const LoginPage = () => {
-  const [username, setUsername] = useState("");
+const SigninPage = () => {
+  const [codigo, setCodigo] = useState(""); 
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    console.log("Usuário:", username);
+    console.log("codigo:", codigo);
     console.log("Senha:", password);
     console.log("Lembrar:", rememberMe);
-    alert("Tentativa de login!");
-    
+    alert("Login simulado com sucesso!");
+    navigate("/menu"); 
+  };
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
   };
 
   return (
-    <div className="login-page">
-      <div className="hero-section">
-        <img src={HeroImage} alt="Hero background" className="hero-image" />
-      </div>
-      <div className="login-container">
-        {" "}
-        <img src={LogoImage} alt="Logo da Empresa" className="login-logo" />
+    <div className="signin-page">
+      <div className="signin-header">
+        <div>
+          <img className="logo" src={nomeDoSeuLogo} alt="Logo"/>
+        </div>
         <h1>Bem-vindo de volta!</h1>
-        <p className="subtitle">
-          Utilize seu <strong>usuário</strong> e <strong>senha do SIO</strong>{" "}
-          para acessar seu perfil:
-        </p>
-        <form onSubmit={handleSubmit}>
-          <div className="input-group">
-            <FaUser className="input-icon" />
+        <p>Utilize seu usuário e senha do SIO para acessar seu perfil:</p>
+      </div>
+
+      <div className="signin-form-card">
+        <form onSubmit={handleSubmit} className="signin-form">
+          <div className="input-field-group">
+            <label htmlFor="email">Código de acesso</label>
             <input
-              type="text"
-              placeholder="Código de acesso"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="codigo"
+              id="codigo"
+              placeholder="Ex: 90801" 
+              value={codigo}
+              onChange={(e) => setCodigo(e.target.value)}
               required
             />
           </div>
-          <div className="input-group">
-            <FaLock className="input-icon" />
-            <input
-              type="password"
-              placeholder="Senha"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+
+          <div className="input-field-group">
+            <label htmlFor="password">Senha</label>
+            <div className="password-input-wrapper">
+              <input
+                type={passwordVisible ? "text" : "password"} 
+                id="password"
+                placeholder="********"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="password-toggle-btn"
+                aria-label={passwordVisible ? "Hide password" : "Show password"}
+              >
+                {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
-          <button type="submit" className="login-button">
-            <a href="/menu">Entrar</a>
-          </button>
+
           <div className="options">
             <label htmlFor="rememberMe" className="remember-me">
               <input
@@ -67,12 +80,19 @@ const LoginPage = () => {
               />
               Lembrar
             </label>
-            <a href="/forgot-password">Esqueceu a sua senha?</a>
+            {/* Usando Link do react-router-dom */}
+            <Link to="/forgot-password" className="forgot-password-link">
+              Esqueceu a sua senha?
+            </Link>
           </div>
+
+          <button type="submit" className="signin-button">
+            Entrar
+          </button>
         </form>
       </div>
     </div>
   );
 };
 
-export default LoginPage;
+export default SigninPage;
