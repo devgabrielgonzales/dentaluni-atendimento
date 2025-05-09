@@ -48,7 +48,8 @@ const MenuPage = () => {
 
   const handleSelectCompany = (companyId) => {
     if (companyId === "notfound") return;
-    navigate(`/company-data/${companyId}`);
+    const url = `/company-details/${companyId}`;
+    navigate(url);
   };
 
   const resultsCardVariants = {
@@ -83,8 +84,8 @@ const MenuPage = () => {
         />
         <motion.h2
           className="menu-prompt-text"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: -50 }} 
+          animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
         >
           Qual é o código da empresa?
