@@ -64,9 +64,9 @@ const SigninPage = () => {
       >
         <form onSubmit={handleSubmit} className="signin-form">
           <div className="input-field-group">
-            <label htmlFor="email">Código de acesso</label>
+            <label htmlFor="codigo">Código de acesso</label>
             <input
-              type="codigo"
+              type="text"
               id="codigo"
               placeholder="Ex: 90801"
               value={codigo}

@@ -4,15 +4,17 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
- 
-  background-image: linear-gradient(to bottom, #ac1815, #5E0002);
-  font-family: 'Inter', sans-serif;
+
+  background-image: linear-gradient(to bottom, #ac1815, #5e0002);
+  font-family: "Inter", sans-serif;
   padding: 20px;
   box-sizing: border-box;
 }
 
 .logo {
-  width: 90px;
+  width: 120px;
+  max-width: 80%;
+  height: auto;
   margin-bottom: 30px;
 }
 
@@ -123,7 +125,6 @@
   outline: none;
 }
 
-
 .options {
   display: flex;
   justify-content: space-between;
@@ -180,7 +181,6 @@
   transform: scale(0.98);
 }
 
-
 @media (max-width: 480px) {
   .signin-header h1 {
     font-size: 22px;
@@ -201,8 +201,8 @@
     padding-right: 40px;
   }
   .password-toggle-btn {
-     width: 40px;
-     font-size: 16px;
+    width: 40px;
+    font-size: 16px;
   }
   .options {
     font-size: 12px;
