@@ -44,7 +44,7 @@ const SigninPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
         >
-          Bem-vindo de volta!
+          Visita Fácil!
         </motion.h1>
         <motion.p
           className="signin-animated-title"
