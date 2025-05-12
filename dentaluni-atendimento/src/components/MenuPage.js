@@ -132,7 +132,7 @@ const MenuPage = () => {
           Qual é o código da empresa?
         </motion.h2>
         <motion.input
-          type="text"
+          type="number"
           className="menu-search-input"
           value={codEmpresa}
           onChange={handleChangeCodEmpresa}
