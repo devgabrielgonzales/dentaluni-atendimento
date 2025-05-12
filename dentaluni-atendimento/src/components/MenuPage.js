@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/MenuPage.css"; // Certifique-se que o caminho está correto
-import Logo from "../img/logo.png"; // Certifique-se que o caminho está correto
+import "../styles/MenuPage.css"; 
+import Logo from "../img/logo.png"; 
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-toastify"; // 1. IMPORTE O TOAST
+import { toast } from "react-toastify";
 
 const mockCompanies = [
   { id: "101", nome: "Dental Uni Matriz", cnpj: "01.234.567/0001-01" },
@@ -28,17 +28,49 @@ const MenuPage = () => {
   const [searchResults, setSearchResults] = useState([]);
   const navigate = useNavigate();
 
+  const formatCNPJ = (digitsOnly) => {
+    if (digitsOnly.length <= 7) {
+      return digitsOnly;
+    }
+
+    const limitedDigits = digitsOnly.slice(0, 14);
+
+    if (limitedDigits.length <= 2) return limitedDigits;
+    let formatted = `${limitedDigits.slice(0, 2)}`;
+    if (limitedDigits.length > 2) formatted += `.${limitedDigits.slice(2, 5)}`;
+    if (limitedDigits.length > 5) formatted += `.${limitedDigits.slice(5, 8)}`;
+    if (limitedDigits.length > 8) formatted += `/${limitedDigits.slice(8, 12)}`;
+    if (limitedDigits.length > 12)
+      formatted += `-${limitedDigits.slice(12, 14)}`;
+
+    return formatted;
+  };
+
+  const handleChangeCodEmpresa = (event) => {
+    const rawValue = event.target.value;
+    const digitsOnly = rawValue.replace(/\D/g, "");
+
+    if (digitsOnly.length <= 7) {
+      setCodEmpresa(digitsOnly);
+    } else {
+      const limitedDigitsForState = digitsOnly.slice(0, 14);
+      setCodEmpresa(formatCNPJ(limitedDigitsForState));
+    }
+  };
+
   const handleSearch = () => {
-    if (!codEmpresa) {
-      // alert("Por favor, informe o Código ou CNPJ da Empresa."); // Removido
-      toast.warn("Por favor, informe o Código ou CNPJ da Empresa."); // 2. ADICIONADO TOAST
+    const valorBusca = codEmpresa.replace(/\D/g, "");
+
+    if (!valorBusca) {
+      toast.warn("Por favor, informe o Código ou CNPJ da Empresa.");
       return;
     }
+
     const results = mockCompanies.filter(
       (company) =>
-        company.id.includes(codEmpresa) ||
-        company.nome.toLowerCase().includes(codEmpresa.toLowerCase()) ||
-        company.cnpj.includes(codEmpresa)
+        company.id.includes(valorBusca) ||
+        company.cnpj.replace(/\D/g, "").includes(valorBusca) ||
+        company.nome.toLowerCase().includes(codEmpresa.toLowerCase()) 
     );
     setSearchResults(
       results.length > 0
@@ -46,7 +78,6 @@ const MenuPage = () => {
         : [{ id: "notfound", nome: "Nenhuma empresa encontrada.", cnpj: "" }]
     );
     setIsSearched(true);
-    // A navegação ocorre ao clicar no item da lista
   };
 
   const handleSelectCompany = (companyId) => {
@@ -104,9 +135,10 @@ const MenuPage = () => {
           type="text"
           className="menu-search-input"
           value={codEmpresa}
-          onChange={(e) => setCodEmpresa(e.target.value)}
+          onChange={handleChangeCodEmpresa}
           placeholder="Código ou CNPJ"
-          initial={{ opacity: 0, y: 20 }} // Mantido y para este, ajuste para x se preferir
+          maxLength={18}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
         />
@@ -114,7 +146,7 @@ const MenuPage = () => {
           type="button"
           className="menu-search-button"
           onClick={handleSearch}
-          initial={{ opacity: 0, y: 20 }} // Mantido y para este, ajuste para x se preferir
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
         >
