@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/MenuPage.css";
-import Logo from "../img/logo.png";
+import "../styles/MenuPage.css"; // Certifique-se que o caminho está correto
+import Logo from "../img/logo.png"; // Certifique-se que o caminho está correto
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify"; // 1. IMPORTE O TOAST
 
 const mockCompanies = [
   { id: "101", nome: "Dental Uni Matriz", cnpj: "01.234.567/0001-01" },
@@ -29,7 +30,8 @@ const MenuPage = () => {
 
   const handleSearch = () => {
     if (!codEmpresa) {
-      alert("Por favor, informe o Código ou CNPJ da Empresa.");
+      // alert("Por favor, informe o Código ou CNPJ da Empresa."); // Removido
+      toast.warn("Por favor, informe o Código ou CNPJ da Empresa."); // 2. ADICIONADO TOAST
       return;
     }
     const results = mockCompanies.filter(
@@ -44,6 +46,7 @@ const MenuPage = () => {
         : [{ id: "notfound", nome: "Nenhuma empresa encontrada.", cnpj: "" }]
     );
     setIsSearched(true);
+    // A navegação ocorre ao clicar no item da lista
   };
 
   const handleSelectCompany = (companyId) => {
@@ -66,13 +69,16 @@ const MenuPage = () => {
     },
   };
 
+  const animationOffset = -30;
+  const baseDuration = 0.5;
+  const baseDelay = 0.1;
+
   return (
     <div
       className={`menu-page-fullscreen-gradient ${
         isSearched ? "results-active" : ""
       }`}
     >
-      {/* Removida a animação de subida do Framer Motion daqui */}
       <div className="menu-search-area-wrapper">
         <motion.img
           src={Logo}
@@ -84,9 +90,13 @@ const MenuPage = () => {
         />
         <motion.h2
           className="menu-prompt-text"
-          initial={{ opacity: 0, x: -50 }} 
+          initial={{ opacity: 0, x: animationOffset }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+          transition={{
+            duration: baseDuration,
+            delay: baseDelay + 0.15,
+            ease: "easeOut",
+          }}
         >
           Qual é o código da empresa?
         </motion.h2>
@@ -96,7 +106,7 @@ const MenuPage = () => {
           value={codEmpresa}
           onChange={(e) => setCodEmpresa(e.target.value)}
           placeholder="Código ou CNPJ"
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 20 }} // Mantido y para este, ajuste para x se preferir
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
         />
@@ -104,7 +114,7 @@ const MenuPage = () => {
           type="button"
           className="menu-search-button"
           onClick={handleSearch}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 20 }} // Mantido y para este, ajuste para x se preferir
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
         >

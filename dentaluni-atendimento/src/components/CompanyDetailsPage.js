@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../styles/CompanyDetailsPage.css";
 import { FaUserCircle, FaHome, FaSearch, FaSignOutAlt } from "react-icons/fa";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import ImagemAgendarVisita from "../img/visita.png";
 import ImagemDadosEmpresa from "../img/dados.png";
 
 const mockCompanies = [
-  { id: "101", nome: "Dental Uni Matriz" },
+  { id: "101", nome: "DentalUni Matriz" },
   { id: "102", nome: "Clínica Sorriso Perfeito" },
 ];
 
@@ -27,7 +27,7 @@ const CompanyDetailsPage = () => {
   }, [companyId]);
 
   const handleNavigateToRegisterVisit = () => {
-    navigate(`/visit`);
+    navigate(`/register-visit/:companyId`);
   };
 
   const handleNavigateToCompanyDataGrid = () => {
@@ -35,7 +35,7 @@ const CompanyDetailsPage = () => {
   };
 
   const handleHomeClick = () => {
-    navigate("/company-details");
+    navigate("/company-details/101");
   };
   const handleSearchClick = () => {
     navigate("/menu");
@@ -56,9 +56,9 @@ const CompanyDetailsPage = () => {
           <div className="user-text-info">
             <motion.p
               className="user-welcome-text-v2"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
             >
               Olá, Bem-vindo! 👋
             </motion.p>
@@ -72,9 +72,6 @@ const CompanyDetailsPage = () => {
             </motion.h1>
           </div>
         </div>
-        <div className="company-name-banner-v2">
-          <h2>{companyName}</h2>
-        </div>
       </header>
       <motion.main
         className="details-content-cards"
@@ -83,10 +80,12 @@ const CompanyDetailsPage = () => {
         transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
       >
         {" "}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
+        <div
+          className="company-name-banner-v2"
+        >
+          <h2>{companyName}</h2>
+        </div>
+        <div
           className="action-card-with-image"
           onClick={handleNavigateToRegisterVisit}
           role="button"
@@ -101,18 +100,15 @@ const CompanyDetailsPage = () => {
             className="card-image"
           />
           <span className="card-text">Agendar Visita</span>
-        </motion.div>
+        </div>
         {/* Card "Dados da Empresa" com Imagem */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
+        <div
           className="action-card-with-image"
-          onClick={handleNavigateToCompanyDataGrid}
+          onClick={handleNavigateToRegisterVisit}
           role="button"
           tabIndex={0}
           onKeyPress={(e) =>
-            e.key === "Enter" && handleNavigateToCompanyDataGrid()
+            e.key === "Enter" && handleNavigateToRegisterVisit()
           }
         >
           <img
@@ -121,7 +117,7 @@ const CompanyDetailsPage = () => {
             className="card-image"
           />
           <span className="card-text">Dados da Empresa</span>
-        </motion.div>
+        </div>
       </motion.main>
       <motion.footer
         className="new-bottom-menu"

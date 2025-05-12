@@ -56,19 +56,16 @@
 }
 
 .company-name-banner-v2 {
-  text-align: left;
-
-  padding-left: calc(44px + 12px + 4px);
-  color: white;
+  text-align: center;
+  color: #333;
   position: relative;
   z-index: 2;
 }
 
 .company-name-banner-v2 h2 {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 500;
   margin: 0;
-  opacity: 0.95;
 }
 
 .details-content-cards {
@@ -83,7 +80,7 @@
   z-index: 2;
   margin-top: -20px;
   border-radius: 25px 25px 0 0;
-  justify-content: center;
+  justify-content: space-evenly;
 }
 
 .action-card-with-image {
@@ -239,4 +236,14 @@
     font-size: 26px;
     margin-bottom: 20px;
   }
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
 }
