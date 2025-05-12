@@ -79,12 +79,6 @@ const CompanyDetailsPage = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.3, ease: "easeOut" }}
       >
-        {" "}
-        <div
-          className="company-name-banner-v2"
-        >
-          <h2>{companyName}</h2>
-        </div>
         <div
           className="action-card-with-image"
           onClick={handleNavigateToRegisterVisit}
@@ -104,11 +98,11 @@ const CompanyDetailsPage = () => {
         {/* Card "Dados da Empresa" com Imagem */}
         <div
           className="action-card-with-image"
-          onClick={handleNavigateToRegisterVisit}
+          onClick={handleNavigateToCompanyDataGrid}
           role="button"
           tabIndex={0}
           onKeyPress={(e) =>
-            e.key === "Enter" && handleNavigateToRegisterVisit()
+            e.key === "Enter" && handleNavigateToCompanyDataGrid()
           }
         >
           <img

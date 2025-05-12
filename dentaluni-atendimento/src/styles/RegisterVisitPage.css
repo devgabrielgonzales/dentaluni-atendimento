@@ -1,79 +1,118 @@
-.new-menu-page {
+/* RegisterVisitPage.css */
+
+/* Estilos do Layout da Página (Reutilizados/Adaptados do CompanyDetailsPage) */
+.details-page-layout-v2 {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background-color: #f0f2f5; /* Fundo geral da página */
   font-family: "Inter", sans-serif;
-  background-color: #e9e9f0;
-  overflow-x: hidden;
+  padding-bottom: 70px; /* ESPAÇO PARA O FOOTER FIXO */
+  box-sizing: border-box;
 }
 
-.new-menu-banner-section {
+/* Banner Superior */
+.details-header-curved {
   background-color: #ac1815;
   color: white;
-  padding: 30px 20px 60px 20px;
-  text-align: center;
+  padding: 15px 15px 30px 15px;
   position: relative;
-  border-bottom-left-radius: 50% 40px;
-  border-bottom-right-radius: 50% 40px;
   z-index: 1;
-}
-.avatar-placeholder {
-  width: 100px;
-  height: 100px;
-  background-color: white;
-  border-radius: 50%;
-  margin: 0 auto 15px auto;
-  border: 4px solid #ac1815;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-.greeting-text {
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 5px;
-}
-.date-text {
-  font-size: 14px;
-  opacity: 0.9;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.new-menu-content-area {
-  background-color: white;
-  margin: -40px 20px 20px 20px;
-  padding: 30px;
-  border-radius: 20px;
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+.user-info-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  position: relative;
   z-index: 2;
-  flex-grow: 1;
 }
 
+.user-avatar-icon-v2 {
+  font-size: 44px;
+  margin-right: 12px;
+  color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  padding: 4px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-text-info .user-welcome-text-v2 {
+  font-size: 13px;
+  margin: 0;
+  opacity: 0.9;
+  font-weight: 400;
+}
+
+.user-text-info .user-name-text-v2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 2px 0 0 0;
+  line-height: 1.2;
+}
+
+/* Removido .company-name-banner-v2 pois o título do formulário é "Registrar Visita" */
+
+/* Área de Conteúdo Principal (Onde o formulário vai) */
+.new-menu-content-area {
+  flex-grow: 1;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  background-color: #f0f2f5;
+  position: relative;
+  z-index: 2;
+  margin-top: -20px;
+  border-radius: 25px 25px 0 0;
+  justify-content: space-evenly;
+}
+
+/* Container do Formulário de Visita */
 .register-visit-form-container {
   max-width: 950px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
+  background-color: #ffffff;
+  padding: 25px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
+
 .register-visit-form-container h1 {
   text-align: center;
   color: #0c0101;
   margin-top: 0;
-  margin-bottom: 35px;
-  font-size: 26px;
+  margin-bottom: 30px;
+  font-size: 24px;
   font-weight: 600;
 }
 
 .visit-form {
   display: flex;
   flex-direction: column;
-  gap: 35px;
+  gap: 30px;
 }
+
+/* Estilos do Formulário Interno */
 .form-section {
   border: 1px solid #e8e8e8;
-  padding: 25px;
+  padding: 20px 25px;
   border-radius: 8px;
   background-color: #fdfdfd;
 }
+
 .form-section legend {
   font-weight: 600;
-  font-size: 18px;
+  font-size: 17px;
   color: #ac1815;
   padding: 0 10px;
   margin-left: 5px;
@@ -121,7 +160,7 @@
 .form-section textarea,
 .form-section select.select-input {
   width: 100%;
-  padding: 12px 15px;
+  padding: 10px 12px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
@@ -148,17 +187,17 @@
 }
 .form-section textarea {
   resize: vertical;
-  min-height: 80px;
+  min-height: 70px;
 }
 .detail-input {
   width: 100%;
-  padding: 10px 12px;
+  padding: 8px 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  font-size: 14px;
+  font-size: 13px;
   box-sizing: border-box;
   font-family: inherit;
-  margin-top: 8px;
+  margin-top: 5px;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .detail-input:focus {
@@ -171,13 +210,13 @@
 .checkbox-group-vertical {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   align-items: flex-start;
 }
 .checkbox-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 20px;
+  gap: 8px 15px;
 }
 .radio-group-horizontal {
   display: flex;
@@ -189,8 +228,8 @@
 .checkbox-group-vertical label input[type="checkbox"],
 .checkbox-group label input[type="checkbox"],
 .radio-group-horizontal label input[type="radio"] {
-  width: 16px;
-  height: 16px;
+  width: 15px;
+  height: 15px;
   cursor: pointer;
   accent-color: #ac1815;
   margin: 0;
@@ -206,41 +245,41 @@
 .ocorrencias-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 25px;
+  gap: 20px;
 }
 .ocorrencia-coluna {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 .ocorrencia-titulo {
   font-weight: 600;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   color: #555;
-  font-size: 15px;
+  font-size: 14px;
   border-bottom: 1px solid #eee;
-  padding-bottom: 8px;
+  padding-bottom: 6px;
 }
 
 .relato-label {
-  margin-top: 20px;
+  margin-top: 15px;
   font-weight: 600;
   color: #333;
 }
 .relato-label textarea {
-  min-height: 100px;
+  min-height: 80px;
 }
 
 .pesquisa-grid,
 .pesquisa-grid-single-col {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 15px;
+  gap: 12px;
 }
 @media (min-width: 768px) {
   .pesquisa-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px 25px;
+    gap: 12px 20px;
   }
   .pesquisa-grid label.full-width {
     grid-column: 1 / -1;
@@ -248,28 +287,28 @@
 }
 
 .dynamic-field-section {
-  margin-top: 25px;
-  padding-top: 20px;
+  margin-top: 20px;
+  padding-top: 15px;
   border-top: 1px solid #eee;
 }
 .dynamic-field-label {
   display: block;
   font-weight: 600;
   color: #333;
-  margin-bottom: 15px;
-  font-size: 15px;
+  margin-bottom: 12px;
+  font-size: 14px;
 }
 .filial-entry {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 .filial-input {
-  padding: 10px 12px !important;
-  font-size: 14px !important;
+  padding: 8px 10px !important;
+  font-size: 13px !important;
   border: 1px solid #ccc !important;
-  border-radius: 6px !important;
+  border-radius: 4px !important;
   background-color: white !important;
 }
 .filial-input.city-input {
@@ -277,14 +316,14 @@
 }
 .filial-input.count-input {
   flex: 1;
-  min-width: 120px;
+  min-width: 100px;
 }
 .remove-filial-btn,
 .add-filial-btn {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 5px;
+  padding: 4px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -298,11 +337,11 @@
   background-color: #ffebee;
 }
 .add-filial-btn {
-  margin-top: 10px;
+  margin-top: 8px;
   background-color: #e8f5e9;
   color: #2e7d32;
-  padding: 8px 15px;
-  font-size: 14px;
+  padding: 6px 12px;
+  font-size: 13px;
   font-weight: 500;
   border: 1px solid #c8e6c9;
   gap: 5px;
@@ -314,27 +353,22 @@
 .additional-questions-column {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 20px;
 }
 .question-block {
   border-bottom: 1px dashed #eee;
-  padding-bottom: 20px;
+  padding-bottom: 15px;
 }
 .question-block:last-child {
   border-bottom: none;
   padding-bottom: 0;
 }
-
-.radio-group-horizontal {
-  margin-top: 5px;
-}
-
 .rating-stars-horizontal {
   display: flex;
   gap: 8px;
   align-items: center;
   justify-content: flex-start;
-  margin-top: 15px;
+  margin-top: 10px;
   padding-left: 10px;
 }
 .rating-label {
@@ -355,6 +389,11 @@
 .rating-stars-horizontal svg.star-selected {
   color: #ffb300;
 }
+.sipat-question {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
 
 .form-actions {
   display: flex;
@@ -366,10 +405,10 @@
 }
 .button-primary,
 .button-secondary {
-  padding: 12px 30px;
+  padding: 10px 25px;
   border-radius: 6px;
   border: 1px solid transparent;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease,
@@ -395,79 +434,131 @@
   color: #333;
 }
 
+/* Menu de Rodapé */
+.new-bottom-menu {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background-color: white;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  padding: 5px 0;
+  padding-bottom: calc(5px + env(safe-area-inset-bottom));
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  height: 65px;
+}
+.menu-item,
+.menu-item-principal {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #606060;
+  font-size: 24px;
+  flex: 1;
+  height: 100%;
+  transition: color 0.2s ease;
+}
+.menu-item:hover,
+.menu-item.active {
+  color: #ac1815;
+}
+.menu-item-principal {
+  font-size: 28px;
+  background-color: #ac1815;
+  color: white;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.15);
+  margin-bottom: 25px;
+  align-self: flex-end;
+  flex: 0 0 60px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.menu-item-principal:hover {
+  background-color: #8c1310;
+  transform: translateY(-2px);
+}
+.menu-item-principal:active {
+  transform: translateY(0px) scale(0.95);
+}
+.menu-item-label {
+  display: none;
+}
+
+/* --- Media Queries --- */
 @media (max-width: 960px) {
-  .register-visit-page {
-    margin: 20px;
-    padding: 20px;
-    width: calc(100% - 40px);
+  .details-page-layout-v2 {
   }
-  .new-menu-content-area {
-    margin: -40px 15px 15px 15px;
+  .new-menu-content-area,
+  .details-content-cards {
+    /* Classe da área de conteúdo principal */
     padding: 25px;
   }
+
   .ocorrencias-grid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 15px;
   }
   .pesquisa-grid {
     grid-template-columns: 1fr;
   }
-  .additional-questions-grid {
-    grid-template-columns: 1fr;
-    gap: 25px;
+  .additional-questions-column {
+    /* Se houver side-by-side dentro, já é tratado */
   }
-  .nota-section-inline {
-    border-left: none;
-    padding-left: 0;
-    margin-top: 10px;
+  .side-by-side-grids {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 }
 @media (max-width: 600px) {
-  .new-menu-page {
-    background-color: white;
+  .details-page-layout-v2 {
+    background-color: #ac1815;
   }
-  .new-menu-content-area {
-    margin: -30px 10px 10px 10px;
+  .new-menu-content-area,
+  .details-content-cards {
     padding: 20px 15px;
-    border-radius: 15px;
+    border-radius: 25px 25px 0 0;
+    z-index: 2;
+    margin-top: -20px;
   }
   .register-visit-form-container h1 {
-    font-size: 22px;
-    margin-bottom: 25px;
+    font-size: 20px;
+    margin-bottom: 20px;
   }
   .visit-form {
-    gap: 25px;
+    gap: 20px;
   }
   .form-section {
     padding: 15px;
   }
   .form-section legend {
-    font-size: 17px;
+    font-size: 16px;
   }
   .ocorrencias-grid {
     grid-template-columns: 1fr;
   }
   .ocorrencia-coluna {
-    margin-bottom: 10px;
+    margin-bottom: 8px;
   }
   .pesquisa-grid,
-  .additional-questions-grid {
+  .side-by-side-grids {
     grid-template-columns: 1fr;
   }
-  .additional-questions-grid {
-    gap: 20px;
+  .side-by-side-grids {
+    gap: 15px;
   }
   .filial-entry {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
-    position: relative;
-    padding-bottom: 0px;
-  }
-  .filial-input.city-input,
-  .filial-input.count-input {
-    flex: none;
-    min-width: unset;
   }
   .remove-filial-btn {
     position: static;
@@ -483,44 +574,55 @@
   }
   .form-actions {
     flex-direction: column-reverse;
-    gap: 12px;
+    gap: 10px;
     align-items: stretch;
   }
   .button-primary,
   .button-secondary {
-    padding: 12px 20px;
+    padding: 10px 15px;
+    font-size: 14px;
   }
   .radio-group-vertical label,
   .checkbox-group-vertical label,
   .checkbox-group label,
   .radio-group-horizontal label {
-    font-size: 15px;
-    gap: 10px;
+    font-size: 14px;
+    gap: 6px;
   }
-  .new-menu-banner-section {
-    padding: 20px 15px 50px 15px;
-    border-bottom-left-radius: 40% 30px;
-    border-bottom-right-radius: 40% 30px;
+  .details-header-curved {
+    padding: 15px 15px 30px 15px;
   }
-  .avatar-placeholder {
-    width: 80px;
-    height: 80px;
-    margin-bottom: 10px;
-  }
-  .greeting-text {
-    font-size: 20px;
-  }
-  .date-text {
+  .user-avatar-icon-v2 {
+    font-size: 44px;
+    margin-right: 12px;
+    color: white;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    padding: 4px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  } /* Ajustado Avatar */
+  .user-text-info .user-welcome-text-v2 {
     font-size: 13px;
   }
-}
+  .user-text-info .user-name-text-v2 {
+    font-size: 22px;
+  } /* Ajustado Nome Usuário */
 
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
+  .company-name-banner-v2 h2 {
+    font-size: 13px;
+  }
+  .new-bottom-menu {
+    height: 60px;
+  }
+  .menu-item {
+    font-size: 20px;
+  }
+  .menu-item-principal {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
 }

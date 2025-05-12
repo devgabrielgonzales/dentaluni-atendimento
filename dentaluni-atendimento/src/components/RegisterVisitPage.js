@@ -1,14 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "../styles/RegisterVisitPage.css";
-import { FaStar, FaPlus, FaTrash } from "react-icons/fa";
+import "../styles/RegisterVisitPage.css"; // Seu caminho
+import {
+  FaStar,
+  FaPlus,
+  FaTrash,
+  FaUserCircle,
+  FaHome,
+  FaSearch,
+  FaSignOutAlt, // Ícones para o footer
+} from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const RegisterVisitPage = () => {
   const { companyId } = useParams();
   const navigate = useNavigate();
 
   const initialFormData = {
-    motivoVisita: "",
+    /* ... (seu initialFormData como você forneceu) ... */ motivoVisita: "",
     motivoVisitaOutros: "",
     ocorrenciasCadastral: {
       atualizacaoCadastral: false,
@@ -41,7 +50,6 @@ const RegisterVisitPage = () => {
     repCompras: "",
     diretorEmpresa: "",
     repLegal: "",
-
     utilizouClinicaUrgencia: "",
     notaClinicaUrgencia: 0,
     possuiInCompany: "",
@@ -50,23 +58,23 @@ const RegisterVisitPage = () => {
     notaSistemaSAE: 0,
     realizouEventosSaudeBucal: "",
     notaEventosSaudeBucal: 0,
-
     mesSIPAT: "",
-
     canalRHSelecionado: "",
     canalRHOutros: "",
     canalDentalUniSelecionado: "",
-
     observacoes: "",
-
     filiais: [{ id: Date.now(), cidadeUF: "", numFuncionarios: "" }],
   };
 
   const [formData, setFormData] = useState(initialFormData);
+  // Removido companyDisplayName e userName daqui, pois não estão no seu header
+  // const [userName, setUserName] = useState("Gabriel Gonzales");
+  // const [companyDisplayName, setCompanyDisplayName] = useState('');
 
   useEffect(() => {
     if (companyId) {
       console.log(`ID da Empresa recebido: ${companyId}`);
+      // Lógica para buscar/definir nome da empresa se necessário no header
     }
   }, [companyId]);
 
@@ -122,6 +130,17 @@ const RegisterVisitPage = () => {
     alert("Visita registrada com sucesso! (simulação)");
   };
 
+  // Handlers para o novo menu de rodapé
+  const handleHomeClick = () => {
+    navigate("/company-details/101");
+  }; // Ajuste a rota conforme necessário
+  const handleSearchClick = () => {
+    navigate("/menu");
+  }; // Ajuste a rota conforme necessário
+  const handleLogoutClick = () => {
+    navigate("/login");
+  }; // Ajuste a rota conforme necessário
+
   const motivoVisitaOptions = [
     { value: "", label: "Selecione um motivo..." },
     { value: "implantacao", label: "Implantação" },
@@ -154,6 +173,22 @@ const RegisterVisitPage = () => {
     inclusoes: "Inclusões",
     exclusoes: "Exclusões",
   };
+  const criteriosOptions = [
+    { value: "criterioUrgencia", label: "Critério Urgência Central/Marcação?" },
+    { value: "maisVidasCompanny", label: "+Vidas X Companny?" },
+    {
+      value: "conheceSistemaChamadoSAE",
+      label: "Conhece Sistema Chamado (Self/App/Nav)?",
+    },
+    {
+      value: "realizouEventosSaudeBucal",
+      label: "Realizou Eventos Saúde Bucal?",
+    },
+    {
+      value: "realizaDescontoParticular",
+      label: "Realiza Desconto Particular?",
+    },
+  ];
   const canalRHOptions = [
     { value: "email", label: "E-mail" },
     { value: "muralIntranet", label: "Mural/Intranet" },
@@ -168,33 +203,61 @@ const RegisterVisitPage = () => {
 
   const RatingStars = ({ ratingField, currentRating }) => (
     <div className="rating-stars-horizontal">
-      <label className="rating-label">Nota:</label>
+      {" "}
+      <label className="rating-label">Nota:</label>{" "}
       {[1, 2, 3, 4, 5].map((star) => (
         <FaStar
           key={star}
           className={star <= currentRating ? "star-selected" : "star-empty"}
           onClick={() => handleSpecificRatingChange(ratingField, star)}
         />
-      ))}
+      ))}{" "}
     </div>
   );
+  // getFormattedDate não está sendo usada no header que você colou, então removi.
+  // Se precisar, pode adicionar de volta.
 
   return (
-    <div className="new-menu-page">
-      <header className="new-menu-banner-section">
-        <div className="avatar-placeholder"></div>
-        <div className="greeting-text">Olá, Gabriel Gonzales</div>
-        <div className="date-text">Registrar Visita</div>
+    // Usando as classes de layout da CompanyDetailsPage que você forneceu
+    <div className="details-page-layout-v2">
+      <header className="details-header-curved">
+        <div className="user-info-container">
+          <FaUserCircle className="user-avatar-icon-v2" />
+          <div className="user-text-info">
+            <motion.p
+              className="user-welcome-text-v2"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+            >
+              Olá, Bem-vindo! 👋
+            </motion.p>
+            <motion.h1
+              className="user-name-text-v2"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+            >
+              Gabriel Gonzales
+            </motion.h1>
+          </div>
+        </div>
+        {/* Removido o company-name-banner-v2 do header,
+            pois o título "Registrar Visita" está dentro do main */}
       </header>
 
       <main className="new-menu-content-area">
+        {" "}
+        {/* Ou details-content-cards */}
         <div className="register-visit-form-container">
-          <h1></h1>
+          {/* O h1 estava vazio no seu código, adicionei o título aqui */}
+          <h1>Registrar Visita</h1>
           <form onSubmit={handleSubmit} className="visit-form">
+            {/* ... (Todo o conteúdo do seu formulário como você colou) ... */}
             {/* Motivo Visita (Select) */}
             <fieldset className="form-section">
-              <legend>Motivo da Visita</legend>
-              {/* ... select ... */}
+              {" "}
+              <legend>Motivo da Visita</legend>{" "}
               <label className="select-label">
                 {" "}
                 Selecione o motivo principal:{" "}
@@ -217,7 +280,7 @@ const RegisterVisitPage = () => {
                     </option>
                   ))}{" "}
                 </select>{" "}
-              </label>
+              </label>{" "}
               {formData.motivoVisita === "outros" && (
                 <input
                   type="text"
@@ -227,14 +290,14 @@ const RegisterVisitPage = () => {
                   onChange={handleInputChange}
                   className="detail-input"
                 />
-              )}
+              )}{" "}
             </fieldset>
-
             {/* Ocorrências (Checkboxes) */}
             <fieldset className="form-section">
-              <legend>Ocorrências</legend>
-              {/* ... grid ocorrências ... */}
+              {" "}
+              <legend>Ocorrências</legend>{" "}
               <div className="ocorrencias-grid">
+                {" "}
                 <div className="ocorrencia-coluna">
                   {" "}
                   <p className="ocorrencia-titulo">Cadastral</p>{" "}
@@ -254,7 +317,7 @@ const RegisterVisitPage = () => {
                       </label>
                     ))}{" "}
                   </div>{" "}
-                </div>
+                </div>{" "}
                 <div className="ocorrencia-coluna">
                   {" "}
                   <p className="ocorrencia-titulo">Faturamento</p>{" "}
@@ -274,7 +337,7 @@ const RegisterVisitPage = () => {
                       </label>
                     ))}{" "}
                   </div>{" "}
-                </div>
+                </div>{" "}
                 <div className="ocorrencia-coluna">
                   {" "}
                   <p className="ocorrencia-titulo">Atendimento</p>{" "}
@@ -294,7 +357,7 @@ const RegisterVisitPage = () => {
                       </label>
                     ))}{" "}
                   </div>{" "}
-                </div>
+                </div>{" "}
                 <div className="ocorrencia-coluna">
                   {" "}
                   <p className="ocorrencia-titulo">Movimentação</p>{" "}
@@ -316,8 +379,8 @@ const RegisterVisitPage = () => {
                       )
                     )}{" "}
                   </div>{" "}
-                </div>
-              </div>
+                </div>{" "}
+              </div>{" "}
               <label className="relato-label">
                 {" "}
                 Relato:{" "}
@@ -327,14 +390,14 @@ const RegisterVisitPage = () => {
                   value={formData.relatoOcorrencias}
                   onChange={handleInputChange}
                 ></textarea>{" "}
-              </label>
+              </label>{" "}
             </fieldset>
-
             {/* Pesquisa e Atualizações */}
             <fieldset className="form-section">
-              <legend>Pesquisa e Atualizações</legend>
-              {/* ... inputs de pesquisa e filiais ... */}
+              {" "}
+              <legend>Pesquisa e Atualizações</legend>{" "}
               <div className="form-grid pesquisa-grid-single-col">
+                {" "}
                 <label>
                   {" "}
                   Qual o total de funcionários na empresa? (Potencial){" "}
@@ -344,11 +407,13 @@ const RegisterVisitPage = () => {
                     value={formData.totalFuncionariosEmpresa}
                     onChange={handleInputChange}
                   />{" "}
-                </label>
+                </label>{" "}
                 <div className="dynamic-field-section">
+                  {" "}
                   <label className="dynamic-field-label">
-                    Filiais (Cidade/UF | Nº de Funcionários):
-                  </label>
+                    {" "}
+                    Filiais (Cidade/UF | Nº de Funcionários):{" "}
+                  </label>{" "}
                   {formData.filiais.map((filial, index) => (
                     <div key={filial.id} className="filial-entry">
                       {" "}
@@ -379,7 +444,7 @@ const RegisterVisitPage = () => {
                         </button>
                       )}{" "}
                     </div>
-                  ))}
+                  ))}{" "}
                   <button
                     type="button"
                     onClick={handleAddFilial}
@@ -387,8 +452,8 @@ const RegisterVisitPage = () => {
                   >
                     {" "}
                     <FaPlus /> Adicionar Filial{" "}
-                  </button>
-                </div>
+                  </button>{" "}
+                </div>{" "}
                 <label>
                   {" "}
                   Permite a inclusão de dependentes no plano? (Especifique o
@@ -399,7 +464,7 @@ const RegisterVisitPage = () => {
                     value={formData.dependentes}
                     onChange={handleInputChange}
                   />{" "}
-                </label>
+                </label>{" "}
                 <label>
                   {" "}
                   Empresa contribui com o valor do plano? Qual o (%)?{" "}
@@ -409,7 +474,7 @@ const RegisterVisitPage = () => {
                     value={formData.contribuiPlano}
                     onChange={handleInputChange}
                   />{" "}
-                </label>
+                </label>{" "}
                 <label>
                   {" "}
                   Possui filiais que não tenham o benefício? Qual cidade?{" "}
@@ -419,7 +484,7 @@ const RegisterVisitPage = () => {
                     value={formData.filiaisBeneficio}
                     onChange={handleInputChange}
                   />{" "}
-                </label>
+                </label>{" "}
                 <label>
                   {" "}
                   Possui plano de saúde? Qual operadora?{" "}
@@ -429,7 +494,7 @@ const RegisterVisitPage = () => {
                     value={formData.planoSaude}
                     onChange={handleInputChange}
                   />{" "}
-                </label>
+                </label>{" "}
                 <label>
                   {" "}
                   Data de aniversário de contrato do plano de saúde?{" "}
@@ -440,7 +505,7 @@ const RegisterVisitPage = () => {
                     onChange={handleInputChange}
                     placeholder="DD/MM ou MM/AAAA"
                   />{" "}
-                </label>
+                </label>{" "}
                 <label>
                   {" "}
                   Camarote Arena: Qual time torce?{" "}
@@ -450,7 +515,7 @@ const RegisterVisitPage = () => {
                     value={formData.camaroteArena}
                     onChange={handleInputChange}
                   />{" "}
-                </label>
+                </label>{" "}
                 <label>
                   {" "}
                   Representante do compras: (Nome/Cargo/CPF/Data Nascimento){" "}
@@ -460,7 +525,7 @@ const RegisterVisitPage = () => {
                     value={formData.repCompras}
                     onChange={handleInputChange}
                   />{" "}
-                </label>
+                </label>{" "}
                 <label>
                   {" "}
                   Diretor da empresa: (Nome/Cargo/CPF/Data Nascimento){" "}
@@ -470,7 +535,7 @@ const RegisterVisitPage = () => {
                     value={formData.diretorEmpresa}
                     onChange={handleInputChange}
                   />{" "}
-                </label>
+                </label>{" "}
                 <label>
                   {" "}
                   Representante legal: (Nome/Cargo/CPF/Data Nascimento){" "}
@@ -480,150 +545,166 @@ const RegisterVisitPage = () => {
                     value={formData.repLegal}
                     onChange={handleInputChange}
                   />{" "}
-                </label>
-              </div>
+                </label>{" "}
+              </div>{" "}
             </fieldset>
-
             {/* Nova Seção de Perguntas Sim/Não com Notas Condicionais */}
             <fieldset className="form-section">
-              <legend>Questões Adicionais</legend>
+              {" "}
+              <legend>Questões Adicionais</legend>{" "}
               <div className="additional-questions-column">
-                {/* Pergunta 1 + Nota */}
+                {" "}
                 <div className="question-block">
+                  {" "}
                   <p className="question-title">
-                    Já utilizou a Clínica de urgência da DentalUni?
-                  </p>
+                    {" "}
+                    Já utilizou a Clínica de urgência da DentalUni?{" "}
+                  </p>{" "}
                   <div className="radio-group-horizontal">
+                    {" "}
                     <label>
+                      {" "}
                       <input
                         type="radio"
                         name="utilizouClinicaUrgencia"
                         value="sim"
                         checked={formData.utilizouClinicaUrgencia === "sim"}
                         onChange={handleInputChange}
-                      />
-                      <span>Sim</span>
-                    </label>
+                      />{" "}
+                      <span>Sim</span>{" "}
+                    </label>{" "}
                     <label>
+                      {" "}
                       <input
                         type="radio"
                         name="utilizouClinicaUrgencia"
                         value="nao"
                         checked={formData.utilizouClinicaUrgencia === "nao"}
                         onChange={handleInputChange}
-                      />
-                      <span>Não</span>
-                    </label>
-                  </div>
+                      />{" "}
+                      <span>Não</span>{" "}
+                    </label>{" "}
+                  </div>{" "}
                   {formData.utilizouClinicaUrgencia === "sim" && (
                     <RatingStars
                       ratingField="notaClinicaUrgencia"
                       currentRating={formData.notaClinicaUrgencia}
                     />
-                  )}
-                </div>
-                {/* Pergunta 2 + Nota */}
+                  )}{" "}
+                </div>{" "}
                 <div className="question-block">
-                  <p className="question-title">Possui In Company?</p>
+                  {" "}
+                  <p className="question-title">Possui In Company?</p>{" "}
                   <div className="radio-group-horizontal">
+                    {" "}
                     <label>
+                      {" "}
                       <input
                         type="radio"
                         name="possuiInCompany"
                         value="sim"
                         checked={formData.possuiInCompany === "sim"}
                         onChange={handleInputChange}
-                      />
-                      <span>Sim</span>
-                    </label>
+                      />{" "}
+                      <span>Sim</span>{" "}
+                    </label>{" "}
                     <label>
+                      {" "}
                       <input
                         type="radio"
                         name="possuiInCompany"
                         value="nao"
                         checked={formData.possuiInCompany === "nao"}
                         onChange={handleInputChange}
-                      />
-                      <span>Não</span>
-                    </label>
-                  </div>
+                      />{" "}
+                      <span>Não</span>{" "}
+                    </label>{" "}
+                  </div>{" "}
                   {formData.possuiInCompany === "sim" && (
                     <RatingStars
                       ratingField="notaInCompany"
                       currentRating={formData.notaInCompany}
                     />
-                  )}
-                </div>
-                {/* Pergunta 3 + Nota */}
+                  )}{" "}
+                </div>{" "}
                 <div className="question-block">
+                  {" "}
                   <p className="question-title">
-                    Conhece o sistema para abrir chamado (SAE Atendimento)?
-                  </p>
+                    {" "}
+                    Conhece o sistema para abrir chamado (SAE Atendimento)?{" "}
+                  </p>{" "}
                   <div className="radio-group-horizontal">
+                    {" "}
                     <label>
+                      {" "}
                       <input
                         type="radio"
                         name="conheceSistemaChamadoSAE"
                         value="sim"
                         checked={formData.conheceSistemaChamadoSAE === "sim"}
                         onChange={handleInputChange}
-                      />
-                      <span>Sim</span>
-                    </label>
+                      />{" "}
+                      <span>Sim</span>{" "}
+                    </label>{" "}
                     <label>
+                      {" "}
                       <input
                         type="radio"
                         name="conheceSistemaChamadoSAE"
                         value="nao"
                         checked={formData.conheceSistemaChamadoSAE === "nao"}
                         onChange={handleInputChange}
-                      />
-                      <span>Não</span>
-                    </label>
-                  </div>
+                      />{" "}
+                      <span>Não</span>{" "}
+                    </label>{" "}
+                  </div>{" "}
                   {formData.conheceSistemaChamadoSAE === "sim" && (
                     <RatingStars
                       ratingField="notaSistemaSAE"
                       currentRating={formData.notaSistemaSAE}
                     />
-                  )}
-                </div>
-                {/* Pergunta 4 + Nota */}
+                  )}{" "}
+                </div>{" "}
                 <div className="question-block">
+                  {" "}
                   <p className="question-title">
-                    Já realizou eventos relacionados a Saúde Bucal?
-                  </p>
+                    {" "}
+                    Já realizou eventos relacionados a Saúde Bucal?{" "}
+                  </p>{" "}
                   <div className="radio-group-horizontal">
+                    {" "}
                     <label>
+                      {" "}
                       <input
                         type="radio"
                         name="realizouEventosSaudeBucal"
                         value="sim"
                         checked={formData.realizouEventosSaudeBucal === "sim"}
                         onChange={handleInputChange}
-                      />
-                      <span>Sim</span>
-                    </label>
+                      />{" "}
+                      <span>Sim</span>{" "}
+                    </label>{" "}
                     <label>
+                      {" "}
                       <input
                         type="radio"
                         name="realizouEventosSaudeBucal"
                         value="nao"
                         checked={formData.realizouEventosSaudeBucal === "nao"}
                         onChange={handleInputChange}
-                      />
-                      <span>Não</span>
-                    </label>
-                  </div>
+                      />{" "}
+                      <span>Não</span>{" "}
+                    </label>{" "}
+                  </div>{" "}
                   {formData.realizouEventosSaudeBucal === "sim" && (
                     <RatingStars
                       ratingField="notaEventosSaudeBucal"
                       currentRating={formData.notaEventosSaudeBucal}
                     />
-                  )}
-                </div>
-                {/* Pergunta SIPAT */}
+                  )}{" "}
+                </div>{" "}
                 <div className="question-block sipat-question">
+                  {" "}
                   <label>
                     {" "}
                     Realiza semana de SIPAT? Qual mês?{" "}
@@ -634,17 +715,19 @@ const RegisterVisitPage = () => {
                       onChange={handleInputChange}
                       placeholder="Ex: Outubro"
                     />{" "}
-                  </label>
-                </div>
-              </div>
+                  </label>{" "}
+                </div>{" "}
+              </div>{" "}
             </fieldset>
-
             {/* Canais de Comunicação RH (Radio Group) */}
             <fieldset className="form-section">
+              {" "}
               <legend>
-                Qual o canal de comunicação do RH com o funcionário?
-              </legend>
+                {" "}
+                Qual o canal de comunicação do RH com o funcionário?{" "}
+              </legend>{" "}
               <div className="radio-group-vertical">
+                {" "}
                 {canalRHOptions.map((option) => (
                   <label key={option.value}>
                     {" "}
@@ -657,8 +740,8 @@ const RegisterVisitPage = () => {
                     />{" "}
                     <span>{option.label}</span>{" "}
                   </label>
-                ))}
-              </div>
+                ))}{" "}
+              </div>{" "}
               {formData.canalRHSelecionado === "outros" && (
                 <input
                   type="text"
@@ -668,15 +751,17 @@ const RegisterVisitPage = () => {
                   onChange={handleInputChange}
                   className="detail-input"
                 />
-              )}
+              )}{" "}
             </fieldset>
-
             {/* Canais de Comunicação DentalUni (Radio Group) */}
             <fieldset className="form-section">
+              {" "}
               <legend>
-                Qual o canal de comunicação DentalUni com a empresa?
-              </legend>
+                {" "}
+                Qual o canal de comunicação DentalUni com a empresa?{" "}
+              </legend>{" "}
               <div className="radio-group-vertical">
+                {" "}
                 {canalDentalUniOptions.map((option) => (
                   <label key={option.value}>
                     {" "}
@@ -691,38 +776,70 @@ const RegisterVisitPage = () => {
                     />{" "}
                     <span>{option.label}</span>{" "}
                   </label>
-                ))}
-              </div>
+                ))}{" "}
+              </div>{" "}
             </fieldset>
-
             {/* Observações (Textarea) */}
             <fieldset className="form-section">
-              <legend>Observações</legend>
+              {" "}
+              <legend>Observações</legend>{" "}
               <textarea
                 name="observacoes"
                 rows="6"
                 placeholder="Adicione suas observações finais aqui..."
                 value={formData.observacoes}
                 onChange={handleInputChange}
-              ></textarea>
+              ></textarea>{" "}
             </fieldset>
-
             {/* Botões Finais */}
             <div className="form-actions">
+              {" "}
               <button
                 type="button"
                 onClick={() => navigate(-1)}
                 className="button-secondary"
               >
-                Voltar
-              </button>
+                {" "}
+                Voltar{" "}
+              </button>{" "}
               <button type="submit" className="button-primary">
-                Registrar Visita
-              </button>
+                {" "}
+                Registrar Visita{" "}
+              </button>{" "}
             </div>
           </form>
         </div>
       </main>
+
+      {/* Footer Adicionado */}
+      <motion.footer
+        className="new-bottom-menu"
+        initial={{ opacity: 0, y: 30 }} // Animação de entrada para o footer
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        <button
+          className="menu-item"
+          onClick={handleHomeClick}
+          aria-label="Início"
+        >
+          <FaHome />
+        </button>
+        <button
+          className="menu-item-principal"
+          onClick={handleSearchClick}
+          aria-label="Pesquisar Empresa"
+        >
+          <FaSearch />
+        </button>
+        <button
+          className="menu-item"
+          onClick={handleLogoutClick}
+          aria-label="Sair"
+        >
+          <FaSignOutAlt />
+        </button>
+      </motion.footer>
     </div>
   );
 };
