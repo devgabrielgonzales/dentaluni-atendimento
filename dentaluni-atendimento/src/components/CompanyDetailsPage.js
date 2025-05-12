@@ -46,33 +46,35 @@ const CompanyDetailsPage = () => {
 
   return (
     <div className="details-page-layout-v2">
-      {" "}
-      {/* Fundo da página é cinza claro aqui */}
-      <header className="details-header-curved">
+      <div className="container">
         {" "}
-        {/* Header vermelho com curva */}
-        <div className="user-info-container">
-          <FaUserCircle className="user-avatar-icon-v2" />
-          <div className="user-text-info">
-            <motion.p
-              className="user-welcome-text-v2"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
-            >
-              Olá, Bem-vindo! 👋
-            </motion.p>
-            <motion.h1
-              className="user-name-text-v2"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
-            >
-              {userName}
-            </motion.h1>
+        {/* Fundo da página é cinza claro aqui */}
+        <header className="details-header-curved">
+          {" "}
+          {/* Header vermelho com curva */}
+          <div className="user-info-container">
+            <FaUserCircle className="user-avatar-icon-v2" />
+            <div className="user-text-info">
+              <motion.p
+                className="user-welcome-text-v2"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+              >
+                Olá, Bem-vindo! 👋
+              </motion.p>
+              <motion.h1
+                className="user-name-text-v2"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+              >
+                {userName}
+              </motion.h1>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
+      </div>
       <motion.main
         className="details-content-cards"
         initial={{ opacity: 0, y: 20 }}
@@ -113,33 +115,36 @@ const CompanyDetailsPage = () => {
           <span className="card-text">Dados da Empresa</span>
         </div>
       </motion.main>
+
       <motion.footer
         className="new-bottom-menu"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.1, ease: "easeOut" }}
       >
-        <button
-          className="menu-item"
-          onClick={handleHomeClick}
-          aria-label="Início"
-        >
-          <FaHome />
-        </button>
-        <button
-          className="menu-item-principal"
-          onClick={handleSearchClick}
-          aria-label="Pesquisar Empresa"
-        >
-          <FaSearch />
-        </button>
-        <button
-          className="menu-item"
-          onClick={handleLogoutClick}
-          aria-label="Sair"
-        >
-          <FaSignOutAlt />
-        </button>
+        <div className="container">
+          <button
+            className="menu-item"
+            onClick={handleHomeClick}
+            aria-label="Início"
+          >
+            <FaHome />
+          </button>
+          <button
+            className="menu-item-principal"
+            onClick={handleSearchClick}
+            aria-label="Pesquisar Empresa"
+          >
+            <FaSearch />
+          </button>
+          <button
+            className="menu-item"
+            onClick={handleLogoutClick}
+            aria-label="Sair"
+          >
+            <FaSignOutAlt />
+          </button>
+        </div>
       </motion.footer>
     </div>
   );

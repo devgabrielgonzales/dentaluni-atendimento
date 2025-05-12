@@ -220,41 +220,42 @@ const RegisterVisitPage = () => {
   return (
     // Usando as classes de layout da CompanyDetailsPage que você forneceu
     <div className="details-page-layout-v2">
-      <header className="details-header-curved">
-        <div className="user-info-container">
-          <FaUserCircle className="user-avatar-icon-v2" />
-          <div className="user-text-info">
-            <motion.p
-              className="user-welcome-text-v2"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
-            >
-              Olá, Bem-vindo! 👋
-            </motion.p>
-            <motion.h1
-              className="user-name-text-v2"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
-            >
-              Gabriel Gonzales
-            </motion.h1>
+      <div className="container">
+        <header className="details-header-curved">
+          <div className="user-info-container">
+            <FaUserCircle className="user-avatar-icon-v2" />
+            <div className="user-text-info">
+              <motion.p
+                className="user-welcome-text-v2"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+              >
+                Olá, Bem-vindo! 👋
+              </motion.p>
+              <motion.h1
+                className="user-name-text-v2"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+              >
+                Gabriel Gonzales
+              </motion.h1>
+            </div>
           </div>
-        </div>
-        {/* Removido o company-name-banner-v2 do header,
-            pois o título "Registrar Visita" está dentro do main */}
-      </header>
+        </header>
+      </div>
 
       <main className="new-menu-content-area">
         {" "}
-        {/* Ou details-content-cards */}
-        <div className="register-visit-form-container">
-          {/* O h1 estava vazio no seu código, adicionei o título aqui */}
+        <motion.div
+          className="register-visit-form-container"
+          initial={{ opacity: 0, y:20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+        >
           <h1>Registrar Visita</h1>
           <form onSubmit={handleSubmit} className="visit-form">
-            {/* ... (Todo o conteúdo do seu formulário como você colou) ... */}
-            {/* Motivo Visita (Select) */}
             <fieldset className="form-section">
               {" "}
               <legend>Motivo da Visita</legend>{" "}
@@ -808,37 +809,38 @@ const RegisterVisitPage = () => {
               </button>{" "}
             </div>
           </form>
-        </div>
+        </motion.div>
       </main>
 
-      {/* Footer Adicionado */}
       <motion.footer
         className="new-bottom-menu"
         initial={{ opacity: 0, y: 30 }} // Animação de entrada para o footer
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <button
-          className="menu-item"
-          onClick={handleHomeClick}
-          aria-label="Início"
-        >
-          <FaHome />
-        </button>
-        <button
-          className="menu-item-principal"
-          onClick={handleSearchClick}
-          aria-label="Pesquisar Empresa"
-        >
-          <FaSearch />
-        </button>
-        <button
-          className="menu-item"
-          onClick={handleLogoutClick}
-          aria-label="Sair"
-        >
-          <FaSignOutAlt />
-        </button>
+        <div className="container">
+          <button
+            className="menu-item"
+            onClick={handleHomeClick}
+            aria-label="Início"
+          >
+            <FaHome />
+          </button>
+          <button
+            className="menu-item-principal"
+            onClick={handleSearchClick}
+            aria-label="Pesquisar Empresa"
+          >
+            <FaSearch />
+          </button>
+          <button
+            className="menu-item"
+            onClick={handleLogoutClick}
+            aria-label="Sair"
+          >
+            <FaSignOutAlt />
+          </button>
+        </div>
       </motion.footer>
     </div>
   );

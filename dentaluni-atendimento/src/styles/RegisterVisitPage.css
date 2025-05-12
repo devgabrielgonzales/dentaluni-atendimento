@@ -1,19 +1,20 @@
-/* RegisterVisitPage.css */
 
-/* Estilos do Layout da Página (Reutilizados/Adaptados do CompanyDetailsPage) */
+
+
 .details-page-layout-v2 {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #f0f2f5; /* Fundo geral da página */
+  background-color: #f0f2f5;
   font-family: "Inter", sans-serif;
-  padding-bottom: 70px; /* ESPAÇO PARA O FOOTER FIXO */
+  padding-bottom: 70px;
   box-sizing: border-box;
+  background-color: #ac1815;
 }
 
-/* Banner Superior */
+
 .details-header-curved {
-  background-color: #ac1815;
+
   color: white;
   padding: 15px 15px 30px 15px;
   position: relative;
@@ -59,9 +60,9 @@
   line-height: 1.2;
 }
 
-/* Removido .company-name-banner-v2 pois o título do formulário é "Registrar Visita" */
 
-/* Área de Conteúdo Principal (Onde o formulário vai) */
+
+
 .new-menu-content-area {
   flex-grow: 1;
   padding: 30px 20px;
@@ -77,7 +78,7 @@
   justify-content: space-evenly;
 }
 
-/* Container do Formulário de Visita */
+
 .register-visit-form-container {
   max-width: 950px;
   margin: 0 auto;
@@ -102,7 +103,7 @@
   gap: 30px;
 }
 
-/* Estilos do Formulário Interno */
+
 .form-section {
   border: 1px solid #e8e8e8;
   padding: 20px 25px;
@@ -171,7 +172,7 @@
 }
 .form-section select.select-input {
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23606060%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.6-3.6%205.4-7.9%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A");
   background-repeat: no-repeat;
   background-position: right 15px center;
   background-size: 10px auto;
@@ -434,7 +435,7 @@
   color: #333;
 }
 
-/* Menu de Rodapé */
+
 .new-bottom-menu {
   display: flex;
   justify-content: space-around;
@@ -493,13 +494,13 @@
   display: none;
 }
 
-/* --- Media Queries --- */
+
 @media (max-width: 960px) {
   .details-page-layout-v2 {
   }
   .new-menu-content-area,
   .details-content-cards {
-    /* Classe da área de conteúdo principal */
+   
     padding: 25px;
   }
 
@@ -511,7 +512,7 @@
     grid-template-columns: 1fr;
   }
   .additional-questions-column {
-    /* Se houver side-by-side dentro, já é tratado */
+   
   }
   .side-by-side-grids {
     grid-template-columns: 1fr;
@@ -604,13 +605,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  } /* Ajustado Avatar */
+  }
   .user-text-info .user-welcome-text-v2 {
     font-size: 13px;
   }
   .user-text-info .user-name-text-v2 {
     font-size: 22px;
-  } /* Ajustado Nome Usuário */
+  }
 
   .company-name-banner-v2 h2 {
     font-size: 13px;
@@ -625,4 +626,16 @@
     font-size: 24px;
     margin-bottom: 20px;
   }
+}
+
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
 }
