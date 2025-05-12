@@ -1,40 +1,27 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/MenuPage.css"; 
-import Logo from "../img/logo.png"; 
+import "../styles/MenuPage.css";
+import Logo from "../img/logo.png";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 
 const mockCompanies = [
   { id: "101", nome: "Dental Uni Matriz", cnpj: "01.234.567/0001-01" },
   { id: "102", nome: "Clínica Sorriso Perfeito", cnpj: "02.345.678/0001-02" },
-  { id: "103", nome: "Odonto Bem Estar", cnpj: "03.456.789/0001-03" },
-  { id: "104", nome: "Saúde Bucal Completa", cnpj: "04.567.890/0001-04" },
-  { id: "105", nome: "Dental Prime Associates", cnpj: "05.678.901/0001-05" },
-  { id: "106", nome: "Orto Center Clínica", cnpj: "06.789.012/0001-06" },
-  { id: "107", nome: "Implantes & Cia", cnpj: "07.890.123/0001-07" },
-  {
-    id: "108",
-    nome: "Odontologia Integrada Smile",
-    cnpj: "08.901.234/0001-08",
-  },
-  { id: "109", nome: "Clínica Dental Master", cnpj: "09.012.345/0001-09" },
-  { id: "110", nome: "Espaço Odonto Feliz", cnpj: "10.123.456/0001-10" },
+  // ...
 ];
 
 const MenuPage = () => {
-  const [codEmpresa, setCodEmpresa] = useState("");
+  const [codEmpresa, setCodEmpresa] = useState(""); // Armazena apenas os dígitos
+  const [displayValue, setDisplayValue] = useState(""); // Para o valor que vai no input
   const [isSearched, setIsSearched] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const navigate = useNavigate();
 
-  const formatCNPJ = (digitsOnly) => {
-    if (digitsOnly.length <= 7) {
-      return digitsOnly;
-    }
-
+  // Função formatCNPJ (será usada para lógica interna, não para o display do input type="number")
+  const formatCNPJForLogic = (digitsOnly) => {
+    if (digitsOnly.length <= 7) return digitsOnly;
     const limitedDigits = digitsOnly.slice(0, 14);
-
     if (limitedDigits.length <= 2) return limitedDigits;
     let formatted = `${limitedDigits.slice(0, 2)}`;
     if (limitedDigits.length > 2) formatted += `.${limitedDigits.slice(2, 5)}`;
@@ -42,35 +29,44 @@ const MenuPage = () => {
     if (limitedDigits.length > 8) formatted += `/${limitedDigits.slice(8, 12)}`;
     if (limitedDigits.length > 12)
       formatted += `-${limitedDigits.slice(12, 14)}`;
-
     return formatted;
   };
 
   const handleChangeCodEmpresa = (event) => {
     const rawValue = event.target.value;
+    // Para input type="number", o navegador já tenta manter apenas números.
+    // Mas para garantir e limpar (caso algo não numérico passe), podemos fazer:
     const digitsOnly = rawValue.replace(/\D/g, "");
 
-    if (digitsOnly.length <= 7) {
-      setCodEmpresa(digitsOnly);
-    } else {
-      const limitedDigitsForState = digitsOnly.slice(0, 14);
-      setCodEmpresa(formatCNPJ(limitedDigitsForState));
+    // Limitar o número de dígitos (código até 7, CNPJ 14)
+    let valueToSet = digitsOnly;
+    if (digitsOnly.length > 7 && digitsOnly.length <= 14) {
+      // Não aplicamos formatação visual para type="number"
+      valueToSet = digitsOnly.slice(0, 14);
+    } else if (digitsOnly.length > 14) {
+      valueToSet = digitsOnly.slice(0, 14);
+    } else if (digitsOnly.length > 7) {
+      // Se for maior que 7 mas não CNPJ completo
+      valueToSet = digitsOnly.slice(0, 7); // Ou alguma outra lógica
     }
+
+    setCodEmpresa(valueToSet); // Salva apenas os dígitos (ou o código simples)
+    setDisplayValue(valueToSet); // O que o input type="number" vai mostrar (só números)
   };
 
   const handleSearch = () => {
-    const valorBusca = codEmpresa.replace(/\D/g, "");
-
-    if (!valorBusca) {
+    if (!codEmpresa) {
+      // codEmpresa agora contém apenas dígitos
       toast.warn("Por favor, informe o Código ou CNPJ da Empresa.");
       return;
     }
 
+    // A busca pode usar codEmpresa diretamente, pois já são só dígitos
     const results = mockCompanies.filter(
       (company) =>
-        company.id.includes(valorBusca) ||
-        company.cnpj.replace(/\D/g, "").includes(valorBusca) ||
-        company.nome.toLowerCase().includes(codEmpresa.toLowerCase()) 
+        company.id.includes(codEmpresa) ||
+        company.cnpj.replace(/\D/g, "").includes(codEmpresa) ||
+        company.nome.toLowerCase().includes(codEmpresa.toLowerCase())
     );
     setSearchResults(
       results.length > 0
@@ -87,19 +83,8 @@ const MenuPage = () => {
   };
 
   const resultsCardVariants = {
-    hidden: { opacity: 0, y: "100%" },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
-    },
-    exit: {
-      opacity: 0,
-      y: "100%",
-      transition: { duration: 0.3, ease: "easeIn" },
-    },
+    /* ... (como antes) ... */
   };
-
   const animationOffset = -30;
   const baseDuration = 0.5;
   const baseDelay = 0.1;
@@ -112,7 +97,7 @@ const MenuPage = () => {
     >
       <div className="menu-search-area-wrapper">
         <motion.img
-          src={Logo}
+          /* ... */ src={Logo}
           alt="Logo DentalUni"
           className="menu-logo"
           initial={{ opacity: 0, y: -20 }}
@@ -120,7 +105,7 @@ const MenuPage = () => {
           transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
         />
         <motion.h2
-          className="menu-prompt-text"
+          /* ... */ className="menu-prompt-text"
           initial={{ opacity: 0, x: animationOffset }}
           animate={{ opacity: 1, x: 0 }}
           transition={{
@@ -132,18 +117,18 @@ const MenuPage = () => {
           Qual é o código da empresa?
         </motion.h2>
         <motion.input
-          type="number"
+          type="number" // MUDADO PARA NUMBER
           className="menu-search-input"
-          value={codEmpresa}
+          value={displayValue} // Mostra apenas os dígitos no campo
           onChange={handleChangeCodEmpresa}
-          placeholder="Código ou CNPJ"
-          maxLength={18}
+          placeholder="Código ou CNPJ (só números)" // Placeholder ajustado
+          // maxLength não funciona bem com type="number" para controlar dígitos visuais
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
         />
         <motion.button
-          type="button"
+          /* ... */ type="button"
           className="menu-search-button"
           onClick={handleSearch}
           initial={{ opacity: 0, y: 20 }}
@@ -153,7 +138,6 @@ const MenuPage = () => {
           Pesquisar
         </motion.button>
       </div>
-
       <AnimatePresence>
         {isSearched && (
           <motion.div
@@ -165,8 +149,10 @@ const MenuPage = () => {
             exit="exit"
           >
             <h3>Empresas Encontradas:</h3>
+            {/* ... (lista de resultados como antes) ... */}
             {searchResults.length > 0 ? (
               <ul className="company-list">
+                {" "}
                 {searchResults.map((company) => (
                   <li
                     key={company.id}
@@ -178,15 +164,16 @@ const MenuPage = () => {
                       handleSelectCompany(company.id)
                     }
                   >
-                    <strong>{company.nome}</strong>
+                    {" "}
+                    <strong>{company.nome}</strong>{" "}
                     {company.id !== "notfound" && (
                       <small>
                         {" "}
-                        (CNPJ: {company.cnpj} / Cód: {company.id})
+                        (CNPJ: {company.cnpj} / Cód: {company.id}){" "}
                       </small>
-                    )}
+                    )}{" "}
                   </li>
-                ))}
+                ))}{" "}
               </ul>
             ) : null}
           </motion.div>
