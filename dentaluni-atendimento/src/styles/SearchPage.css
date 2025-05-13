@@ -212,3 +212,19 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
   -moz-appearance: textfield;
 }
+
+.button-spinner-menu {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #ac1815;
+  animation: spin 1s ease-in-out infinite;
+  margin: 0 auto; /* Para centralizar no botão se o botão for display flex */
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

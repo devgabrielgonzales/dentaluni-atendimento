@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import "../styles/RegisterVisitPage.css"; // Seu caminho
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import "../styles/RegisterVisitPage.css";
 import {
   FaStar,
   FaPlus,
@@ -8,16 +8,61 @@ import {
   FaUserCircle,
   FaHome,
   FaSearch,
-  FaSignOutAlt, // Ícones para o footer
+  FaSignOutAlt,
+  FaBuilding,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
+
+const mockCompaniesForData = [
+  { id: "101", nome: "Dental Uni Matriz" },
+  { id: "102", nome: "Clínica Sorriso Perfeito" },
+];
+
+const formatUserNameDisplay = (fullName) => {
+  if (!fullName || typeof fullName !== "string") return "Usuário";
+  let mainNamePart = fullName;
+  const separatorIndex = fullName.indexOf(" - ");
+  if (separatorIndex !== -1) {
+    mainNamePart = fullName.substring(0, separatorIndex);
+  }
+  const nameParts = mainNamePart
+    .trim()
+    .split(/\s+/)
+    .filter((part) => part.length > 0);
+  if (nameParts.length === 0) return "Usuário";
+  const firstName =
+    nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1).toLowerCase();
+  if (nameParts.length > 1) {
+    const lastName =
+      nameParts[nameParts.length - 1].charAt(0).toUpperCase() +
+      nameParts[nameParts.length - 1].slice(1).toLowerCase();
+    return `${firstName} ${lastName}`;
+  }
+  return firstName;
+};
+
+const toTitleCase = (str) => {
+  if (!str || typeof str !== "string") return "";
+  const articles = ["de", "do", "da", "dos", "das", "e", "a", "o", "um", "uma"];
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map((word, index) => {
+      if (word.length > 1 && word === word.toUpperCase()) return word;
+      if (index > 0 && articles.includes(word.toLowerCase()))
+        return word.toLowerCase();
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+};
 
 const RegisterVisitPage = () => {
   const { companyId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const initialFormData = {
-    /* ... (seu initialFormData como você forneceu) ... */ motivoVisita: "",
+    motivoVisita: "",
     motivoVisitaOutros: "",
     ocorrenciasCadastral: {
       atualizacaoCadastral: false,
@@ -67,16 +112,60 @@ const RegisterVisitPage = () => {
   };
 
   const [formData, setFormData] = useState(initialFormData);
-  // Removido companyDisplayName e userName daqui, pois não estão no seu header
-  // const [userName, setUserName] = useState("Gabriel Gonzales");
-  // const [companyDisplayName, setCompanyDisplayName] = useState('');
+  const [userName, setUserName] = useState("Gabriel Gonzales"); // Valor Padrão
+  const [companyDataForHeader, setCompanyDataForHeader] = useState({
+    nome: "Carregando Empresa...",
+  }); // Para o header
+  const [isLoadingHeaderData, setIsLoadingHeaderData] = useState(true);
 
   useEffect(() => {
-    if (companyId) {
-      console.log(`ID da Empresa recebido: ${companyId}`);
-      // Lógica para buscar/definir nome da empresa se necessário no header
+    const storedUserName = localStorage.getItem("userName");
+    if (storedUserName) {
+      setUserName(formatUserNameDisplay(storedUserName));
+    } else {
+      setUserName(formatUserNameDisplay("Gabriel Gonzales"));
     }
-  }, [companyId]);
+    let isMounted = true;
+    setIsLoadingHeaderData(true);
+
+    const fetchHeaderCompanyData = async () => {
+      let rawCompanyData = null;
+      if (location.state && location.state.companyData) {
+        rawCompanyData = location.state.companyData;
+      } else if (companyId) {
+        console.warn(
+          `Header: Dados da empresa ${companyId} não passados via state. Buscando... (simulação)`
+        );
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        const company = mockCompaniesForData.find((c) => c.id === companyId);
+        if (company) {
+          rawCompanyData = company;
+        }
+      }
+
+      if (isMounted) {
+        if (rawCompanyData) {
+          setCompanyDataForHeader({
+            ...rawCompanyData,
+            nome: toTitleCase(rawCompanyData.nome || `Empresa ${companyId}`),
+          });
+        } else if (companyId) {
+          setCompanyDataForHeader({
+            nome: toTitleCase(`Empresa ${companyId} (Info não disp.)`),
+            id: companyId,
+          });
+        } else {
+          setCompanyDataForHeader({ nome: "Registrar Visita", id: null });
+        }
+        setIsLoadingHeaderData(false);
+      }
+    };
+
+    fetchHeaderCompanyData();
+    return () => {
+      isMounted = false;
+    };
+  }, [companyId, location.state]);
 
   const handleInputChange = (event) => {
     const { name, value, type } = event.target;
@@ -130,16 +219,17 @@ const RegisterVisitPage = () => {
     alert("Visita registrada com sucesso! (simulação)");
   };
 
-  // Handlers para o novo menu de rodapé
   const handleHomeClick = () => {
-    navigate("/company-details/101");
-  }; // Ajuste a rota conforme necessário
+    navigate("/menu");
+  };
   const handleSearchClick = () => {
     navigate("/menu");
-  }; // Ajuste a rota conforme necessário
+  };
   const handleLogoutClick = () => {
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userToken");
     navigate("/login");
-  }; // Ajuste a rota conforme necessário
+  };
 
   const motivoVisitaOptions = [
     { value: "", label: "Selecione um motivo..." },
@@ -214,43 +304,61 @@ const RegisterVisitPage = () => {
       ))}{" "}
     </div>
   );
-  // getFormattedDate não está sendo usada no header que você colou, então removi.
-  // Se precisar, pode adicionar de volta.
+
+  const headerAnimationProps = {
+    initial: { opacity: 0, x: -20 },
+    animate: { opacity: 1, x: 0 },
+    transition: { duration: 0.5, ease: "easeOut" },
+  };
+
+  if (isLoadingHeaderData && companyId) {
+    return <div className="loading-details">Carregando dados...</div>;
+  }
 
   return (
-    // Usando as classes de layout da CompanyDetailsPage que você forneceu
     <div className="details-page-layout-v2">
-      <div className="container">
-        <header className="details-header-curved">
+      <header className="details-header-curved">
+        <div className="header-content-container">
           <div className="user-info-container">
             <FaUserCircle className="user-avatar-icon-v2" />
             <div className="user-text-info">
               <motion.p
                 className="user-welcome-text-v2"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+                {...headerAnimationProps}
+                transition={{ ...headerAnimationProps.transition, delay: 0.2 }}
               >
                 Olá, Bem-vindo! 👋
               </motion.p>
               <motion.h1
                 className="user-name-text-v2"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+                {...headerAnimationProps}
+                transition={{ ...headerAnimationProps.transition, delay: 0.3 }}
               >
-                Gabriel Gonzales
+                {userName}
               </motion.h1>
             </div>
           </div>
-        </header>
-      </div>
+          {companyDataForHeader && companyDataForHeader.nome && (
+            <motion.div
+              className="company-display-card"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
+            >
+              <div className="company-text-info">
+                <h2 className="company-name-text">
+                  {companyDataForHeader.nome}
+                </h2>
+              </div>
+            </motion.div>
+          )}
+        </div>
+      </header>
 
       <main className="new-menu-content-area">
-        {" "}
         <motion.div
           className="register-visit-form-container"
-          initial={{ opacity: 0, y:20 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
         >
@@ -293,7 +401,6 @@ const RegisterVisitPage = () => {
                 />
               )}{" "}
             </fieldset>
-            {/* Ocorrências (Checkboxes) */}
             <fieldset className="form-section">
               {" "}
               <legend>Ocorrências</legend>{" "}
@@ -393,7 +500,6 @@ const RegisterVisitPage = () => {
                 ></textarea>{" "}
               </label>{" "}
             </fieldset>
-            {/* Pesquisa e Atualizações */}
             <fieldset className="form-section">
               {" "}
               <legend>Pesquisa e Atualizações</legend>{" "}
@@ -549,7 +655,7 @@ const RegisterVisitPage = () => {
                 </label>{" "}
               </div>{" "}
             </fieldset>
-            {/* Nova Seção de Perguntas Sim/Não com Notas Condicionais */}
+
             <fieldset className="form-section">
               {" "}
               <legend>Questões Adicionais</legend>{" "}
@@ -720,7 +826,7 @@ const RegisterVisitPage = () => {
                 </div>{" "}
               </div>{" "}
             </fieldset>
-            {/* Canais de Comunicação RH (Radio Group) */}
+
             <fieldset className="form-section">
               {" "}
               <legend>
@@ -754,7 +860,7 @@ const RegisterVisitPage = () => {
                 />
               )}{" "}
             </fieldset>
-            {/* Canais de Comunicação DentalUni (Radio Group) */}
+
             <fieldset className="form-section">
               {" "}
               <legend>
@@ -780,7 +886,7 @@ const RegisterVisitPage = () => {
                 ))}{" "}
               </div>{" "}
             </fieldset>
-            {/* Observações (Textarea) */}
+
             <fieldset className="form-section">
               {" "}
               <legend>Observações</legend>{" "}
@@ -792,9 +898,8 @@ const RegisterVisitPage = () => {
                 onChange={handleInputChange}
               ></textarea>{" "}
             </fieldset>
-            {/* Botões Finais */}
+
             <div className="form-actions">
-              {" "}
               <button
                 type="button"
                 onClick={() => navigate(-1)}
@@ -802,11 +907,11 @@ const RegisterVisitPage = () => {
               >
                 {" "}
                 Voltar{" "}
-              </button>{" "}
+              </button>
               <button type="submit" className="button-primary">
                 {" "}
                 Registrar Visita{" "}
-              </button>{" "}
+              </button>
             </div>
           </form>
         </motion.div>
@@ -814,33 +919,31 @@ const RegisterVisitPage = () => {
 
       <motion.footer
         className="new-bottom-menu"
-        initial={{ opacity: 0, y: 30 }} // Animação de entrada para o footer
+        initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <div className="container">
-          <button
-            className="menu-item"
-            onClick={handleHomeClick}
-            aria-label="Início"
-          >
-            <FaHome />
-          </button>
-          <button
-            className="menu-item-principal"
-            onClick={handleSearchClick}
-            aria-label="Pesquisar Empresa"
-          >
-            <FaSearch />
-          </button>
-          <button
-            className="menu-item"
-            onClick={handleLogoutClick}
-            aria-label="Sair"
-          >
-            <FaSignOutAlt />
-          </button>
-        </div>
+        <button
+          className="menu-item"
+          onClick={handleHomeClick}
+          aria-label="Início"
+        >
+          <FaHome />
+        </button>
+        <button
+          className="menu-item-principal"
+          onClick={handleSearchClick}
+          aria-label="Pesquisar Empresa"
+        >
+          <FaSearch />
+        </button>
+        <button
+          className="menu-item"
+          onClick={handleLogoutClick}
+          aria-label="Sair"
+        >
+          <FaSignOutAlt />
+        </button>
       </motion.footer>
     </div>
   );

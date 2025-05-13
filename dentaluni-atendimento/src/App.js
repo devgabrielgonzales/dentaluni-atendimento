@@ -9,7 +9,7 @@ const LoadingSpinner = lazy(() => import('./components/LoadingSpinner'));
 
 
 const SigninPage = lazy(() => import('./components/LoginPage'));
-const MenuPage = lazy(() => import('./components/MenuPage'));
+const SearchPage = lazy(() => import('./components/SearchPage'));
 const ForgotPasswordPage = lazy(() => import('./components/ForgotPasswordPage'));
 const CompanyDataPage = lazy(() => import('./components/CompanyDataPage'));
 const CompanyDetailsPage = lazy(() => import('./components/CompanyDetailsPage'));
@@ -34,7 +34,7 @@ function App() {
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           <Route path="/login" element={<SigninPage />} />
-          <Route path="/menu" element={<MenuPage />} />
+          <Route path="/menu" element={<SearchPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/company-details/:companyId" element={<CompanyDetailsPage />} />
           <Route path="/company-data/:companyId" element={<CompanyDataPage />} />

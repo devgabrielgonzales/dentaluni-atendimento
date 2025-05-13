@@ -10,7 +10,7 @@
 
 .details-header-curved {
   color: white;
-  padding: 15px 15px 30px 15px;
+  padding: 30px 15px 40px 15px;
   position: relative;
   z-index: 1;
   display: flex;
@@ -19,6 +19,17 @@
 }
 
 .container {
+  width: 100%;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-right: 15px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: start;
+}
+
+.menu-container {
   width: 100%;
   max-width: 1100px;
   margin-left: auto;
@@ -193,7 +204,7 @@
     padding-bottom: 65px;
   }
   .details-header-curved {
-    padding: 15px 15px 30px 15px;
+    padding: 30px 15px 40px 15px;
   }
   .details-header-curved::after {
     height: 25px;
@@ -245,24 +256,22 @@
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
   -webkit-appearance: none;
-  margin: 0; /* RegisterVisitPage.css */
+  margin: 0;
 
-  /* Estilos do Layout da Página (Reutilizados/Adaptados do CompanyDetailsPage) */
   .details-page-layout-v2 {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background-color: #f0f2f5; /* Fundo geral da página */
+    background-color: #f0f2f5;
     font-family: "Inter", sans-serif;
-    padding-bottom: 70px; /* ESPAÇO PARA O FOOTER FIXO */
+    padding-bottom: 70px;
     box-sizing: border-box;
   }
 
-  /* Banner Superior */
   .details-header-curved {
     background-color: #ac1815;
     color: white;
-    padding: 20px 20px 40px 20px; /* Padding inferior ajustado para a curva "comer" parte dele */
+    padding: 20px 20px 40px 20px;
     padding-top: calc(20px + env(safe-area-inset-top));
     position: relative;
     z-index: 1;
@@ -274,8 +283,8 @@ input[type="number"]::-webkit-inner-spin-button {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 35px; /* Profundidade da curva - ajuste este valor! */
-    background: #f0f2f5; /* MESMA COR DO .details-page-layout-v2 e .new-menu-content-area */
+    height: 35px;
+    background: #f0f2f5;
     border-top-left-radius: 50% 100%;
     border-top-right-radius: 50% 100%;
   }
@@ -285,7 +294,7 @@ input[type="number"]::-webkit-inner-spin-button {
     align-items: center;
     margin-bottom: 10px;
     position: relative;
-    z-index: 2; /* Para ficar acima da curva ::after */
+    z-index: 2;
   }
 
   .user-avatar-icon-v2 {
@@ -317,12 +326,10 @@ input[type="number"]::-webkit-inner-spin-button {
 
   .company-name-banner-v2 {
     text-align: left;
-    padding-left: calc(
-      44px + 12px + 4px
-    ); /* Alinhamento com o texto do usuário */
+    padding-left: calc(44px + 12px + 4px);
     color: white;
     position: relative;
-    z-index: 2; /* Acima da curva ::after */
+    z-index: 2;
   }
 
   .company-name-banner-v2 h2 {
@@ -332,25 +339,22 @@ input[type="number"]::-webkit-inner-spin-button {
     opacity: 0.9;
   }
 
-  /* Área de Conteúdo Principal (Onde o formulário vai) */
   .new-menu-content-area {
-    /* Classe usada no seu JSX para o <main> */
     flex-grow: 1;
     padding: 20px;
-    background-color: #f0f2f5; /* Fundo da área onde o card do formulário fica */
+    background-color: #f0f2f5;
     position: relative;
-    z-index: 0; /* Abaixo da curva do header */
-    overflow-y: auto; /* Permite scroll APENAS nesta área se o formulário for muito longo */
-    display: flex; /* Para centralizar o .register-visit-form-container se ele for menor */
-    flex-direction: column; /* Alinha o form container no topo se não centralizado verticalmente */
-    align-items: center; /* Centraliza o form container horizontalmente */
+    z-index: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
-  /* Container do Formulário de Visita (Caixa Branca Interna) */
   .register-visit-form-container {
-    width: 100%; /* Para ocupar a largura da content-area */
-    max-width: 950px; /* Largura máxima do formulário */
-    margin: 0 auto 20px auto; /* Centraliza e adiciona margem inferior */
+    width: 100%;
+    max-width: 950px;
+    margin: 0 auto 20px auto;
     background-color: #ffffff;
     padding: 25px 30px;
     border-radius: 12px;
@@ -360,7 +364,7 @@ input[type="number"]::-webkit-inner-spin-button {
   .register-visit-form-container h1 {
     text-align: center;
     color: #0c0101;
-    margin-top: 0; /* Removido do seu JSX anterior, então ok */
+    margin-top: 0;
     margin-bottom: 30px;
     font-size: 24px;
     font-weight: 600;
@@ -372,7 +376,6 @@ input[type="number"]::-webkit-inner-spin-button {
     gap: 30px;
   }
 
-  /* Estilos do Formulário Interno (Fieldsets, Inputs, etc.) */
   .form-section {
     border: 1px solid #e8e8e8;
     padding: 20px 25px;
@@ -388,7 +391,6 @@ input[type="number"]::-webkit-inner-spin-button {
     margin-left: 5px;
   }
 
-  /* Estilos Gerais para Labels (Containers de Input) */
   .form-section label,
   .form-grid label,
   .select-label,
@@ -408,7 +410,6 @@ input[type="number"]::-webkit-inner-spin-button {
     color: #333;
   }
 
-  /* Estilos para Labels de Radio/Checkbox (Input + Texto) */
   .radio-group-vertical label,
   .checkbox-group-vertical label,
   .checkbox-group label,
@@ -424,7 +425,6 @@ input[type="number"]::-webkit-inner-spin-button {
     padding: 2px 0;
   }
 
-  /* Estilos Gerais para Inputs, Textarea, Select */
   .form-section input[type="text"],
   .form-section input[type="email"],
   .form-section input[type="tel"],
@@ -444,7 +444,7 @@ input[type="number"]::-webkit-inner-spin-button {
   }
   .form-section select.select-input {
     appearance: none;
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23606060%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.6-3.6%205.4-7.9%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A");
     background-repeat: no-repeat;
     background-position: right 15px center;
     background-size: 10px auto;
@@ -479,7 +479,6 @@ input[type="number"]::-webkit-inner-spin-button {
     box-shadow: 0 0 0 3px rgba(172, 24, 21, 0.15);
   }
 
-  /* Grupos de Radio/Checkbox */
   .radio-group-vertical,
   .checkbox-group-vertical {
     display: flex;
@@ -516,7 +515,6 @@ input[type="number"]::-webkit-inner-spin-button {
     line-height: 1.2;
   }
 
-  /* Grid de Ocorrências */
   .ocorrencias-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -536,7 +534,6 @@ input[type="number"]::-webkit-inner-spin-button {
     padding-bottom: 6px;
   }
 
-  /* Textarea Relato */
   .relato-label {
     margin-top: 15px;
     font-weight: 600;
@@ -546,7 +543,6 @@ input[type="number"]::-webkit-inner-spin-button {
     min-height: 80px;
   }
 
-  /* Pesquisa Grid */
   .pesquisa-grid,
   .pesquisa-grid-single-col {
     display: grid;
@@ -563,7 +559,6 @@ input[type="number"]::-webkit-inner-spin-button {
     }
   }
 
-  /* Seção Dinâmica de Filiais */
   .dynamic-field-section {
     margin-top: 20px;
     padding-top: 15px;
@@ -628,7 +623,6 @@ input[type="number"]::-webkit-inner-spin-button {
     background-color: #c8e6c9;
   }
 
-  /* Perguntas Adicionais e Nota */
   .additional-questions-column {
     display: flex;
     flex-direction: column;
@@ -674,7 +668,6 @@ input[type="number"]::-webkit-inner-spin-button {
     border-top: 1px solid #eee;
   }
 
-  /* Botões de Ação Finais do Formulário */
   .form-actions {
     display: flex;
     justify-content: flex-end;
@@ -714,7 +707,6 @@ input[type="number"]::-webkit-inner-spin-button {
     color: #333;
   }
 
-  /* Menu de Rodapé */
   .new-bottom-menu {
     display: flex;
     justify-content: space-around;
@@ -773,14 +765,11 @@ input[type="number"]::-webkit-inner-spin-button {
     display: none;
   }
 
-  /* --- Media Queries --- */
   @media (max-width: 960px) {
     .details-page-layout-v2 {
-      /* Classe principal da página */
     }
     .new-menu-content-area {
-      /* Classe da área de conteúdo */
-      margin: -30px 15px 15px 15px; /* Ajuste do overlap */
+      margin: -30px 15px 15px 15px;
       padding: 20px;
     }
     .register-visit-form-container {
@@ -805,16 +794,14 @@ input[type="number"]::-webkit-inner-spin-button {
   @media (max-width: 600px) {
     .details-page-layout-v2 {
       background-color: #f0f2f5;
-    } /* Fundo da página */
+    }
     .new-menu-content-area {
-      /* Área onde o form branco fica */
       margin: -30px 10px 10px 10px;
       padding: 15px;
       border-radius: 20px;
     }
     .register-visit-form-container {
-      /* Container branco do formulário */
-      padding: 20px 15px; /* Padding interno do form */
+      padding: 20px 15px;
     }
     .register-visit-form-container h1 {
       font-size: 20px;
@@ -878,10 +865,10 @@ input[type="number"]::-webkit-inner-spin-button {
     }
     .details-header-curved {
       padding: 15px 15px 35px 15px;
-    } /* Menor padding inferior para a curva */
+    }
     .details-header-curved::after {
       height: 25px;
-    } /* Curva um pouco menor */
+    }
     .user-avatar-icon-v2 {
       width: 40px;
       height: 40px;
@@ -917,4 +904,74 @@ input[type="number"]::-webkit-inner-spin-button {
 
 input[type="number"] {
   -moz-appearance: textfield;
+}
+
+.icon-building {
+  font-size: 26px;
+}
+
+.header-content-container {
+  width: 100%;
+}
+
+.company-display-card {
+  background-color: #8c1310;
+  color: white;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.company-text-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.company-label {
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.85;
+  display: block;
+  margin-bottom: 1px;
+}
+
+.company-name-text {
+  font-size: 26px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.company-icon-placeholder {
+  width: 36px;
+  height: 36px;
+  background-color: white;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@media (max-width: 680px) {
+  .company-display-card {
+    padding: 10px 12px;
+    margin-top: 12px;
+  }
+
+  .company-label {
+    font-size: 10px;
+  }
+
+  .company-name-text {
+    font-size: 12px;
+  }
+
+  .company-icon-placeholder {
+    width: 32px;
+    height: 32px;
+  }
 }

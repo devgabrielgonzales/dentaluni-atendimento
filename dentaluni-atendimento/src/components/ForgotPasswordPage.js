@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/ForgotPasswordPage.css";
-import Logo from "../img/logo.png";
+import "../styles/ForgotPasswordPage.css"; // Certifique-se que o caminho está correto
+import Logo from "../img/logo.png"; // Ajuste o caminho se necessário
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 
@@ -10,7 +10,7 @@ const ForgotPasswordPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (isLoading) return;
 
@@ -20,23 +20,82 @@ const ForgotPasswordPage = () => {
     }
 
     setIsLoading(true);
-    console.log("Código de acesso para recuperação:", codAcesso);
+    console.log("Solicitando nova senha para o código de acesso:", codAcesso);
 
-    setTimeout(() => {
-      toast.success(`Link de recuperação enviado para o acesso: ${codAcesso}`);
+    const apiUrl = `https://api.dentaluni.com.br/esqueciMinhaSenha/${codAcesso}/2`;
 
-      setIsLoading(false);
-    }, 1000);
+    try {
+      const response = await fetch(apiUrl, { method: "GET" });
+
+      // Tentar ler a resposta. Primeiro como JSON, depois como texto se JSON falhar.
+      let responseData;
+      let isJsonResponse = false;
+      try {
+        responseData = await response.clone().json(); // Clonar para poder ler como texto depois se necessário
+        isJsonResponse = true;
+        console.log("Resposta da API (tentativa JSON):", responseData);
+      } catch (e) {
+        // Falha ao parsear JSON, tentar ler como texto
+        responseData = await response.text();
+        console.log("Resposta da API (texto simples):", responseData);
+      }
+
+      if (response.ok) {
+        if (isJsonResponse && responseData.error === false) {
+          // Resposta JSON e sem erro lógico da API
+          toast.success(
+            responseData.msg ||
+              "Solicitação de nova senha processada com sucesso!"
+          );
+        } else if (isJsonResponse && responseData.error === true) {
+          // Resposta JSON mas com erro lógico da API
+          toast.error(responseData.msg || "Erro ao processar a solicitação.");
+        } else if (
+          !isJsonResponse &&
+          typeof responseData === "string" &&
+          responseData.toLowerCase().includes("e-mail env")
+        ) {
+          // Resposta texto simples, e parece ser de sucesso
+          toast.success(responseData);
+        } else if (!isJsonResponse && typeof responseData === "string") {
+          // Resposta texto simples, mas não parece ser a mensagem de sucesso esperada
+          toast.warn(responseData); // Mostrar como aviso
+        } else {
+          // Caso inesperado, mas response.ok é true
+          toast.success(
+            "Operação concluída, mas a resposta do servidor foi inesperada."
+          );
+        }
+      } else {
+        // Erro HTTP (ex: 404, 500)
+        let errorMessage = `Erro ao solicitar nova senha (${response.status})`;
+        if (isJsonResponse && responseData && responseData.msg) {
+          errorMessage = responseData.msg;
+        } else if (typeof responseData === "string" && responseData) {
+          errorMessage = responseData;
+        }
+        toast.error(errorMessage);
+        console.error(
+          "Erro da API (nova senha):",
+          response.status,
+          responseData
+        );
+      }
+    } catch (error) {
+      // Erro de rede ou outro erro antes de conseguir ler a resposta
+      console.error("Erro de rede ou ao processar a solicitação:", error);
+      toast.error("Falha na comunicação. Tente novamente mais tarde.");
+    }
+
+    setIsLoading(false);
   };
 
-  const animationOffset = -10;
-  const baseDuration = 0.4;
+  const animationOffset = -20;
+  const baseDuration = 0.7;
   const baseDelay = 0.1;
 
   return (
     <div className="signin-page">
-      {" "}
-      {/* Reutilizando a classe da página de login para layout */}
       <div className="signin-header">
         <div>
           <motion.img
@@ -87,12 +146,13 @@ const ForgotPasswordPage = () => {
           <div className="input-field-group">
             <label htmlFor="cod-forgot">Código de acesso</label>
             <input
-              type="number"
+              type="text"
               id="cod-forgot"
               placeholder="Ex:90801"
               value={codAcesso}
               onChange={(e) => setCodAcesso(e.target.value)}
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -101,8 +161,6 @@ const ForgotPasswordPage = () => {
           </button>
 
           <div className="options-fp">
-            {" "}
-            {/* Classe para estilizar este link de "voltar" */}
             <Link to="/login" className="back-to-login-link">
               Voltar para o Login
             </Link>

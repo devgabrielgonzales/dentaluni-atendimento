@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/LoginPage.css";
+import "../styles/LoginPage.css"; 
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import Logo from "../img/logo.png";
+import Logo from "../img/logo.png"; 
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 
@@ -14,34 +14,68 @@ const SigninPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (isLoading) return;
 
-    setIsLoading(true);
-    console.log("Código de acesso:", codigo);
-    console.log("Senha:", password);
-    console.log("Lembrar:", rememberMe);
+    if (codigo === "" || password === "") {
+      toast.warn("Por favor, preencha código e senha.");
+      return;
+    }
 
-    setTimeout(() => {
-      if (codigo === "90801" && password === "123") {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(
+        "https://api.dentaluni.com.br/login/colaborador",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            login: codigo,
+            senha: password,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok && data.accessToken) {
         toast.success("Login realizado com sucesso!");
+        if (data.nome) {
+          localStorage.setItem("userName", data.nome);
+        } else {
+          localStorage.setItem("userName", "Usuário DentalUni");
+        }
+        localStorage.setItem("userToken", data.accessToken);
+
         setTimeout(() => {
           navigate("/menu");
         }, 1200);
-      } else if (codigo === "" || password === "") {
-        toast.warn("Por favor, preencha código e senha.");
-        setIsLoading(false);
       } else {
+        const errorMessage =
+          data.msg || data.message || "Código ou senha inválidos!";
         toast.error("Código ou senha inválidos!");
         setIsLoading(false);
       }
-    }, 1000);
+    } catch (error) {
+      console.error("Erro na requisição de login (catch):", error);
+      toast.error(
+        "Erro ao tentar fazer login. Verifique sua conexão ou tente mais tarde."
+      );
+      setIsLoading(false);
+    }
   };
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
+
+  const animationOffset = -20;
+  const baseDuration = 0.7;
+  const baseDelay = 0.1;
 
   return (
     <div className="signin-page">
@@ -49,26 +83,38 @@ const SigninPage = () => {
         <div>
           <motion.img
             className="signin-animated-title logo"
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: animationOffset }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+            transition={{
+              duration: baseDuration,
+              delay: baseDelay + 0.1,
+              ease: "easeOut",
+            }}
             src={Logo}
             alt="Logo"
           />
         </div>
         <motion.h1
           className="signin-animated-title"
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: animationOffset }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
+          transition={{
+            duration: baseDuration,
+            delay: baseDelay + 0.2,
+            ease: "easeOut",
+          }}
         >
           Visita Fácil!
         </motion.h1>
         <motion.p
           className="signin-animated-title"
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: animationOffset }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4, ease: "easeOut" }}
+          transition={{
+            duration: baseDuration,
+            delay: baseDelay + 0.3,
+            ease: "easeOut",
+          }}
         >
           Utilize seu código e senha para continuar.
         </motion.p>
@@ -78,18 +124,19 @@ const SigninPage = () => {
         className="signin-form-card"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, delay: 0.5, ease: "backOut" }}
+        transition={{ duration: 0.6, delay: baseDelay + 0.4, ease: "backOut" }}
       >
         <form onSubmit={handleSubmit} className="signin-form">
           <div className="input-field-group">
             <label htmlFor="codigo">Código de acesso</label>
             <input
-              type="number"
+              type="text"
               id="codigo"
               placeholder="Ex: 90801"
               value={codigo}
               onChange={(e) => setCodigo(e.target.value)}
               required
+              disabled={isLoading}
             />
           </div>
 
@@ -103,6 +150,7 @@ const SigninPage = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={isLoading}
               />
               <button
                 type="button"
@@ -111,6 +159,7 @@ const SigninPage = () => {
                 aria-label={
                   passwordVisible ? "Esconder senha" : "Mostrar senha"
                 }
+                disabled={isLoading}
               >
                 {passwordVisible ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -124,10 +173,16 @@ const SigninPage = () => {
                 id="rememberMe"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
+                disabled={isLoading}
               />
               Lembrar
             </label>
-            <Link to="/forgot-password" className="forgot-password-link">
+            <Link
+              to={isLoading ? "#" : "/forgot-password"}
+              className={`forgot-password-link ${
+                isLoading ? "disabled-link" : ""
+              }`}
+            >
               Esqueceu a sua senha?
             </Link>
           </div>
