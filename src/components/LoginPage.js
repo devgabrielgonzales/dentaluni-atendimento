@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/LoginPage.css"; 
+import "../styles/LoginPage.css";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import Logo from "../img/logo.png"; 
+import Logo from "../img/logo.png";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 
@@ -50,15 +50,17 @@ const SigninPage = () => {
           localStorage.setItem("userName", "Usuário DentalUni");
         }
         localStorage.setItem("userToken", data.accessToken);
+        localStorage.setItem("userImg", data.img_painel);
 
         setTimeout(() => {
-          navigate("/menu");
+          navigate("/pesquisa");
         }, 1200);
       } else {
         const errorMessage =
           data.msg || data.message || "Código ou senha inválidos!";
         toast.error("Código ou senha inválidos!");
         setIsLoading(false);
+        console.log(errorMessage);
       }
     } catch (error) {
       console.error("Erro na requisição de login (catch):", error);
@@ -178,7 +180,7 @@ const SigninPage = () => {
               Lembrar
             </label>
             <Link
-              to={isLoading ? "#" : "/forgot-password"}
+              to={isLoading ? "#" : "/lembrar-senha"}
               className={`forgot-password-link ${
                 isLoading ? "disabled-link" : ""
               }`}

@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-tailwind/react": "^2.1.10",
+    "@tailwindcss/postcss": "^4.1.6",
+    "@tailwindcss/vite": "^4.1.6",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -20,7 +23,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "css:build": "npx tailwindcss -i ./src/styles/index.css -o ./dist/output.css --watch"
   },
   "eslintConfig": {
     "extends": [

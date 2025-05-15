@@ -1,6 +1,6 @@
 import React from "react";
 
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   FaListAlt,
   FaUsers,
@@ -31,7 +31,7 @@ export const useAppNavigation = () => {
   };
 
   const navigateToSearch = () => {
-    navigate("/menu");
+    navigate("/pesquisa");
   };
 
   const navigateToLogin = () => {
@@ -73,36 +73,42 @@ const CompanyDataPage = () => {
   options.sort((a, b) => a.label.localeCompare(b.label, "pt-BR"));
 
   return (
-    <div className="details-page-layout-v2">
-      <div className="container">
-        <header className="details-header-curved">
-          <div className="user-info-container">
+   <div className="details-page-layout-v2">
+      <header className="details-header-curved">
+        <div className="header-content-container">
+          <div className="user-info-container container">
             <FaUserCircle className="user-avatar-icon-v2" />
             <div className="user-text-info">
-              {/* Usar motion.p para animação */}
               <motion.p
                 className="user-welcome-text-v2"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+   
               >
                 Olá, Bem-vindo! 👋
               </motion.p>
-              {/* Usar motion.h1 para animação */}
               <motion.h1
                 className="user-name-text-v2"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+ 
               >
-                Gabriel Gonzales
+                Gabriel Oliveira
               </motion.h1>
             </div>
           </div>
-        </header>
-      </div>
+          <motion.div
+            className="company-display-card container"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
+          >
+            <div className="company-text-info">
+              <span className="company-label">Empresa:</span>
+              <h2 className="company-name-text">Dentaluni teste</h2>
+            </div>
+            <FaBuilding className="icon-building" />
+          </motion.div>
+        </div>
+      </header>
 
-      <main className="content-area">
+      <main className="content-area menu-container">
         <div className="options-grid">
           {options.map((option) => (
             <button
@@ -121,14 +127,12 @@ const CompanyDataPage = () => {
         </div>
       </main>
 
-      {/* Usar motion.footer para animação */}
       <motion.footer
         className="new-bottom-menu"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
       >
-        <div className="container">
           <button
             className="menu-item"
             onClick={navigateToHome}
@@ -150,7 +154,6 @@ const CompanyDataPage = () => {
           >
             <FaSignOutAlt />
           </button>
-        </div>
       </motion.footer>
     </div>
   );

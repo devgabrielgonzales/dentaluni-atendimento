@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/ForgotPasswordPage.css"; // Certifique-se que o caminho está correto
-import Logo from "../img/logo.png"; // Ajuste o caminho se necessário
+import "../styles/ForgotPasswordPage.css";
+import Logo from "../img/logo.png";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 
@@ -27,47 +27,39 @@ const ForgotPasswordPage = () => {
     try {
       const response = await fetch(apiUrl, { method: "GET" });
 
-      // Tentar ler a resposta. Primeiro como JSON, depois como texto se JSON falhar.
       let responseData;
       let isJsonResponse = false;
       try {
-        responseData = await response.clone().json(); // Clonar para poder ler como texto depois se necessário
+        responseData = await response.clone().json();
         isJsonResponse = true;
         console.log("Resposta da API (tentativa JSON):", responseData);
       } catch (e) {
-        // Falha ao parsear JSON, tentar ler como texto
         responseData = await response.text();
         console.log("Resposta da API (texto simples):", responseData);
       }
 
       if (response.ok) {
         if (isJsonResponse && responseData.error === false) {
-          // Resposta JSON e sem erro lógico da API
           toast.success(
             responseData.msg ||
               "Solicitação de nova senha processada com sucesso!"
           );
         } else if (isJsonResponse && responseData.error === true) {
-          // Resposta JSON mas com erro lógico da API
           toast.error(responseData.msg || "Erro ao processar a solicitação.");
         } else if (
           !isJsonResponse &&
           typeof responseData === "string" &&
           responseData.toLowerCase().includes("e-mail env")
         ) {
-          // Resposta texto simples, e parece ser de sucesso
           toast.success(responseData);
         } else if (!isJsonResponse && typeof responseData === "string") {
-          // Resposta texto simples, mas não parece ser a mensagem de sucesso esperada
-          toast.warn(responseData); // Mostrar como aviso
+          toast.warn(responseData);
         } else {
-          // Caso inesperado, mas response.ok é true
           toast.success(
             "Operação concluída, mas a resposta do servidor foi inesperada."
           );
         }
       } else {
-        // Erro HTTP (ex: 404, 500)
         let errorMessage = `Erro ao solicitar nova senha (${response.status})`;
         if (isJsonResponse && responseData && responseData.msg) {
           errorMessage = responseData.msg;
@@ -82,7 +74,6 @@ const ForgotPasswordPage = () => {
         );
       }
     } catch (error) {
-      // Erro de rede ou outro erro antes de conseguir ler a resposta
       console.error("Erro de rede ou ao processar a solicitação:", error);
       toast.error("Falha na comunicação. Tente novamente mais tarde.");
     }

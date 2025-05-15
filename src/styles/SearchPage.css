@@ -220,7 +220,7 @@ input[type="number"] {
   border-radius: 50%;
   border-top-color: #ac1815;
   animation: spin 1s ease-in-out infinite;
-  margin: 0 auto; /* Para centralizar no botão se o botão for display flex */
+  margin: 0 auto;
 }
 
 @keyframes spin {

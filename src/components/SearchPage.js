@@ -1,14 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/SearchPage.css"; // Certifique-se que o caminho e nome do CSS estão corretos
-import Logo from "../img/logo.png"; // Certifique-se que o caminho está correto
+import "../styles/SearchPage.css";
+import Logo from "../img/logo.png";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 
-// const mockCompanies = [ /* ... SEU ARRAY MOCK COMENTADO OU REMOVIDO ... */ ];
-
 const SearchPage = () => {
-  // Ou MenuPage
   const [codEmpresa, setCodEmpresa] = useState("");
   const [isSearched, setIsSearched] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -16,6 +13,7 @@ const SearchPage = () => {
   const navigate = useNavigate();
 
   const formatCNPJ = (digitsOnly) => {
+    if (!digitsOnly) return "";
     if (digitsOnly.length <= 7) {
       return digitsOnly;
     }
@@ -42,7 +40,6 @@ const SearchPage = () => {
   };
 
   const performSearch = async () => {
-    // Renomeado de handleSearch
     const valorInput = codEmpresa;
     const valorBuscaApenasDigitos = valorInput.replace(/\D/g, "");
 
@@ -62,9 +59,12 @@ const SearchPage = () => {
       apiUrl = `https://api.dentaluni.com.br/sae/empresa?codigo=${valorBuscaApenasDigitos}`;
     }
 
+    console.log(`Buscando na API: ${apiUrl}`);
+
     try {
       const response = await fetch(apiUrl);
       const data = await response.json();
+      console.log("Resposta da API:", data);
 
       if (
         response.ok &&
@@ -72,12 +72,27 @@ const SearchPage = () => {
         data.empresas &&
         data.empresas.length > 0
       ) {
-        const formattedResults = data.empresas.map((company) => ({
+        const mappedResults = data.empresas.map((company) => ({
           id: company.codigo,
           nome: company.razao_social,
           cnpj: company.cnpj,
+
+          logradouro: company.logradouro,
+          numero: company.numero,
+          bairro: company.bairro,
+          cidade: company.cidade,
+          uf: company.uf,
+          cep: company.cep,
+          email_fat: company.email_fat,
+          email: company.email,
         }));
-        setSearchResults(formattedResults);
+
+        const uniqueResults = mappedResults.filter(
+          (company, index, self) =>
+            index === self.findIndex((c) => c.id === company.id)
+        );
+
+        setSearchResults(uniqueResults);
       } else if (
         data.error === false &&
         (!data.empresas || data.empresas.length === 0)
@@ -121,7 +136,30 @@ const SearchPage = () => {
 
   const handleSelectCompany = (company) => {
     if (company.id === "notfound") return;
-    navigate(`/company-details/${company.id}`, {
+
+    try {
+      if (company.id) {
+        localStorage.setItem("selectedCompanyId", company.id);
+      } else {
+        localStorage.removeItem("selectedCompanyId");
+      }
+      if (company.cnpj) {
+        localStorage.setItem("selectedCompanyCnpj", company.cnpj);
+      } else {
+        localStorage.removeItem("selectedCompanyCnpj");
+      }
+      if (company.nome) {
+        localStorage.setItem("selectedCompanyName", company.nome);
+      } else {
+        localStorage.removeItem("selectedCompanyName");
+      }
+
+      console.log("Empresa selecionada e salva no localStorage:", company);
+    } catch (error) {
+      console.error("Erro ao salvar dados da empresa no localStorage:", error);
+    }
+
+    navigate(`/menu/${company.id}`, {
       state: { companyData: company },
     });
   };
@@ -187,7 +225,7 @@ const SearchPage = () => {
           <motion.button
             type="submit"
             className="menu-search-button"
-            onClick={performSearch} // Mantido para clique explícito também
+            onClick={performSearch}
             disabled={isLoading}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -229,8 +267,11 @@ const SearchPage = () => {
                     {company.id !== "notfound" && (
                       <small>
                         {" "}
-                        (CNPJ: {formatCNPJ(company.cnpj.replace(/\D/g, ""))} /
-                        Cód: {company.id}){" "}
+                        (CNPJ:{" "}
+                        {company.cnpj
+                          ? formatCNPJ(company.cnpj.replace(/\D/g, ""))
+                          : "N/A"}{" "}
+                        / Cód: {company.id}){" "}
                       </small>
                     )}
                   </li>
@@ -244,4 +285,4 @@ const SearchPage = () => {
   );
 };
 
-export default SearchPage; // Ou MenuPage, conforme o nome do seu arquivo
+export default SearchPage;

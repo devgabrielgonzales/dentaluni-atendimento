@@ -89,7 +89,6 @@
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   width: 85%;
-
 }
 
 .option-button {
@@ -148,7 +147,6 @@
     font-size: 13px;
   }
   .content-area {
-
     padding: 20px;
   }
 
@@ -195,27 +193,43 @@ input[type="number"] {
   max-width: 1100px;
   margin-left: auto;
   margin-right: auto;
+  box-sizing: border-box;
+  display: flex;
+  align-items: start;
+}
+
+.menu-container {
+  width: 100%;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
   padding-left: 15px;
   padding-right: 15px;
   box-sizing: border-box;
   display: flex;
-  align-items: center;
+}
+
+.icon-building {
+  font-size: 26px;
+}
+
+.header-content-container {
+  width: 100%;
 }
 
 .details-page-layout-v2 {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #f0f2f5;
+  background-color: #ac1815;
   font-family: "Inter", sans-serif;
   padding-bottom: 70px;
   box-sizing: border-box;
-  background-color: #ac1815;
 }
 
 .details-header-curved {
   color: white;
-  padding: 15px 15px 30px 15px;
+  padding: 30px 15px 40px 15px;
   position: relative;
   z-index: 1;
   display: flex;
@@ -226,7 +240,7 @@ input[type="number"] {
 .user-info-container {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   position: relative;
   z-index: 2;
 }
@@ -234,7 +248,7 @@ input[type="number"] {
 .user-avatar-icon-v2 {
   font-size: 44px;
   margin-right: 12px;
-  color: rgba(255, 255, 255, 0.9);
+  color: white;
   background-color: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
   padding: 4px;
@@ -316,4 +330,66 @@ input[type="number"] {
 }
 .menu-item-label {
   display: none;
+}
+
+.company-display-card {
+  background-color: #8c1310;
+  color: white;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.company-text-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.company-label {
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.85;
+  display: block;
+  margin-bottom: 1px;
+}
+
+.company-name-text {
+  font-size: 26px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.company-icon-placeholder {
+  width: 36px;
+  height: 36px;
+  background-color: white;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+@media (max-width: 680px) {
+  .company-display-card {
+    padding: 10px 12px;
+    margin-top: 12px;
+  }
+
+  .company-label {
+    font-size: 10px;
+  }
+
+  .company-name-text {
+    font-size: 12px;
+  }
+
+  .company-icon-placeholder {
+    width: 32px;
+    height: 32px;
+  }
 }
