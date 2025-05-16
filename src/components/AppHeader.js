@@ -158,7 +158,6 @@ const AppHeader = ({
             </span>
             <h2 className="company-name-text">{displayCompanyNameText}</h2>
           </div>
-          {/* Mostra o ícone de prédio apenas se houver um ID de empresa efetivo e não estiver carregando */}
           {effectiveCompanyId && !isLoadingCompanyInfo && (
             <FaBuilding className="icon-building" />
           )}

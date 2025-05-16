@@ -79,7 +79,7 @@ const SearchPage = () => {
       ) {
         const mappedResults = data.empresas.map((company) => ({
           id: company.codigo,
-          nome: company.razao_social, // Este é o 'nome' que você usa
+          nome: company.razao_social,
           cnpj: company.cnpj,
           logradouro: company.logradouro,
           numero: company.numero,
@@ -201,12 +201,11 @@ const SearchPage = () => {
     performSearch();
   };
 
-  // 👇 MODIFICAÇÕES PRINCIPAIS AQUI 👇
+
   const handleSelectCompany = (company) => {
     if (company.id === "notfound") return;
 
     try {
-      // Campos que você já salva:
       if (company.id) {
         localStorage.setItem("selectedCompanyId", company.id);
       } else {
@@ -218,44 +217,35 @@ const SearchPage = () => {
         localStorage.removeItem("selectedCompanyCnpj");
       }
       if (company.nome) {
-        // 'nome' é 'razao_social' no mapeamento da API
         localStorage.setItem("selectedCompanyName", company.nome);
       } else {
         localStorage.removeItem("selectedCompanyName");
       }
-
-      // --- NOVOS CAMPOS PARA ARMAZENAR SEPARADAMENTE ---
-      // CEP
       if (company.cep) {
         localStorage.setItem("selectedCompanyCep", company.cep);
       } else {
         localStorage.removeItem("selectedCompanyCep");
       }
-      // Logradouro
       if (company.logradouro) {
         localStorage.setItem("selectedCompanyLogradouro", company.logradouro);
       } else {
         localStorage.removeItem("selectedCompanyLogradouro");
       }
-      // Número
       if (company.numero) {
         localStorage.setItem("selectedCompanyNumero", company.numero);
       } else {
         localStorage.removeItem("selectedCompanyNumero");
       }
-      // Bairro
       if (company.bairro) {
         localStorage.setItem("selectedCompanyBairro", company.bairro);
       } else {
         localStorage.removeItem("selectedCompanyBairro");
       }
-      // Cidade
       if (company.cidade) {
         localStorage.setItem("selectedCompanyCidade", company.cidade);
       } else {
         localStorage.removeItem("selectedCompanyCidade");
       }
-      // UF
       if (company.uf) {
         localStorage.setItem("selectedCompanyUf", company.uf);
       } else {
