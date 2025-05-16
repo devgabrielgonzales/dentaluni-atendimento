@@ -268,12 +268,12 @@ const CompanyDetailsPage = () => {
           }
         >
           <LuMapPinCheck className="card-icon" />
-          <h2 className="card-title">Controle de Visitas</h2>
+          <h2 className="card-title">Registro de Visitas</h2>
           <p className="card-description">
             Clique para registrar os detalhes da sua visita e manter tudo
             organizado.
           </p>
-          <span className="card-action-button">Registrar Visita</span>
+          <span className="card-action-button">Registrar</span>
         </div>
         <div
           className="action-card-container"

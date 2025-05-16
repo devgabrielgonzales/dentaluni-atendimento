@@ -1853,7 +1853,7 @@ setFormData((prevData) => ({
                 className="button-primary"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? "Enviando..." : "Registrar Visita"}
+                {isSubmitting ? "Registrando Visita..." : "Registrar Visita"}
               </button>{" "}
             </div>
           </form>
