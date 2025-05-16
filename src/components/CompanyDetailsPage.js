@@ -8,9 +8,8 @@ import {
   FaSignOutAlt,
   FaBuilding,
 } from "react-icons/fa";
+import { LuMapPinCheck, LuFileSearch } from "react-icons/lu";
 import { motion } from "framer-motion";
-import ImagemAgendarVisita from "../img/visita.png";
-import ImagemDadosEmpresa from "../img/dados.png";
 import LoadingSpinner from "./LoadingSpinner";
 
 const formatUserNameDisplay = (fullName) => {
@@ -260,7 +259,7 @@ const CompanyDetailsPage = () => {
         transition={{ duration: 0.5, delay: 0.5, ease: "easeOut" }}
       >
         <div
-          className="action-card-with-image"
+          className="action-card-container"
           onClick={handleNavigateToRegisterVisit}
           role="button"
           tabIndex={0}
@@ -268,15 +267,16 @@ const CompanyDetailsPage = () => {
             e.key === "Enter" && handleNavigateToRegisterVisit()
           }
         >
-          <img
-            src={ImagemAgendarVisita}
-            alt="Registrar Visita"
-            className="card-image"
-          />
-          <span className="card-text">Registrar Visita</span>
+          <LuMapPinCheck className="card-icon" />
+          <h2 className="card-title">Controle de Visitas</h2>
+          <p className="card-description">
+            Clique para registrar os detalhes da sua visita e manter tudo
+            organizado.
+          </p>
+          <span className="card-action-button">Registrar Visita</span>
         </div>
         <div
-          className="action-card-with-image"
+          className="action-card-container"
           onClick={handleNavigateToCompanyDataGrid}
           role="button"
           tabIndex={0}
@@ -284,12 +284,13 @@ const CompanyDetailsPage = () => {
             e.key === "Enter" && handleNavigateToCompanyDataGrid()
           }
         >
-          <img
-            src={ImagemDadosEmpresa}
-            alt="Dados da Empresa"
-            className="card-image"
-          />
-          <span className="card-text">Dados da Empresa</span>
+          <LuFileSearch className="card-icon" />
+
+          <h2 className="card-title">Dados da Empresa</h2>
+          <p className="card-description">
+            Acesse informações cadastrais e outros dados relevantes.
+          </p>
+          <span className="card-action-button">Acessar Dados</span>
         </div>
       </motion.main>
 

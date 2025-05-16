@@ -14,10 +14,8 @@ const SearchPage = () => {
 
   const formatCNPJ = (digitsOnly) => {
     if (!digitsOnly) return "";
-    if (digitsOnly.length <= 7) {
-      return digitsOnly;
-    }
-    const limitedDigits = digitsOnly.slice(0, 14);
+    const limitedDigits = String(digitsOnly).replace(/\D/g, "").slice(0, 14);
+
     if (limitedDigits.length <= 2) return limitedDigits;
     let formatted = `${limitedDigits.slice(0, 2)}`;
     if (limitedDigits.length > 2) formatted += `.${limitedDigits.slice(2, 5)}`;
@@ -31,11 +29,12 @@ const SearchPage = () => {
   const handleChangeCodEmpresa = (event) => {
     const rawValue = event.target.value;
     const digitsOnly = rawValue.replace(/\D/g, "");
-    if (digitsOnly.length <= 7) {
+    if (digitsOnly.length > 7 && digitsOnly.length <= 14) {
+      setCodEmpresa(formatCNPJ(digitsOnly));
+    } else if (digitsOnly.length <= 7) {
       setCodEmpresa(digitsOnly);
-    } else {
-      const limitedDigitsForState = digitsOnly.slice(0, 14);
-      setCodEmpresa(formatCNPJ(limitedDigitsForState));
+    } else if (digitsOnly.length > 14) {
+      setCodEmpresa(formatCNPJ(digitsOnly.slice(0, 14)));
     }
   };
 
@@ -76,7 +75,6 @@ const SearchPage = () => {
           id: company.codigo,
           nome: company.razao_social,
           cnpj: company.cnpj,
-
           logradouro: company.logradouro,
           numero: company.numero,
           bairro: company.bairro,
@@ -92,7 +90,20 @@ const SearchPage = () => {
             index === self.findIndex((c) => c.id === company.id)
         );
 
-        setSearchResults(uniqueResults);
+        if (uniqueResults.length === 1) {
+          const companyToSelect = uniqueResults[0];
+          if (companyToSelect.id !== "notfound") {
+            handleSelectCompany(companyToSelect);
+            setIsLoading(false);
+            return;
+          } else {
+            setSearchResults(uniqueResults);
+            setIsSearched(true);
+          }
+        } else {
+          setSearchResults(uniqueResults);
+          setIsSearched(true);
+        }
       } else if (
         data.error === false &&
         (!data.empresas || data.empresas.length === 0)
@@ -107,11 +118,13 @@ const SearchPage = () => {
             cnpj: "",
           },
         ]);
+        setIsSearched(true);
       } else {
         const errorMessage =
           data.msg || `Erro ao buscar empresa: ${response.status}`;
         toast.error(errorMessage);
         setSearchResults([{ id: "notfound", nome: errorMessage, cnpj: "" }]);
+        setIsSearched(true);
       }
     } catch (error) {
       console.error("Erro de rede ou ao processar a busca:", error);
@@ -123,10 +136,10 @@ const SearchPage = () => {
           cnpj: "",
         },
       ]);
+      setIsSearched(true);
     }
 
     setIsLoading(false);
-    setIsSearched(true);
   };
 
   const handleSubmitSearch = (event) => {
@@ -225,7 +238,6 @@ const SearchPage = () => {
           <motion.button
             type="submit"
             className="menu-search-button"
-            onClick={performSearch}
             disabled={isLoading}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -267,9 +279,8 @@ const SearchPage = () => {
                     {company.id !== "notfound" && (
                       <small>
                         {" "}
-                        (CNPJ:{" "}
-                        {company.cnpj
-                          ? formatCNPJ(company.cnpj.replace(/\D/g, ""))
+                        (CNPJ: {company.cnpj
+                          ? formatCNPJ(company.cnpj)
                           : "N/A"}{" "}
                         / Cód: {company.id}){" "}
                       </small>

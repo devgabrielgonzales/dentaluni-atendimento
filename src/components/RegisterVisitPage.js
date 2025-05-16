@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import "../styles/RegisterVisitPage.css"; 
+import "../styles/RegisterVisitPage.css";
 import {
   FaStar,
   FaPlus,
@@ -8,11 +8,10 @@ import {
   FaHome,
   FaSearch,
   FaSignOutAlt,
-  FaTimes, 
+  FaTimes,
 } from "react-icons/fa";
 import { motion } from "framer-motion";
-import AppHeader from "./AppHeader"; 
-
+import AppHeader from "./AppHeader";
 
 const modalStyles = {
   overlay: {
@@ -119,9 +118,6 @@ const RegisterVisitPage = () => {
     notaEventosSaudeBucal: 0,
     mesSIPAT: "",
     canalRHSelecionado: "",
-    canalRHEmailEspecifico: "",
-    canalRHWhatsappEspecifico: "",
-    canalRHOutros: "",
     canalDentalUniSelecionado: "",
     canalDentalUniEmailEspecifico: "",
     canalDentalUniWhatsappEspecifico: "",
@@ -159,7 +155,7 @@ const RegisterVisitPage = () => {
   const [cepLoading, setCepLoading] = useState(false);
   const [cepError, setCepError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null); 
+  const [submitStatus, setSubmitStatus] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
@@ -410,24 +406,45 @@ const RegisterVisitPage = () => {
   };
 
   const formatDataToHtml = (data, labels) => {
-    let html = "<h1>Relatório de Visita</h1>";
+    const corDentalUni = "#00529B";
+
+    let html = `<h1 style="color: ${corDentalUni}; font-family: Arial, sans-serif; text-align: center;">Relatório de Visita</h1>`;
+    let sectionsAdded = 0;
+
     const addSection = (title, content) => {
-      if (content && content.trim() !== "")
-        html += `<h2>${title}</h2><div>${content}</div>`;
+      if (content && String(content).trim() !== "") {
+        if (sectionsAdded > 0) {
+          html +=
+            '<hr style="border: 0; border-top: 1px solid #ccc; margin: 25px 0;">';
+        }
+        html += `<h2 style="color: ${corDentalUni}; font-family: Arial, sans-serif; margin-top: 20px; margin-bottom: 10px;">${title}</h2><div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">${content}</div>`;
+        sectionsAdded++;
+      }
     };
-    const addField = (label, value) =>
-      value !== undefined && value !== null && String(value).trim() !== ""
-        ? `<p style="margin: 5px 0; word-break: break-word;"><strong>${label}:</strong> ${String(
-            value
-          ).replace(/\n/g, "<br>")}</p>`
+
+    const addField = (label, value) => {
+      let displayValue = String(value).trim();
+      if (
+        label.toLowerCase().includes("nota") &&
+        (displayValue === "0" || displayValue === "")
+      ) {
+        return "";
+      }
+      return value !== undefined && value !== null && displayValue !== ""
+        ? `<p style="margin: 5px 0; padding-left:10px; word-break: break-word;"><strong>${label}:</strong> ${displayValue.replace(
+            /\n/g,
+            "<br>"
+          )}</p>`
         : "";
+    };
+
     const addCheckboxGroup = (groupTitle, groupData, groupLabels) => {
       let groupHtml = "";
       const selectedItems = Object.keys(groupData).filter(
         (key) => groupData[key]
       );
       if (selectedItems.length > 0) {
-        groupHtml += `<p style="margin: 5px 0;"><strong>${groupTitle}:</strong></p><ul style="margin-top:0; padding-left: 20px;">`;
+        groupHtml += `<p style="margin: 8px 0; padding-left:10px;"><strong>${groupTitle}:</strong></p><ul style="margin-top:0; padding-left: 30px; list-style-type: disc;">`;
         selectedItems.forEach((key) => {
           groupHtml += `<li>${groupLabels[key] || key}</li>`;
         });
@@ -435,21 +452,20 @@ const RegisterVisitPage = () => {
       }
       return groupHtml;
     };
+
     const formatDate = (dateString) => {
       if (!dateString) return "";
       const parts = dateString.split("-");
       if (parts.length === 3) {
         const [year, month, day] = parts;
-
         const date = new Date(
           Date.UTC(Number(year), Number(month) - 1, Number(day))
         );
-
         if (!isNaN(date.getTime())) {
           return date.toLocaleDateString("pt-BR", { timeZone: "UTC" });
         }
       }
-      return dateString; 
+      return dateString;
     };
 
     let motivoContent = addField(
@@ -512,7 +528,10 @@ const RegisterVisitPage = () => {
         "Total de Funcionários na Empresa (Potencial)",
         data.totalFuncionariosEmpresa
       ) +
-      addField("Total de Funcionários no Plano", data.totalFuncionariosPlano) +
+      addField(
+        "Total de Funcionários no Plano DentalUni",
+        data.totalFuncionariosPlano
+      ) +
       addField(
         "Permite Inclusão de Dependentes (Parentesco)",
         data.dependentes
@@ -532,7 +551,7 @@ const RegisterVisitPage = () => {
       let filiaisHtml = "<ul style='list-style-type: none; padding-left: 0;'>";
       data.filiais.forEach((f, i) => {
         if (String(f.cidadeUF).trim() || String(f.numFuncionarios).trim()) {
-          filiaisHtml += `<li style="margin-bottom: 10px; border-top: 1px solid #eee; padding-top: 10px;"><h4>Filial ${
+          filiaisHtml += `<li style="margin-bottom: 10px; border-top: 1px solid #eee; padding-top: 10px; margin-left:10px"><h4>Filial ${
             i + 1
           }</h4>${addField("Cidade/UF", f.cidadeUF)}${addField(
             "Nº de Funcionários",
@@ -553,22 +572,22 @@ const RegisterVisitPage = () => {
       let respHtml = "";
       data.responsaveis.forEach((r, i) => {
         if (String(r.nome).trim() || String(r.cargo).trim()) {
+          const cargoLabels = {
+            representanteComercial: "Representante Comercial",
+            diretorEmpresa: "Diretor da Empresa",
+            representanteLegal: "Representante Legal",
+            proprietario: "Proprietário(a)",
+            socio: "Sócio(a)",
+            rh: "RH",
+            financeiro: "Financeiro",
+            compras: "Compras",
+            outros: "Outros",
+          };
           respHtml +=
-            `<div style="margin-bottom: 15px; border-top: 1px solid #eee; padding-top: 10px;"><h4>Responsável ${
+            `<div style="margin-bottom: 15px; border-top: 1px solid #eee; padding-top: 10px; margin-left:10px"><h4>Responsável ${
               i + 1
             }</h4>` +
-            addField(
-              "Cargo",
-              r.cargo
-                ? r.cargo === "representanteComercial"
-                  ? "Representante Comercial"
-                  : r.cargo === "diretorEmpresa"
-                  ? "Diretor da Empresa"
-                  : r.cargo === "representanteLegal"
-                  ? "Representante Legal"
-                  : r.cargo 
-                : ""
-            ) +
+            addField("Cargo", cargoLabels[r.cargo] || r.cargo) +
             addField("Nome", r.nome) +
             addField("CPF", r.cpf) +
             addField("Data de Aniversário", formatDate(r.dataAniversario)) +
@@ -592,24 +611,26 @@ const RegisterVisitPage = () => {
       data.contatos.forEach((c, i) => {
         if (String(c.nome).trim() || String(c.departamento).trim()) {
           let deptoDisplay = c.departamento;
+          const deptoLabels = {
+            financeiro: "Financeiro",
+            rh: "RH",
+            compras: "Compras",
+            diretoria: "Diretoria",
+            outros: "Outros",
+          };
           if (
             c.departamento === "outros" &&
             String(c.outroDepartamento).trim()
           ) {
             deptoDisplay = `Outros (${c.outroDepartamento})`;
-          } else if (c.departamento) {
-            const deptoLabels = {
-              financeiro: "Financeiro",
-              rh: "RH",
-
-            };
+          } else {
             deptoDisplay =
               deptoLabels[c.departamento] ||
               c.departamento.charAt(0).toUpperCase() + c.departamento.slice(1);
           }
 
           contatosHtml +=
-            `<div style="margin-bottom: 15px; border-top: 1px solid #eee; padding-top: 10px;"><h4>Contato ${
+            `<div style="margin-bottom: 15px; border-top: 1px solid #eee; padding-top: 10px; margin-left:10px"><h4>Contato ${
               i + 1
             }</h4>` +
             addField("Departamento", deptoDisplay) +
@@ -684,15 +705,6 @@ const RegisterVisitPage = () => {
     let canalRhDisplay =
       labels.canalRHOptions.find((opt) => opt.value === data.canalRHSelecionado)
         ?.label || data.canalRHSelecionado;
-    if (data.canalRHSelecionado === "email" && data.canalRHEmailEspecifico)
-      canalRhDisplay += `: ${data.canalRHEmailEspecifico}`;
-    else if (
-      data.canalRHSelecionado === "whatsapp" &&
-      data.canalRHWhatsappEspecifico
-    )
-      canalRhDisplay += `: ${data.canalRHWhatsappEspecifico}`;
-    else if (data.canalRHSelecionado === "outros" && data.canalRHOutros)
-      canalRhDisplay += `: ${data.canalRHOutros}`;
     canaisHtml += addField(
       "Canal de Comunicação RH com Funcionário",
       canalRhDisplay
@@ -745,24 +757,23 @@ const RegisterVisitPage = () => {
       codigo: currentCompanyId,
       dpto: "86",
       tipo: "3",
-      status: "1", 
+      status: "1",
       abertura: "2",
       topico: "12",
       assunto: "Relatorio de Visita CRM",
-      msg: htmlMessage, 
+      msg: htmlMessage,
     };
 
     console.log(
       "Enviando dados via POST:",
       JSON.stringify(dadosParaEnviar, null, 2)
-    ); 
+    );
 
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-
         },
         body: JSON.stringify(dadosParaEnviar),
       });
@@ -784,7 +795,6 @@ const RegisterVisitPage = () => {
         console.error("Erro da API:", responseData);
         setSubmitStatus("error");
         setModalMessage(
-       
           `Erro ao enviar relatório: ${
             responseData.msg ||
             responseData.protocolo ||
@@ -798,7 +808,6 @@ const RegisterVisitPage = () => {
       console.error("Erro de rede ou na chamada da API:", error);
       setSubmitStatus("error");
       setModalMessage(
-
         `Erro de conexão: ${error.message}. Verifique sua internet e se a API está acessível.`
       );
       setModalVisible(true);
@@ -807,12 +816,10 @@ const RegisterVisitPage = () => {
     }
   };
 
-
   const handleCloseModal = () => {
     setModalVisible(false);
     setModalMessage("");
     if (submitStatus === "success") {
-
     }
   };
 
@@ -1630,39 +1637,6 @@ const RegisterVisitPage = () => {
                   </label>
                 ))}
               </div>
-              {formData.canalRHSelecionado === "email" && (
-                <input
-                  type="email"
-                  name="canalRHEmailEspecifico"
-                  placeholder="Digite o e-mail do RH"
-                  value={formData.canalRHEmailEspecifico}
-                  onChange={handleInputChange}
-                  className="detail-input"
-                  style={{ marginTop: "10px" }}
-                />
-              )}
-              {formData.canalRHSelecionado === "whatsapp" && (
-                <input
-                  type="tel"
-                  name="canalRHWhatsappEspecifico"
-                  placeholder="Digite o WhatsApp do RH (Ex: 5541...)"
-                  value={formData.canalRHWhatsappEspecifico}
-                  onChange={handleInputChange}
-                  className="detail-input"
-                  style={{ marginTop: "10px" }}
-                />
-              )}
-              {formData.canalRHSelecionado === "outros" && (
-                <input
-                  type="text"
-                  name="canalRHOutros"
-                  placeholder="Qual outro canal do RH?"
-                  value={formData.canalRHOutros}
-                  onChange={handleInputChange}
-                  className="detail-input"
-                  style={{ marginTop: "10px" }}
-                />
-              )}
             </fieldset>
 
             <fieldset className="form-section">
@@ -1745,7 +1719,7 @@ const RegisterVisitPage = () => {
             <div className="form-actions">
               <button
                 type="button"
-                onClick={() => navigate(-1)} 
+                onClick={() => navigate(-1)}
                 className="button-secondary"
                 disabled={isSubmitting}
               >
@@ -1778,10 +1752,10 @@ const RegisterVisitPage = () => {
                 ? "Retorno do Atendimento"
                 : "Erro no Envio"}
             </h3>
-            <p
+            <div
               style={modalStyles.protocolText}
               dangerouslySetInnerHTML={{ __html: modalMessage }}
-            ></p>
+            ></div>
             <button
               onClick={handleCloseModal}
               style={modalStyles.okButton}
