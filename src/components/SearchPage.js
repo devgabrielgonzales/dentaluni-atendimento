@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/SearchPage.css";
+import "../styles/SearchPage.css"; 
 import Logo from "../img/logo.png";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
@@ -60,8 +60,19 @@ const SearchPage = () => {
 
     console.log(`Buscando na API: ${apiUrl}`);
 
+    const requestHeaders = {
+      "client-id": "26",
+      "client-token": "cb93f445a9426532143cd0f3c7866421",
+      Accept: "application/json",
+    };
+
+    console.log("Enviando com cabeçalhos:", requestHeaders);
+
     try {
-      const response = await fetch(apiUrl);
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: requestHeaders,
+      });
       const data = await response.json();
       console.log("Resposta da API:", data);
 
@@ -121,14 +132,29 @@ const SearchPage = () => {
         setIsSearched(true);
       } else {
         const errorMessage =
-          data.msg || `Erro ao buscar empresa: ${response.status}`;
+          data.msg ||
+          `Erro ao buscar empresa: ${response.status} - ${
+            response.statusText || "Erro desconhecido"
+          }`;
         toast.error(errorMessage);
+        console.error(
+          "Erro da API:",
+          data.msg,
+          "Status:",
+          response.status,
+          "StatusText:",
+          response.statusText
+        );
         setSearchResults([{ id: "notfound", nome: errorMessage, cnpj: "" }]);
         setIsSearched(true);
       }
     } catch (error) {
       console.error("Erro de rede ou ao processar a busca:", error);
-      toast.error("Falha na comunicação com o servidor.");
+      if (error.name === "AbortError") {
+        toast.warn("Busca cancelada.");
+      } else {
+        toast.error("Falha na comunicação com o servidor.");
+      }
       setSearchResults([
         {
           id: "notfound",
@@ -267,12 +293,21 @@ const SearchPage = () => {
               <ul className="company-list">
                 {searchResults.map((company) => (
                   <li
-                    key={company.id || company.cnpj}
+                    key={company.id || company.cnpj || Math.random()} 
                     className={`company-list-item ${
                       company.id === "notfound" ? "not-found" : ""
                     }`}
                     onClick={() =>
                       company.id !== "notfound" && handleSelectCompany(company)
+                    }
+                    role="button"
+                    tabIndex={company.id !== "notfound" ? 0 : -1}
+                    onKeyPress={(
+                      e 
+                    ) =>
+                      e.key === "Enter" &&
+                      company.id !== "notfound" &&
+                      handleSelectCompany(company)
                     }
                   >
                     <strong>{company.nome}</strong>
