@@ -318,7 +318,7 @@ const SearchPage = () => {
         </motion.h2>
         <form onSubmit={handleSubmitSearch} className="menu-search-form">
           <motion.input
-            type="text"
+            type="number"
             className="menu-search-input"
             value={codEmpresa}
             onChange={handleChangeCodEmpresa}
