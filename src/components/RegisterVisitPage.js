@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "../styles/RegisterVisitPage.css";
 import {
@@ -14,6 +14,7 @@ import { motion } from "framer-motion";
 import AppHeader from "./AppHeader";
 
 const modalStyles = {
+  /* ... */
   overlay: {
     position: "fixed",
     top: 0,
@@ -70,6 +71,18 @@ const RegisterVisitPage = () => {
   const { companyId } = useParams();
   const navigate = useNavigate();
 
+  const motivoVisitaOptions = [
+    { value: "", label: "Selecione um motivo...", id_topico: null },
+    { value: "214", label: "Visita", id_topico: 214 },
+    { value: "333", label: "Visita - Checklist", id_topico: 333 },
+    { value: "331", label: "Visita de Eventos", id_topico: 331 },
+    { value: "215", label: "Visita de Implantação", id_topico: 215 },
+    { value: "311", label: "Visita de Reajuste", id_topico: 311 },
+    { value: "330", label: "Visita de Treinamentos", id_topico: 330 },
+    { value: "342", label: "Visita Negociação", id_topico: 342 },
+    { value: "343", label: "Visita Outros", id_topico: 343 },
+  ];
+
   const initialFormData = {
     motivoVisita: "",
     motivoVisitaOutros: "",
@@ -118,6 +131,7 @@ const RegisterVisitPage = () => {
     notaEventosSaudeBucal: 0,
     mesSIPAT: "",
     canalRHSelecionado: "",
+    canalRHOutros: "",
     canalDentalUniSelecionado: "",
     canalDentalUniEmailEspecifico: "",
     canalDentalUniWhatsappEspecifico: "",
@@ -159,16 +173,6 @@ const RegisterVisitPage = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
 
-  const motivoVisitaOptions = [
-    { value: "", label: "Selecione um motivo..." },
-    { value: "implantacao", label: "Implantação" },
-    { value: "eventos", label: "Eventos" },
-    { value: "reajuste", label: "Reajuste" },
-    { value: "treinamentos", label: "Treinamentos" },
-    { value: "negociacao", label: "Negociação" },
-    { value: "naoHouve", label: "Não houve" },
-    { value: "outros", label: "Outros" },
-  ];
   const ocorrenciasCadastralLabels = {
     atualizacaoCadastral: "Atualização Cadastral",
     insencaoCarencia: "Insenção de Carência",
@@ -216,44 +220,28 @@ const RegisterVisitPage = () => {
   const handleSpecificRatingChange = (field, newRating) => {
     setFormData((prevData) => ({ ...prevData, [field]: newRating }));
   };
-
   const RatingStars = ({ ratingField, currentRating }) => (
     <div className="rating-stars-horizontal">
-      <label className="rating-label">Nota:</label>
+      {" "}
+      <label className="rating-label">Nota:</label>{" "}
       {[1, 2, 3, 4, 5].map((star) => (
         <FaStar
           key={star}
           className={star <= currentRating ? "star-selected" : "star-empty"}
           onClick={() => handleSpecificRatingChange(ratingField, star)}
         />
-      ))}
+      ))}{" "}
     </div>
   );
 
-  useEffect(() => {
-    if (formData.atualizacaoCEP.trim() === "") {
-      setCepError("");
-    }
-  }, [formData.atualizacaoCEP]);
-
-  const handleInputChange = (event) => {
-    const { name, value, type } = event.target;
-    const newValue = type === "number" ? parseInt(value, 10) || 0 : value;
-    setFormData((prevData) => ({ ...prevData, [name]: newValue }));
-  };
-
-  const handleCheckboxGroupChange = (event) => {
-    const { name, checked, dataset } = event.target;
-    const group = dataset.group;
-    setFormData((prevData) => ({
-      ...prevData,
-      [group]: { ...prevData[group], [name]: checked },
-    }));
-  };
-
-  const handleCepBlur = async (event) => {
-    const cepValue = event.target.value.replace(/\D/g, "");
-    if (cepValue.length !== 8) {
+  const fetchAddressByCep = useCallback(async (cepToSearch) => {
+    const cepNumerico = cepToSearch.replace(/\D/g, "");
+    if (cepNumerico.length !== 8) {
+      if (cepNumerico.trim() !== "") {
+        setCepError("CEP deve conter 8 dígitos.");
+      } else {
+        setCepError("");
+      }
       setFormData((prev) => ({
         ...prev,
         atualizacaoLogradouro: "",
@@ -261,24 +249,20 @@ const RegisterVisitPage = () => {
         atualizacaoCidade: "",
         atualizacaoUF: "",
       }));
-      if (event.target.value.trim() !== "" && cepValue.length > 0) {
-        setCepError("CEP deve conter 8 dígitos.");
-      } else {
-        setCepError("");
-      }
       return;
     }
     setCepLoading(true);
     setCepError("");
     try {
       const response = await fetch(
-        `https://api.dentaluni.com.br/cep/buscar/${cepValue}`
+        `https://api.dentaluni.com.br/cep/buscar/${cepNumerico}`
       );
       const data = await response.json();
-      if (!response.ok)
+      if (!response.ok) {
         throw new Error(
           data.message || `Erro ao buscar CEP (${response.status})`
         );
+      }
       if (data.erro || !data.cep) {
         setCepError("CEP não encontrado.");
         setFormData((prev) => ({
@@ -310,19 +294,153 @@ const RegisterVisitPage = () => {
     } finally {
       setCepLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    if (formData.ocorrenciasCadastral.atualizacaoCadastral) {
+      const cepNumerico = formData.atualizacaoCEP.replace(/\D/g, "");
+      if (cepNumerico.length === 8) {
+        fetchAddressByCep(cepNumerico);
+      } else if (
+        cepNumerico.trim() === "" &&
+        formData.atualizacaoLogradouro.trim() === ""
+      ) {
+        setCepError("");
+      }
+    }
+  }, [
+    formData.atualizacaoCEP,
+    formData.ocorrenciasCadastral.atualizacaoCadastral,
+    fetchAddressByCep,
+  ]);
+
+  const handleInputChange = (event) => {
+    const { name, value, type } = event.target;
+    let newValue = value;
+    if (name === "atualizacaoCEP") {
+      newValue = value.replace(/\D/g, "");
+      if (newValue.length > 8) {
+        newValue = newValue.slice(0, 8);
+      }
+    } else if (type === "number" && name === "novaDataVencimento") {
+      const numValue = parseInt(value, 10);
+      if (value === "" || value === null) {
+        newValue = "";
+      } else if (!isNaN(numValue) && numValue >= 1 && numValue <= 31) {
+        newValue = numValue;
+      } else if (!isNaN(numValue)) {
+        newValue = formData.novaDataVencimento;
+      } else {
+        newValue = "";
+      }
+    } else if (type === "number") {
+      newValue = value === "" ? "" : parseInt(value, 10) || "";
+    }
+    setFormData((prevData) => ({ ...prevData, [name]: newValue }));
+  };
+
+  const handleCheckboxGroupChange = (event) => {
+    const { name, checked, dataset } = event.target;
+    const group = dataset.group;
+
+    if (group === "ocorrenciasCadastral" && name === "atualizacaoCadastral") {
+      if (checked) {
+        const companyName = localStorage.getItem("selectedCompanyName") || "";
+        const companyCep = (
+          localStorage.getItem("selectedCompanyCep") || ""
+        ).replace(/\D/g, "");
+        const companyLogradouro =
+          localStorage.getItem("selectedCompanyLogradouro") || "";
+        const companyNumero =
+          localStorage.getItem("selectedCompanyNumero") || "";
+        const companyBairro =
+          localStorage.getItem("selectedCompanyBairro") || "";
+        const companyCidade =
+          localStorage.getItem("selectedCompanyCidade") || "";
+        const companyUf = localStorage.getItem("selectedCompanyUf") || "";
+
+        
+        setFormData((prevData) => ({
+          ...prevData,
+          ocorrenciasCadastral: {
+            ...prevData.ocorrenciasCadastral,
+            [name]: true,
+          },
+          atualizacaoRazaoSocial: companyName,
+          atualizacaoCEP: companyCep, 
+          atualizacaoLogradouro: companyLogradouro, 
+          atualizacaoNumero: companyNumero, 
+          atualizacaoBairro: companyBairro, 
+          atualizacaoCidade: companyCidade, 
+          atualizacaoUF: companyUf, 
+        }));
+      } else {
+        setFormData((prevData) => ({
+          ...prevData,
+          ocorrenciasCadastral: {
+            ...prevData.ocorrenciasCadastral,
+            [name]: false,
+          },
+          atualizacaoRazaoSocial: "",
+          atualizacaoCEP: "",
+          atualizacaoLogradouro: "",
+          atualizacaoNumero: "",
+          atualizacaoBairro: "",
+          atualizacaoCidade: "",
+          atualizacaoUF: "",
+          cepError: "",
+        }));
+      }
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [group]: { ...prevData[group], [name]: checked },
+      }));
+    }
+  };
+
+  const handleCepBlur = (event) => {
+    const cepValue = event.target.value.replace(/\D/g, "");
+    if (
+      formData.ocorrenciasCadastral.atualizacaoCadastral &&
+      cepValue.length === 8
+    ) {
+      if (cepValue !== formData.atualizacaoCEP.replace(/\D/g, "")) {
+        fetchAddressByCep(cepValue);
+      }
+    } else if (cepValue.length !== 8 && cepValue.trim() !== "") {
+      setCepError("CEP deve conter 8 dígitos.");
+      setFormData((prev) => ({
+        ...prev,
+        atualizacaoLogradouro: "",
+        atualizacaoBairro: "",
+        atualizacaoCidade: "",
+        atualizacaoUF: "",
+      }));
+    } else if (cepValue.trim() === "") {
+      setCepError("");
+      setFormData((prev) => ({
+        ...prev,
+        atualizacaoLogradouro: "",
+        atualizacaoBairro: "",
+        atualizacaoCidade: "",
+        atualizacaoUF: "",
+      }));
+    }
   };
 
   const handleFilialChange = (id, event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
+    /* ... */ setFormData((prevData) => ({
       ...prevData,
       filiais: prevData.filiais.map((filial) =>
-        filial.id === id ? { ...filial, [name]: value } : filial
+        filial.id === id
+          ? { ...filial, [event.target.name]: event.target.value }
+          : filial
       ),
     }));
   };
   const handleAddFilial = () => {
-    setFormData((prevData) => ({
+    /* ... */ setFormData((prevData) => ({
       ...prevData,
       filiais: [
         ...prevData.filiais,
@@ -331,22 +449,23 @@ const RegisterVisitPage = () => {
     }));
   };
   const handleRemoveFilial = (id) => {
-    setFormData((prevData) => ({
+    /* ... */ setFormData((prevData) => ({
       ...prevData,
       filiais: prevData.filiais.filter((filial) => filial.id !== id),
     }));
   };
   const handleResponsavelChange = (id, event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
+    /* ... */ setFormData((prevData) => ({
       ...prevData,
       responsaveis: prevData.responsaveis.map((responsavel) =>
-        responsavel.id === id ? { ...responsavel, [name]: value } : responsavel
+        responsavel.id === id
+          ? { ...responsavel, [event.target.name]: event.target.value }
+          : responsavel
       ),
     }));
   };
   const handleAddResponsavel = () => {
-    setFormData((prevData) => ({
+    /* ... */ setFormData((prevData) => ({
       ...prevData,
       responsaveis: [
         ...prevData.responsaveis,
@@ -365,7 +484,7 @@ const RegisterVisitPage = () => {
     }));
   };
   const handleRemoveResponsavel = (id) => {
-    setFormData((prevData) => ({
+    /* ... */ setFormData((prevData) => ({
       ...prevData,
       responsaveis: prevData.responsaveis.filter(
         (responsavel) => responsavel.id !== id
@@ -373,16 +492,17 @@ const RegisterVisitPage = () => {
     }));
   };
   const handleContatoChange = (id, event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
+    /* ... */ setFormData((prevData) => ({
       ...prevData,
       contatos: prevData.contatos.map((contato) =>
-        contato.id === id ? { ...contato, [name]: value } : contato
+        contato.id === id
+          ? { ...contato, [event.target.name]: event.target.value }
+          : contato
       ),
     }));
   };
   const handleAddContato = () => {
-    setFormData((prevData) => ({
+    /* ... */ setFormData((prevData) => ({
       ...prevData,
       contatos: [
         ...prevData.contatos,
@@ -399,29 +519,26 @@ const RegisterVisitPage = () => {
     }));
   };
   const handleRemoveContato = (id) => {
-    setFormData((prevData) => ({
+setFormData((prevData) => ({
       ...prevData,
       contatos: prevData.contatos.filter((contato) => contato.id !== id),
     }));
   };
-
   const formatDataToHtml = (data, labels) => {
-    const corDentalUni = "#00529B";
 
-    let html = `<h1 style="color: ${corDentalUni}; font-family: Arial, sans-serif; text-align: center;">Relatório de Visita</h1>`;
+    const corDentalUni = "#ac1815";
+    let html = `<h1 style="color: ${corDentalUni}; font-family: Arial, sans-serif; text-align: center;"></h1>`;
     let sectionsAdded = 0;
-
     const addSection = (title, content) => {
       if (content && String(content).trim() !== "") {
         if (sectionsAdded > 0) {
           html +=
             '<hr style="border: 0; border-top: 1px solid #ccc; margin: 25px 0;">';
         }
-        html += `<h2 style="color: ${corDentalUni}; font-family: Arial, sans-serif; margin-top: 20px; margin-bottom: 10px;">${title}</h2><div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">${content}</div>`;
+        html += `<h3 style="color: ${corDentalUni}; font-family: Arial, sans-serif; margin-top: 20px; margin-bottom: 10px;">${title}</h3><div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">${content}</div>`;
         sectionsAdded++;
       }
     };
-
     const addField = (label, value) => {
       let displayValue = String(value).trim();
       if (
@@ -437,7 +554,6 @@ const RegisterVisitPage = () => {
           )}</p>`
         : "";
     };
-
     const addCheckboxGroup = (groupTitle, groupData, groupLabels) => {
       let groupHtml = "";
       const selectedItems = Object.keys(groupData).filter(
@@ -452,34 +568,24 @@ const RegisterVisitPage = () => {
       }
       return groupHtml;
     };
-
-    const formatDate = (dateString) => {
-      if (!dateString) return "";
-      const parts = dateString.split("-");
-      if (parts.length === 3) {
-        const [year, month, day] = parts;
-        const date = new Date(
-          Date.UTC(Number(year), Number(month) - 1, Number(day))
-        );
-        if (!isNaN(date.getTime())) {
-          return date.toLocaleDateString("pt-BR", { timeZone: "UTC" });
-        }
-      }
-      return dateString;
-    };
-
-    let motivoContent = addField(
-      "Motivo Principal",
-      labels.motivoVisitaOptions.find((opt) => opt.value === data.motivoVisita)
-        ?.label || data.motivoVisita
+    const motivoSelecionadoObj = labels.motivoVisitaOptions.find(
+      (opt) => opt.value === data.motivoVisita
     );
-    if (data.motivoVisita === "outros")
+    let motivoPrincipalLabel = motivoSelecionadoObj
+      ? motivoSelecionadoObj.label
+      : data.motivoVisita;
+    let motivoContent = addField("Motivo Principal", motivoPrincipalLabel);
+    if (
+      data.motivoVisita === "343" &&
+      data.motivoVisitaOutros &&
+      data.motivoVisitaOutros.trim() !== ""
+    ) {
       motivoContent += addField(
         "Outro Motivo Especificado",
         data.motivoVisitaOutros
       );
+    }
     addSection("Motivo da Visita", motivoContent);
-
     let ocorrenciasContent = addCheckboxGroup(
       "Cadastral",
       data.ocorrenciasCadastral,
@@ -500,17 +606,17 @@ const RegisterVisitPage = () => {
       data.ocorrenciasMovimentacao,
       labels.ocorrenciasMovimentacaoLabels
     );
-    if (data.ocorrenciasFaturamento.alteracaoVencimento)
+    if (data.ocorrenciasFaturamento.alteracaoVencimento) {
       ocorrenciasContent += addField(
-        "Nova Data de Vencimento",
-        formatDate(data.novaDataVencimento)
+        "Novo Dia de Vencimento",
+        data.novaDataVencimento
       );
+    }
     ocorrenciasContent += addField(
       "Relato das Ocorrências",
       data.relatoOcorrencias
     );
     addSection("Ocorrências", ocorrenciasContent);
-
     if (data.ocorrenciasCadastral.atualizacaoCadastral) {
       let atualizacaoHtml =
         addField("Razão Social", data.atualizacaoRazaoSocial) +
@@ -522,7 +628,6 @@ const RegisterVisitPage = () => {
         addField("UF", data.atualizacaoUF);
       addSection("Dados da Atualização Cadastral", atualizacaoHtml);
     }
-
     let pesquisaHtml =
       addField(
         "Total de Funcionários na Empresa (Potencial)",
@@ -541,7 +646,6 @@ const RegisterVisitPage = () => {
       addField("Possui Plano de Saúde (Operadora)", data.planoSaude) +
       addField("Aniversário Contrato Plano de Saúde", data.aniversarioContrato);
     addSection("Pesquisa e Atualizações da Empresa", pesquisaHtml);
-
     if (
       data.filiais &&
       data.filiais.some(
@@ -562,7 +666,6 @@ const RegisterVisitPage = () => {
       filiaisHtml += "</ul>";
       addSection("Filiais", filiaisHtml);
     }
-
     if (
       data.responsaveis &&
       data.responsaveis.some(
@@ -590,7 +693,7 @@ const RegisterVisitPage = () => {
             addField("Cargo", cargoLabels[r.cargo] || r.cargo) +
             addField("Nome", r.nome) +
             addField("CPF", r.cpf) +
-            addField("Data de Aniversário", formatDate(r.dataAniversario)) +
+            addField("Data de Aniversário", r.dataAniversario) +
             addField("Telefone", r.telefone) +
             addField("WhatsApp", r.whatsApp) +
             addField("E-mail", r.email) +
@@ -600,7 +703,6 @@ const RegisterVisitPage = () => {
       });
       addSection("Responsáveis Adicionados", respHtml);
     }
-
     if (
       data.contatos &&
       data.contatos.some(
@@ -628,7 +730,6 @@ const RegisterVisitPage = () => {
               deptoLabels[c.departamento] ||
               c.departamento.charAt(0).toUpperCase() + c.departamento.slice(1);
           }
-
           contatosHtml +=
             `<div style="margin-bottom: 15px; border-top: 1px solid #eee; padding-top: 10px; margin-left:10px"><h4>Contato ${
               i + 1
@@ -643,7 +744,6 @@ const RegisterVisitPage = () => {
       });
       addSection("Contatos Adicionados", contatosHtml);
     }
-
     let questoesHtml = addField(
       "Utilizou Clínica de Urgência DentalUni",
       data.utilizouClinicaUrgencia === "sim"
@@ -700,16 +800,21 @@ const RegisterVisitPage = () => {
       );
     questoesHtml += addField("Realiza Semana SIPAT (Mês)", data.mesSIPAT);
     addSection("Questões Adicionais", questoesHtml);
-
     let canaisHtml = "";
     let canalRhDisplay =
       labels.canalRHOptions.find((opt) => opt.value === data.canalRHSelecionado)
         ?.label || data.canalRHSelecionado;
+    if (
+      data.canalRHSelecionado === "outros" &&
+      data.canalRHOutros &&
+      data.canalRHOutros.trim() !== ""
+    ) {
+      canalRhDisplay += `: ${data.canalRHOutros.trim()}`;
+    }
     canaisHtml += addField(
       "Canal de Comunicação RH com Funcionário",
       canalRhDisplay
     );
-
     let canalDentalUniDisplay =
       labels.canalDentalUniOptions.find(
         (opt) => opt.value === data.canalDentalUniSelecionado
@@ -739,47 +844,54 @@ const RegisterVisitPage = () => {
       canalDentalUniDisplay
     );
     addSection("Canais de Comunicação", canaisHtml);
-
     addSection("Observações Finais", addField("", data.observacoes));
     return html;
   };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
     setSubmitStatus(null);
-
+    const codigoEmpresaStorage = localStorage.getItem("selectedCompanyId");
+    const nomeUsuarioLogado =
+      localStorage.getItem("userName") || "Usuário Padrão";
+    const idCriadorTicket =
+      localStorage.getItem("userId") ||
+      localStorage.getItem("userToken") ||
+      "ID_PADRAO";
+    const codigoEmpresaFinal =
+      codigoEmpresaStorage || companyId || "NAO_INFORMADO";
     const htmlMessage = formatDataToHtml(formData, allLabelsForHtml);
-    const currentCompanyId = companyId || "NAO_INFORMADO";
+    const motivoSelecionado = motivoVisitaOptions.find(
+      (opt) => opt.value === formData.motivoVisita
+    );
+    const assuntoSelecionado = motivoSelecionado
+      ? motivoSelecionado.label
+      : "Relatório de Visita";
     const apiUrl = "https://api.dentaluni.com.br/sae/atendimento";
-
     const dadosParaEnviar = {
-      codigo: currentCompanyId,
+      codigo: codigoEmpresaFinal,
       dpto: "86",
-      tipo: "3",
+      tipo: "28",
       status: "1",
-      abertura: "2",
-      topico: "12",
-      assunto: "Relatorio de Visita CRM",
+      abertura: "26",
+      topico: formData.motivoVisita,
+      assunto: assuntoSelecionado,
       msg: htmlMessage,
+      criador: nomeUsuarioLogado,
+      id_criador_ticket: idCriadorTicket,
+      mostrar_empresa: "1",
     };
-
     console.log(
       "Enviando dados via POST:",
       JSON.stringify(dadosParaEnviar, null, 2)
     );
-
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dadosParaEnviar),
       });
-
       const responseData = await response.json();
-
       if (response.ok && !responseData.error) {
         setSubmitStatus("success");
         setModalMessage(
@@ -815,27 +927,30 @@ const RegisterVisitPage = () => {
       setIsSubmitting(false);
     }
   };
-
   const handleCloseModal = () => {
-    setModalVisible(false);
+    /* ... */ setModalVisible(false);
     setModalMessage("");
-    if (submitStatus === "success") {
-    }
   };
-
   const handleHomeClick = () => {
-    navigate(`/menu/${companyId || ""}`);
+    /* ... */ navigate(`/menu/${companyId || ""}`);
   };
   const handleSearchClick = () => {
-    navigate("/pesquisa");
+    /* ... */ navigate("/pesquisa");
   };
   const handleLogoutClick = () => {
-    localStorage.removeItem("userName");
+    /* ... */ localStorage.removeItem("userName");
     localStorage.removeItem("userToken");
+    localStorage.removeItem("userId");
     localStorage.removeItem("userImg");
     localStorage.removeItem("selectedCompanyId");
     localStorage.removeItem("selectedCompanyName");
     localStorage.removeItem("selectedCompanyCnpj");
+    localStorage.removeItem("selectedCompanyCep");
+    localStorage.removeItem("selectedCompanyLogradouro");
+    localStorage.removeItem("selectedCompanyNumero");
+    localStorage.removeItem("selectedCompanyBairro");
+    localStorage.removeItem("selectedCompanyCidade");
+    localStorage.removeItem("selectedCompanyUf");
     navigate("/login");
   };
 
@@ -847,7 +962,6 @@ const RegisterVisitPage = () => {
         isLoadingCompanyInfo={false}
         showCompanyBuildingIcon={!!companyId}
       />
-
       <main className="new-menu-content-area menu-container">
         <motion.div
           className="register-visit-form-container"
@@ -870,7 +984,7 @@ const RegisterVisitPage = () => {
                 >
                   {motivoVisitaOptions.map((option) => (
                     <option
-                      key={option.value}
+                      key={option.id_topico || "placeholder-motivo"}
                       value={option.value}
                       disabled={option.value === ""}
                     >
@@ -879,7 +993,7 @@ const RegisterVisitPage = () => {
                   ))}
                 </select>
               </label>
-              {formData.motivoVisita === "outros" && (
+              {formData.motivoVisita === "343" && (
                 <input
                   type="text"
                   name="motivoVisitaOutros"
@@ -933,13 +1047,16 @@ const RegisterVisitPage = () => {
                       style={{ marginTop: "10px" }}
                     >
                       <label>
-                        Nova Data de Vencimento:
+                        Novo Dia de Vencimento:
                         <input
-                          type="date"
+                          type="number"
                           name="novaDataVencimento"
                           value={formData.novaDataVencimento}
                           onChange={handleInputChange}
                           className="detail-input"
+                          placeholder="Dia (1-31)"
+                          min="1"
+                          max="31"
                         />
                       </label>
                     </div>
@@ -1015,34 +1132,14 @@ const RegisterVisitPage = () => {
                     onChange={handleInputChange}
                     onBlur={handleCepBlur}
                     className="detail-input"
-                    placeholder="00000-000"
-                    maxLength={9}
+                    placeholder="00000000"
+                    maxLength={8}
                   />
                 </label>
                 {cepLoading && (
-                  <p
-                    className="loading-feedback"
-                    style={{
-                      fontStyle: "italic",
-                      color: "#555",
-                      marginTop: "5px",
-                    }}
-                  >
-                    Buscando CEP...
-                  </p>
+                  <p className="loading-feedback">Buscando CEP...</p>
                 )}
-                {cepError && (
-                  <p
-                    className="error-feedback"
-                    style={{
-                      color: "red",
-                      fontWeight: "bold",
-                      marginTop: "5px",
-                    }}
-                  >
-                    {cepError}
-                  </p>
-                )}
+                {cepError && <p className="error-feedback">{cepError}</p>}
                 <label>
                   Logradouro:
                   <input
@@ -1051,7 +1148,6 @@ const RegisterVisitPage = () => {
                     value={formData.atualizacaoLogradouro}
                     onChange={handleInputChange}
                     className="detail-input"
-                    readOnly={cepLoading}
                   />
                 </label>
                 <label>
@@ -1072,7 +1168,6 @@ const RegisterVisitPage = () => {
                     value={formData.atualizacaoBairro}
                     onChange={handleInputChange}
                     className="detail-input"
-                    readOnly={cepLoading}
                   />
                 </label>
                 <label>
@@ -1083,7 +1178,6 @@ const RegisterVisitPage = () => {
                     value={formData.atualizacaoCidade}
                     onChange={handleInputChange}
                     className="detail-input"
-                    readOnly={cepLoading}
                   />
                 </label>
                 <label>
@@ -1095,15 +1189,15 @@ const RegisterVisitPage = () => {
                     onChange={handleInputChange}
                     className="detail-input"
                     maxLength="2"
-                    readOnly={cepLoading}
                   />
                 </label>
               </fieldset>
             )}
-
             <fieldset className="form-section">
-              <legend>Pesquisa e Atualizações</legend>
+              {" "}
+              <legend>Pesquisa e Atualizações</legend>{" "}
               <div className="form-grid pesquisa-grid-single-col">
+                {" "}
                 <label>
                   Qual o total de funcionários na empresa? (Potencial)
                   <input
@@ -1112,7 +1206,7 @@ const RegisterVisitPage = () => {
                     value={formData.totalFuncionariosEmpresa}
                     onChange={handleInputChange}
                   />
-                </label>
+                </label>{" "}
                 <label>
                   Total de Funcionários no Plano DentalUni?
                   <input
@@ -1121,13 +1215,15 @@ const RegisterVisitPage = () => {
                     value={formData.totalFuncionariosPlano}
                     onChange={handleInputChange}
                   />
-                </label>
+                </label>{" "}
                 <div className="dynamic-field-section">
+                  {" "}
                   <label className="dynamic-field-label">
                     Filiais (Cidade/UF | Nº de Funcionários):
-                  </label>
+                  </label>{" "}
                   {formData.filiais.map((filial) => (
                     <div key={filial.id} className="filial-entry">
+                      {" "}
                       <input
                         type="text"
                         name="cidadeUF"
@@ -1135,7 +1231,7 @@ const RegisterVisitPage = () => {
                         value={filial.cidadeUF}
                         onChange={(e) => handleFilialChange(filial.id, e)}
                         className="filial-input city-input"
-                      />
+                      />{" "}
                       <input
                         type="number"
                         name="numFuncionarios"
@@ -1143,7 +1239,7 @@ const RegisterVisitPage = () => {
                         value={filial.numFuncionarios}
                         onChange={(e) => handleFilialChange(filial.id, e)}
                         className="filial-input count-input"
-                      />
+                      />{" "}
                       {formData.filiais.length > 1 && (
                         <button
                           type="button"
@@ -1153,17 +1249,17 @@ const RegisterVisitPage = () => {
                         >
                           <FaTrash />
                         </button>
-                      )}
+                      )}{" "}
                     </div>
-                  ))}
+                  ))}{" "}
                   <button
                     type="button"
                     onClick={handleAddFilial}
                     className="add-filial-btn"
                   >
                     <FaPlus /> Adicionar Filial
-                  </button>
-                </div>
+                  </button>{" "}
+                </div>{" "}
                 <label>
                   Permite a inclusão de dependentes no plano? (Especifique o
                   parentesco)
@@ -1173,7 +1269,7 @@ const RegisterVisitPage = () => {
                     value={formData.dependentes}
                     onChange={handleInputChange}
                   />
-                </label>
+                </label>{" "}
                 <label>
                   Empresa contribui com o valor do plano? Qual o (%)?
                   <input
@@ -1182,7 +1278,7 @@ const RegisterVisitPage = () => {
                     value={formData.contribuiPlano}
                     onChange={handleInputChange}
                   />
-                </label>
+                </label>{" "}
                 <label>
                   Possui filiais que não tenham o benefício? Qual cidade?
                   <input
@@ -1191,7 +1287,7 @@ const RegisterVisitPage = () => {
                     value={formData.filiaisBeneficio}
                     onChange={handleInputChange}
                   />
-                </label>
+                </label>{" "}
                 <label>
                   Possui plano de saúde? Qual operadora?
                   <input
@@ -1200,7 +1296,7 @@ const RegisterVisitPage = () => {
                     value={formData.planoSaude}
                     onChange={handleInputChange}
                   />
-                </label>
+                </label>{" "}
                 <label>
                   Data de aniversário de contrato do plano de saúde?
                   <input
@@ -1210,12 +1306,12 @@ const RegisterVisitPage = () => {
                     onChange={handleInputChange}
                     placeholder="DD/MM ou MM/AAAA"
                   />
-                </label>
-              </div>
+                </label>{" "}
+              </div>{" "}
             </fieldset>
-
             <fieldset className="form-section">
-              <legend>Adicionar Responsáveis</legend>
+              {" "}
+              <legend>Adicionar Responsáveis</legend>{" "}
               {formData.responsaveis.map((responsavel, index) => (
                 <div
                   key={responsavel.id}
@@ -1226,9 +1322,10 @@ const RegisterVisitPage = () => {
                     paddingBottom: "15px",
                   }}
                 >
-                  <h4>Responsável {index + 1}</h4>
+                  {" "}
+                  <h4>Responsável {index + 1}</h4>{" "}
                   <label className="select-label">
-                    Cargo:
+                    Cargo:{" "}
                     <select
                       name="cargo"
                       value={responsavel.cargo}
@@ -1237,6 +1334,7 @@ const RegisterVisitPage = () => {
                       }
                       className="select-input"
                     >
+                      {" "}
                       <option value="">Selecione...</option>
                       <option value="representanteComercial">
                         Representante Comercial
@@ -1250,9 +1348,9 @@ const RegisterVisitPage = () => {
                       <option value="rh">RH</option>
                       <option value="financeiro">Financeiro</option>
                       <option value="compras">Compras</option>
-                      <option value="outros">Outros</option>
-                    </select>
-                  </label>
+                      <option value="outros">Outros</option>{" "}
+                    </select>{" "}
+                  </label>{" "}
                   <label>
                     Nome:
                     <input
@@ -1264,7 +1362,7 @@ const RegisterVisitPage = () => {
                       }
                       className="detail-input"
                     />
-                  </label>
+                  </label>{" "}
                   <label>
                     CPF:
                     <input
@@ -1277,7 +1375,7 @@ const RegisterVisitPage = () => {
                       className="detail-input"
                       placeholder="000.000.000-00"
                     />
-                  </label>
+                  </label>{" "}
                   <label>
                     Data de Aniversário:
                     <input
@@ -1289,7 +1387,7 @@ const RegisterVisitPage = () => {
                       }
                       className="detail-input"
                     />
-                  </label>
+                  </label>{" "}
                   <label>
                     Telefone:
                     <input
@@ -1302,7 +1400,7 @@ const RegisterVisitPage = () => {
                       className="detail-input"
                       placeholder="(00) 00000-0000"
                     />
-                  </label>
+                  </label>{" "}
                   <label>
                     WhatsApp:
                     <input
@@ -1315,7 +1413,7 @@ const RegisterVisitPage = () => {
                       className="detail-input"
                       placeholder="(00) 00000-0000"
                     />
-                  </label>
+                  </label>{" "}
                   <label>
                     Email:
                     <input
@@ -1327,7 +1425,7 @@ const RegisterVisitPage = () => {
                       }
                       className="detail-input"
                     />
-                  </label>
+                  </label>{" "}
                   <label>
                     Qual time torce? (Camarote Arena)
                     <input
@@ -1339,7 +1437,7 @@ const RegisterVisitPage = () => {
                       }
                       className="detail-input"
                     />
-                  </label>
+                  </label>{" "}
                   {formData.responsaveis.length > 1 && (
                     <button
                       type="button"
@@ -1350,22 +1448,22 @@ const RegisterVisitPage = () => {
                     >
                       <FaTrash /> Remover Responsável {index + 1}
                     </button>
-                  )}
+                  )}{" "}
                 </div>
-              ))}
+              ))}{" "}
               <button
                 type="button"
                 onClick={handleAddResponsavel}
                 className="add-filial-btn"
               >
                 <FaPlus /> Adicionar Responsável
-              </button>
+              </button>{" "}
             </fieldset>
-
             <fieldset className="form-section">
+              {" "}
               <legend>
                 Adicionar Contatos (Pessoas que falam com a DentalUni)
-              </legend>
+              </legend>{" "}
               {formData.contatos.map((contato, index) => (
                 <div
                   key={contato.id}
@@ -1376,23 +1474,25 @@ const RegisterVisitPage = () => {
                     paddingBottom: "15px",
                   }}
                 >
-                  <h4>Contato {index + 1}</h4>
+                  {" "}
+                  <h4>Contato {index + 1}</h4>{" "}
                   <label className="select-label">
-                    Departamento:
+                    Departamento:{" "}
                     <select
                       name="departamento"
                       value={contato.departamento}
                       onChange={(e) => handleContatoChange(contato.id, e)}
                       className="select-input"
                     >
+                      {" "}
                       <option value="">Selecione...</option>
                       <option value="financeiro">Financeiro</option>
                       <option value="rh">RH</option>
                       <option value="compras">Compras</option>
                       <option value="diretoria">Diretoria</option>
-                      <option value="outros">Outros</option>
-                    </select>
-                  </label>
+                      <option value="outros">Outros</option>{" "}
+                    </select>{" "}
+                  </label>{" "}
                   {contato.departamento === "outros" && (
                     <label style={{ marginTop: "5px" }}>
                       Descreva o Departamento:
@@ -1406,7 +1506,7 @@ const RegisterVisitPage = () => {
                         style={{ marginTop: "2px" }}
                       />
                     </label>
-                  )}
+                  )}{" "}
                   <label style={{ marginTop: "10px" }}>
                     Nome:
                     <input
@@ -1416,7 +1516,7 @@ const RegisterVisitPage = () => {
                       onChange={(e) => handleContatoChange(contato.id, e)}
                       className="detail-input"
                     />
-                  </label>
+                  </label>{" "}
                   <label>
                     Email:
                     <input
@@ -1426,7 +1526,7 @@ const RegisterVisitPage = () => {
                       onChange={(e) => handleContatoChange(contato.id, e)}
                       className="detail-input"
                     />
-                  </label>
+                  </label>{" "}
                   <label>
                     Telefone:
                     <input
@@ -1437,7 +1537,7 @@ const RegisterVisitPage = () => {
                       className="detail-input"
                       placeholder="(00) 00000-0000"
                     />
-                  </label>
+                  </label>{" "}
                   <label>
                     WhatsApp:
                     <input
@@ -1448,7 +1548,7 @@ const RegisterVisitPage = () => {
                       className="detail-input"
                       placeholder="(00) 00000-0000"
                     />
-                  </label>
+                  </label>{" "}
                   {formData.contatos.length > 1 && (
                     <button
                       type="button"
@@ -1459,26 +1559,29 @@ const RegisterVisitPage = () => {
                     >
                       <FaTrash /> Remover Contato {index + 1}
                     </button>
-                  )}
+                  )}{" "}
                 </div>
-              ))}
+              ))}{" "}
               <button
                 type="button"
                 onClick={handleAddContato}
                 className="add-filial-btn"
               >
                 <FaPlus /> Adicionar Contato
-              </button>
+              </button>{" "}
             </fieldset>
-
             <fieldset className="form-section">
-              <legend>Questões Adicionais</legend>
+              {" "}
+              <legend>Questões Adicionais</legend>{" "}
               <div className="additional-questions-column">
+                {" "}
                 <div className="question-block">
+                  {" "}
                   <p className="question-title">
                     Já utilizou a Clínica de urgência da DentalUni?
-                  </p>
+                  </p>{" "}
                   <div className="radio-group-horizontal">
+                    {" "}
                     <label>
                       <input
                         type="radio"
@@ -1488,7 +1591,7 @@ const RegisterVisitPage = () => {
                         onChange={handleInputChange}
                       />
                       <span>Sim</span>
-                    </label>
+                    </label>{" "}
                     <label>
                       <input
                         type="radio"
@@ -1498,18 +1601,20 @@ const RegisterVisitPage = () => {
                         onChange={handleInputChange}
                       />
                       <span>Não</span>
-                    </label>
-                  </div>
+                    </label>{" "}
+                  </div>{" "}
                   {formData.utilizouClinicaUrgencia === "sim" && (
                     <RatingStars
                       ratingField="notaClinicaUrgencia"
                       currentRating={formData.notaClinicaUrgencia}
                     />
-                  )}
-                </div>
+                  )}{" "}
+                </div>{" "}
                 <div className="question-block">
-                  <p className="question-title">Possui In Company?</p>
+                  {" "}
+                  <p className="question-title">Possui In Company?</p>{" "}
                   <div className="radio-group-horizontal">
+                    {" "}
                     <label>
                       <input
                         type="radio"
@@ -1519,7 +1624,7 @@ const RegisterVisitPage = () => {
                         onChange={handleInputChange}
                       />
                       <span>Sim</span>
-                    </label>
+                    </label>{" "}
                     <label>
                       <input
                         type="radio"
@@ -1529,20 +1634,22 @@ const RegisterVisitPage = () => {
                         onChange={handleInputChange}
                       />
                       <span>Não</span>
-                    </label>
-                  </div>
+                    </label>{" "}
+                  </div>{" "}
                   {formData.possuiInCompany === "sim" && (
                     <RatingStars
                       ratingField="notaInCompany"
                       currentRating={formData.notaInCompany}
                     />
-                  )}
-                </div>
+                  )}{" "}
+                </div>{" "}
                 <div className="question-block">
+                  {" "}
                   <p className="question-title">
                     Conhece o sistema para abrir chamado (SAE Atendimento)?
-                  </p>
+                  </p>{" "}
                   <div className="radio-group-horizontal">
+                    {" "}
                     <label>
                       <input
                         type="radio"
@@ -1552,7 +1659,7 @@ const RegisterVisitPage = () => {
                         onChange={handleInputChange}
                       />
                       <span>Sim</span>
-                    </label>
+                    </label>{" "}
                     <label>
                       <input
                         type="radio"
@@ -1562,20 +1669,22 @@ const RegisterVisitPage = () => {
                         onChange={handleInputChange}
                       />
                       <span>Não</span>
-                    </label>
-                  </div>
+                    </label>{" "}
+                  </div>{" "}
                   {formData.conheceSistemaChamadoSAE === "sim" && (
                     <RatingStars
                       ratingField="notaSistemaSAE"
                       currentRating={formData.notaSistemaSAE}
                     />
-                  )}
-                </div>
+                  )}{" "}
+                </div>{" "}
                 <div className="question-block">
+                  {" "}
                   <p className="question-title">
                     Já realizou eventos relacionados a Saúde Bucal?
-                  </p>
+                  </p>{" "}
                   <div className="radio-group-horizontal">
+                    {" "}
                     <label>
                       <input
                         type="radio"
@@ -1585,7 +1694,7 @@ const RegisterVisitPage = () => {
                         onChange={handleInputChange}
                       />
                       <span>Sim</span>
-                    </label>
+                    </label>{" "}
                     <label>
                       <input
                         type="radio"
@@ -1595,16 +1704,17 @@ const RegisterVisitPage = () => {
                         onChange={handleInputChange}
                       />
                       <span>Não</span>
-                    </label>
-                  </div>
+                    </label>{" "}
+                  </div>{" "}
                   {formData.realizouEventosSaudeBucal === "sim" && (
                     <RatingStars
                       ratingField="notaEventosSaudeBucal"
                       currentRating={formData.notaEventosSaudeBucal}
                     />
-                  )}
-                </div>
+                  )}{" "}
+                </div>{" "}
                 <div className="question-block sipat-question">
+                  {" "}
                   <label>
                     Realiza semana de SIPAT? Qual mês?
                     <input
@@ -1614,16 +1724,17 @@ const RegisterVisitPage = () => {
                       onChange={handleInputChange}
                       placeholder="Ex: Outubro"
                     />
-                  </label>
-                </div>
-              </div>
+                  </label>{" "}
+                </div>{" "}
+              </div>{" "}
             </fieldset>
-
             <fieldset className="form-section">
+              {" "}
               <legend>
                 Qual o canal de comunicação do RH com o funcionário?
-              </legend>
+              </legend>{" "}
               <div className="radio-group-vertical">
+                {" "}
                 {canalRHOptions.map((option) => (
                   <label key={option.value}>
                     <input
@@ -1635,15 +1746,27 @@ const RegisterVisitPage = () => {
                     />
                     <span>{option.label}</span>
                   </label>
-                ))}
-              </div>
+                ))}{" "}
+              </div>{" "}
+              {formData.canalRHSelecionado === "outros" && (
+                <input
+                  type="text"
+                  name="canalRHOutros"
+                  placeholder="Especifique qual outro canal do RH"
+                  value={formData.canalRHOutros}
+                  onChange={handleInputChange}
+                  className="detail-input"
+                  style={{ marginTop: "10px" }}
+                />
+              )}{" "}
             </fieldset>
-
             <fieldset className="form-section">
+              {" "}
               <legend>
                 Qual o canal de comunicação DentalUni com a empresa?
-              </legend>
+              </legend>{" "}
               <div className="radio-group-vertical">
+                {" "}
                 {canalDentalUniOptions.map((option) => (
                   <label key={option.value}>
                     <input
@@ -1657,8 +1780,8 @@ const RegisterVisitPage = () => {
                     />
                     <span>{option.label}</span>
                   </label>
-                ))}
-              </div>
+                ))}{" "}
+              </div>{" "}
               {formData.canalDentalUniSelecionado === "email" && (
                 <input
                   type="email"
@@ -1669,7 +1792,7 @@ const RegisterVisitPage = () => {
                   className="detail-input"
                   style={{ marginTop: "10px" }}
                 />
-              )}
+              )}{" "}
               {formData.canalDentalUniSelecionado === "whatsapp" && (
                 <input
                   type="tel"
@@ -1680,7 +1803,7 @@ const RegisterVisitPage = () => {
                   className="detail-input"
                   style={{ marginTop: "10px" }}
                 />
-              )}
+              )}{" "}
               {formData.canalDentalUniSelecionado === "telefone" && (
                 <input
                   type="tel"
@@ -1691,7 +1814,7 @@ const RegisterVisitPage = () => {
                   className="detail-input"
                   style={{ marginTop: "10px" }}
                 />
-              )}
+              )}{" "}
               {formData.canalDentalUniSelecionado === "outros" && (
                 <input
                   type="text"
@@ -1702,21 +1825,21 @@ const RegisterVisitPage = () => {
                   className="detail-input"
                   style={{ marginTop: "10px" }}
                 />
-              )}
+              )}{" "}
             </fieldset>
-
             <fieldset className="form-section">
-              <legend>Observações</legend>
+              {" "}
+              <legend>Observações</legend>{" "}
               <textarea
                 name="observacoes"
                 rows="6"
                 placeholder="Adicione suas observações finais aqui..."
                 value={formData.observacoes}
                 onChange={handleInputChange}
-              ></textarea>
+              ></textarea>{" "}
             </fieldset>
-
             <div className="form-actions">
+              {" "}
               <button
                 type="button"
                 onClick={() => navigate(-1)}
@@ -1724,19 +1847,18 @@ const RegisterVisitPage = () => {
                 disabled={isSubmitting}
               >
                 Voltar
-              </button>
+              </button>{" "}
               <button
                 type="submit"
                 className="button-primary"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Enviando..." : "Registrar Visita"}
-              </button>
+              </button>{" "}
             </div>
           </form>
         </motion.div>
       </main>
-
       {modalVisible && (
         <div style={modalStyles.overlay}>
           <div style={modalStyles.content}>
@@ -1767,7 +1889,6 @@ const RegisterVisitPage = () => {
           </div>
         </div>
       )}
-
       <motion.footer
         className="new-bottom-menu"
         initial={{ opacity: 0, y: 30 }}

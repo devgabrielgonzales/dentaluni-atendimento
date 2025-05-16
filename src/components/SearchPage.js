@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/SearchPage.css"; 
+import "../styles/SearchPage.css";
 import Logo from "../img/logo.png";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
@@ -58,15 +58,11 @@ const SearchPage = () => {
       apiUrl = `https://api.dentaluni.com.br/sae/empresa?codigo=${valorBuscaApenasDigitos}`;
     }
 
-    console.log(`Buscando na API: ${apiUrl}`);
-
     const requestHeaders = {
       "client-id": "26",
       "client-token": "cb93f445a9426532143cd0f3c7866421",
       Accept: "application/json",
     };
-
-    console.log("Enviando com cabeçalhos:", requestHeaders);
 
     try {
       const response = await fetch(apiUrl, {
@@ -74,7 +70,6 @@ const SearchPage = () => {
         headers: requestHeaders,
       });
       const data = await response.json();
-      console.log("Resposta da API:", data);
 
       if (
         response.ok &&
@@ -84,7 +79,7 @@ const SearchPage = () => {
       ) {
         const mappedResults = data.empresas.map((company) => ({
           id: company.codigo,
-          nome: company.razao_social,
+          nome: company.razao_social, // Este é o 'nome' que você usa
           cnpj: company.cnpj,
           logradouro: company.logradouro,
           numero: company.numero,
@@ -100,6 +95,18 @@ const SearchPage = () => {
           (company, index, self) =>
             index === self.findIndex((c) => c.id === company.id)
         );
+
+        try {
+          localStorage.setItem(
+            "allSearchResults",
+            JSON.stringify(uniqueResults)
+          );
+        } catch (error) {
+          console.error(
+            "Erro ao salvar todos os resultados da busca no localStorage:",
+            error
+          );
+        }
 
         if (uniqueResults.length === 1) {
           const companyToSelect = uniqueResults[0];
@@ -122,13 +129,22 @@ const SearchPage = () => {
         toast.info(
           data.msg || "Nenhuma empresa encontrada com esses critérios."
         );
-        setSearchResults([
+        const noResults = [
           {
             id: "notfound",
             nome: data.msg || "Nenhuma empresa encontrada.",
             cnpj: "",
           },
-        ]);
+        ];
+        setSearchResults(noResults);
+        try {
+          localStorage.setItem("allSearchResults", JSON.stringify(noResults));
+        } catch (error) {
+          console.error(
+            "Erro ao salvar 'nenhuma empresa encontrada' no localStorage:",
+            error
+          );
+        }
         setIsSearched(true);
       } else {
         const errorMessage =
@@ -137,15 +153,16 @@ const SearchPage = () => {
             response.statusText || "Erro desconhecido"
           }`;
         toast.error(errorMessage);
-        console.error(
-          "Erro da API:",
-          data.msg,
-          "Status:",
-          response.status,
-          "StatusText:",
-          response.statusText
-        );
-        setSearchResults([{ id: "notfound", nome: errorMessage, cnpj: "" }]);
+        const errorResult = [{ id: "notfound", nome: errorMessage, cnpj: "" }];
+        setSearchResults(errorResult);
+        try {
+          localStorage.setItem("allSearchResults", JSON.stringify(errorResult));
+        } catch (error) {
+          console.error(
+            "Erro ao salvar estado de erro da API no localStorage:",
+            error
+          );
+        }
         setIsSearched(true);
       }
     } catch (error) {
@@ -155,16 +172,27 @@ const SearchPage = () => {
       } else {
         toast.error("Falha na comunicação com o servidor.");
       }
-      setSearchResults([
+      const networkErrorResult = [
         {
           id: "notfound",
           nome: "Falha na busca. Verifique sua conexão.",
           cnpj: "",
         },
-      ]);
+      ];
+      setSearchResults(networkErrorResult);
+      try {
+        localStorage.setItem(
+          "allSearchResults",
+          JSON.stringify(networkErrorResult)
+        );
+      } catch (error) {
+        console.error(
+          "Erro ao salvar estado de erro de rede no localStorage:",
+          error
+        );
+      }
       setIsSearched(true);
     }
-
     setIsLoading(false);
   };
 
@@ -173,10 +201,12 @@ const SearchPage = () => {
     performSearch();
   };
 
+  // 👇 MODIFICAÇÕES PRINCIPAIS AQUI 👇
   const handleSelectCompany = (company) => {
     if (company.id === "notfound") return;
 
     try {
+      // Campos que você já salva:
       if (company.id) {
         localStorage.setItem("selectedCompanyId", company.id);
       } else {
@@ -188,14 +218,62 @@ const SearchPage = () => {
         localStorage.removeItem("selectedCompanyCnpj");
       }
       if (company.nome) {
+        // 'nome' é 'razao_social' no mapeamento da API
         localStorage.setItem("selectedCompanyName", company.nome);
       } else {
         localStorage.removeItem("selectedCompanyName");
       }
 
-      console.log("Empresa selecionada e salva no localStorage:", company);
+      // --- NOVOS CAMPOS PARA ARMAZENAR SEPARADAMENTE ---
+      // CEP
+      if (company.cep) {
+        localStorage.setItem("selectedCompanyCep", company.cep);
+      } else {
+        localStorage.removeItem("selectedCompanyCep");
+      }
+      // Logradouro
+      if (company.logradouro) {
+        localStorage.setItem("selectedCompanyLogradouro", company.logradouro);
+      } else {
+        localStorage.removeItem("selectedCompanyLogradouro");
+      }
+      // Número
+      if (company.numero) {
+        localStorage.setItem("selectedCompanyNumero", company.numero);
+      } else {
+        localStorage.removeItem("selectedCompanyNumero");
+      }
+      // Bairro
+      if (company.bairro) {
+        localStorage.setItem("selectedCompanyBairro", company.bairro);
+      } else {
+        localStorage.removeItem("selectedCompanyBairro");
+      }
+      // Cidade
+      if (company.cidade) {
+        localStorage.setItem("selectedCompanyCidade", company.cidade);
+      } else {
+        localStorage.removeItem("selectedCompanyCidade");
+      }
+      // UF
+      if (company.uf) {
+        localStorage.setItem("selectedCompanyUf", company.uf);
+      } else {
+        localStorage.removeItem("selectedCompanyUf");
+      }
+
+      console.log(
+        "Empresa selecionada e dados específicos salvos no localStorage:",
+        company
+      );
     } catch (error) {
-      console.error("Erro ao salvar dados da empresa no localStorage:", error);
+      console.error(
+        "Erro ao salvar dados da empresa selecionada no localStorage:",
+        error
+      );
+      toast.error(
+        "Houve um problema ao salvar os dados da empresa. Tente novamente."
+      );
     }
 
     navigate(`/menu/${company.id}`, {
@@ -293,7 +371,7 @@ const SearchPage = () => {
               <ul className="company-list">
                 {searchResults.map((company) => (
                   <li
-                    key={company.id || company.cnpj || Math.random()} 
+                    key={company.id || company.cnpj || Math.random()}
                     className={`company-list-item ${
                       company.id === "notfound" ? "not-found" : ""
                     }`}
@@ -302,9 +380,7 @@ const SearchPage = () => {
                     }
                     role="button"
                     tabIndex={company.id !== "notfound" ? 0 : -1}
-                    onKeyPress={(
-                      e 
-                    ) =>
+                    onKeyPress={(e) =>
                       e.key === "Enter" &&
                       company.id !== "notfound" &&
                       handleSelectCompany(company)
