@@ -132,7 +132,7 @@ const SigninPage = () => {
           <div className="input-field-group">
             <label htmlFor="codigo">Código de acesso</label>
             <input
-              type="text"
+              type="number"
               id="codigo"
               placeholder="Ex: 90801"
               value={codigo}
