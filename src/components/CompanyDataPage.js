@@ -1,11 +1,10 @@
 import React from "react";
+import { useNavigate, useParams } from "react-router-dom"; 
+import { FaHome, FaSearch, FaSignOutAlt } from "react-icons/fa";
+import { motion } from "framer-motion";
+import "../styles/CompanyDataPage.css"; 
+import AppHeader from "./AppHeader"; 
 
-import { useNavigate } from "react-router-dom";
-import {
-  FaHome,
-  FaSearch,
-  FaSignOutAlt,
-} from "react-icons/fa";
 import {
   LuClipboardCheck,
   LuUserRoundSearch,
@@ -18,47 +17,63 @@ import {
   LuFileSearch,
   LuFileSliders,
   LuBarcode,
-  LuLockKeyholeOpen
+  LuLockKeyholeOpen,
 } from "react-icons/lu";
-import { motion } from "framer-motion";
-import "../styles/CompanyDataPage.css";
-import AppHeader from "./AppHeader";
 
-const companyId = localStorage.getItem("selectedCompanyId")
-
-export const useAppNavigation = () => {
-  
+export const useCompanyDataNavigation = () => {
   const navigate = useNavigate();
+  const { companyId } = useParams(); 
 
-  const navigateToHome = () => {
-    navigate(`/menu/${companyId}`);
+  const navigateToSection = (sectionAction) => {
+    if (companyId && sectionAction) {
+      navigate(`/dados/${companyId}/${sectionAction}`);
+    } else {
+      console.error(
+        "Company ID ou Section Action não fornecidos para navegação."
+      );
+      navigate("/pesquisa"); 
+    }
   };
 
+  const navigateToHomeMenu = () => {
+    if (companyId) {
+      navigate(`/menu/${companyId}`);
+    } else {
+      navigate("/pesquisa");
+    }
+  };
 
   const navigateToSearch = () => {
     navigate("/pesquisa");
   };
 
   const navigateToLogin = () => {
+    localStorage.clear();
     navigate("/login");
   };
 
   return {
-    navigateToHome,
+    navigateToSection,
+    navigateToHomeMenu,
     navigateToSearch,
     navigateToLogin,
   };
 };
 
 const CompanyDataPage = () => {
-  const { navigateToHome, navigateToSearch, navigateToLogin } =
-    useAppNavigation();
+  const { companyId } = useParams();
+  const {
+    navigateToSection,
+    navigateToHomeMenu,
+    navigateToSearch,
+    navigateToLogin,
+  } = useCompanyDataNavigation();
 
   const handleOptionClick = (optionLabel, action) => {
     console.log(
       `Option clicked: ${optionLabel} (Action: ${action}) for Company ${companyId}`
     );
-    alert(`Opção: ${optionLabel}`);
+    navigateToSection(action); 
   };
 
   const options = [
@@ -70,7 +85,7 @@ const CompanyDataPage = () => {
     },
     { label: "Reajustes", icon: LuFileSliders, action: "readjustments" },
     { label: "Contatos", icon: LuContactRound, action: "contacts" },
-    { label: "Contrato", icon: LuFilePenLine,  action: "contract" },
+    { label: "Contrato", icon: LuFilePenLine, action: "contract" },
     { label: "Empresa", icon: LuBuilding2, action: "company_info" },
     { label: "Cobertura", icon: LuClipboardCheck, action: "coverage" },
     { label: "Guias", icon: LuFileHeart, action: "guides" },
@@ -84,26 +99,28 @@ const CompanyDataPage = () => {
 
   return (
     <div className="details-page-layout-v2">
+      {" "}
       <AppHeader />
       <main className="content-area menu-container">
+        {" "}
         <div className="options-grid">
+          {" "}
           {options.map((option) => (
             <button
               key={option.action}
               type="button"
-              className="option-button"
+              className="option-button" 
               onClick={() => handleOptionClick(option.label, option.action)}
             >
-              <option.icon className="option-icon" />
-              <span className="option-label">{option.label}</span>
+              <option.icon className="option-icon" />{" "}
+              <span className="option-label">{option.label}</span>{" "}
             </button>
           ))}
           {options.length % 2 !== 0 && (
-            <div className="option-placeholder"></div>
+            <div className="option-placeholder"></div> 
           )}
         </div>
       </main>
-
       <motion.footer
         className="new-bottom-menu"
         initial={{ opacity: 0, y: 30 }}
@@ -112,10 +129,10 @@ const CompanyDataPage = () => {
       >
         <button
           className="menu-item"
-          onClick={navigateToHome}
-          aria-label="Início"
+          onClick={navigateToHomeMenu}
+          aria-label="Menu Empresa"
         >
-          <FaHome />
+          <FaHome />{" "}
         </button>
         <button
           className="menu-item-principal"
