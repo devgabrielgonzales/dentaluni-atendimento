@@ -17,6 +17,8 @@ import {
   LuListCheck,
   LuFileSearch,
   LuFileSliders,
+  LuBarcode,
+  LuLockKeyholeOpen
 } from "react-icons/lu";
 import { motion } from "framer-motion";
 import "../styles/CompanyDataPage.css";
@@ -74,6 +76,8 @@ const CompanyDataPage = () => {
     { label: "Guias", icon: LuFileHeart, action: "guides" },
     { label: "Faturamento", icon: LuReceipt, action: "billing" },
     { label: "Protocolos", icon: LuFileSearch, action: "protocols" },
+    { label: "Boletos", icon: LuBarcode, action: "ticket" },
+    { label: "Nova senha", icon: LuLockKeyholeOpen, action: "password" },
   ];
 
   options.sort((a, b) => a.label.localeCompare(b.label, "pt-BR"));
