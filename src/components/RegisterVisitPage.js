@@ -14,7 +14,6 @@ import { motion } from "framer-motion";
 import AppHeader from "./AppHeader";
 
 const modalStyles = {
-  /* ... */
   overlay: {
     position: "fixed",
     top: 0,
@@ -359,7 +358,6 @@ const RegisterVisitPage = () => {
           localStorage.getItem("selectedCompanyCidade") || "";
         const companyUf = localStorage.getItem("selectedCompanyUf") || "";
 
-        
         setFormData((prevData) => ({
           ...prevData,
           ocorrenciasCadastral: {
@@ -367,12 +365,12 @@ const RegisterVisitPage = () => {
             [name]: true,
           },
           atualizacaoRazaoSocial: companyName,
-          atualizacaoCEP: companyCep, 
-          atualizacaoLogradouro: companyLogradouro, 
-          atualizacaoNumero: companyNumero, 
-          atualizacaoBairro: companyBairro, 
-          atualizacaoCidade: companyCidade, 
-          atualizacaoUF: companyUf, 
+          atualizacaoCEP: companyCep,
+          atualizacaoLogradouro: companyLogradouro,
+          atualizacaoNumero: companyNumero,
+          atualizacaoBairro: companyBairro,
+          atualizacaoCidade: companyCidade,
+          atualizacaoUF: companyUf,
         }));
       } else {
         setFormData((prevData) => ({
@@ -519,13 +517,12 @@ const RegisterVisitPage = () => {
     }));
   };
   const handleRemoveContato = (id) => {
-setFormData((prevData) => ({
+    setFormData((prevData) => ({
       ...prevData,
       contatos: prevData.contatos.filter((contato) => contato.id !== id),
     }));
   };
   const formatDataToHtml = (data, labels) => {
-
     const corDentalUni = "#ac1815";
     let html = `<h1 style="color: ${corDentalUni}; font-family: Arial, sans-serif; text-align: center;"></h1>`;
     let sectionsAdded = 0;
@@ -928,17 +925,17 @@ setFormData((prevData) => ({
     }
   };
   const handleCloseModal = () => {
-    /* ... */ setModalVisible(false);
+    setModalVisible(false);
     setModalMessage("");
   };
   const handleHomeClick = () => {
-    /* ... */ navigate(`/menu/${companyId || ""}`);
+    navigate(`/menu/${companyId || ""}`);
   };
   const handleSearchClick = () => {
-    /* ... */ navigate("/pesquisa");
+    navigate("/pesquisa");
   };
   const handleLogoutClick = () => {
-    /* ... */ localStorage.removeItem("userName");
+    localStorage.removeItem("userName");
     localStorage.removeItem("userToken");
     localStorage.removeItem("userId");
     localStorage.removeItem("userImg");
