@@ -183,16 +183,22 @@ const TemplatePage = () => {
     }
 
     const sectionProps = { companyId, companyData };
+
+    console.log("Renderizando seção:", currentSectionKey);
+    console.log("Props passadas para a seção:", sectionProps);
+
     switch (currentSectionKey) {
       case "boletos":
+        console.log("Componente retornado: Ticket");
         return <Ticket {...sectionProps} />;
-      case "planos":
-        return <PlansSection {...sectionProps} />;
       case "empresa":
+        console.log("Componente retornado: CompanyDataDisplay");
         return <CompanyDataDisplay companyDetails={companyData} />;
       case "protocolos":
+        console.log("Componente retornado: ProtocolsList");
         return <ProtocolsList {...sectionProps} />;
       default:
+        console.log("Nenhum componente correspondente. Retornando default.");
         return (
           <div className="ticket-message ticket-no-data">
             <p>Conteúdo para "{pageTitle}" ainda não implementado.</p>
