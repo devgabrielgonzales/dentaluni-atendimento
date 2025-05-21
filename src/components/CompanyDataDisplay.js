@@ -263,6 +263,5 @@ const CompanyDataDisplay = ({ companyDetails }) => {
 };
 
 CompanyDataDisplay.propTypes = {
-  /* ... seu PropTypes ... */
 };
 export default CompanyDataDisplay;

@@ -63,7 +63,6 @@ const SearchPage = () => {
       "client-token": "cb93f445a9426532143cd0f3c7866421",
       Accept: "application/json",
     };
-    console.log("fetchEmpresa", apiUrl);
     try {
       const response = await fetch(apiUrl, {
         method: "GET",

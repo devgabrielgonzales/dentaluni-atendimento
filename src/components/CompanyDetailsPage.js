@@ -11,7 +11,7 @@ import {
 import { LuMapPinCheck, LuFileSearch } from "react-icons/lu";
 import { motion } from "framer-motion";
 import LoadingSpinner from "./LoadingSpinner";
-import AppHeader from "./AppHeader"
+import AppHeader from "./AppHeader";
 
 const formatUserNameDisplay = (fullName) => {
   if (!fullName || typeof fullName !== "string") return "Usuário";
@@ -99,9 +99,19 @@ const CompanyDetailsPage = () => {
         console.warn(
           `Dados da empresa ${companyId} não passados via state. Buscando via API...`
         );
+
+        const requestHeaders = {
+          "client-id": "26",
+          "client-token": "cb93f445a9426532143cd0f3c7866421",
+          Accept: "application/json",
+        };
         try {
           const response = await fetch(
-            `https://api.dentaluni.com.br/sae/empresa?codigo=${companyId}`
+            `https://api.dentaluni.com.br/sae/empresa?codigo=${companyId}`,
+            {
+              method: "GET",
+              headers: requestHeaders,
+            }
           );
           if (!response.ok) {
             errorFetching = true;
