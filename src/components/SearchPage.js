@@ -63,7 +63,7 @@ const SearchPage = () => {
       "client-token": "cb93f445a9426532143cd0f3c7866421",
       Accept: "application/json",
     };
-
+    console.log("fetchEmpresa", apiUrl);
     try {
       const response = await fetch(apiUrl, {
         method: "GET",
@@ -201,7 +201,6 @@ const SearchPage = () => {
     performSearch();
   };
 
-
   const handleSelectCompany = (company) => {
     if (company.id === "notfound") return;
 
@@ -251,7 +250,6 @@ const SearchPage = () => {
       } else {
         localStorage.removeItem("selectedCompanyUf");
       }
-
     } catch (error) {
       console.error(
         "Erro ao salvar dados da empresa selecionada no localStorage:",

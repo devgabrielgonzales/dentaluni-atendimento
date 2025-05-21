@@ -59,12 +59,13 @@ const ProtocolsList = ({ companyId }) => {
     const fetchProtocols = async () => {
       setIsLoadingList(true);
       setListError(null);
+      console.log("fetchProtocols", companyId);
       try {
         const response = await fetch(
           `https://api.dentaluni.com.br/sae/list?cod=${companyId}`,
           {
-            method: "GET", 
-            headers: requestHeaders, 
+            method: "GET",
+            headers: requestHeaders,
           }
         );
         if (!response.ok) {
@@ -113,8 +114,8 @@ const ProtocolsList = ({ companyId }) => {
         const response = await fetch(
           `https://api.dentaluni.com.br/sae/ticket?id=${selectedProtocol.id_ticket}`,
           {
-            method: "GET", 
-            headers: requestHeaders, 
+            method: "GET",
+            headers: requestHeaders,
           }
         );
         if (!response.ok) {
