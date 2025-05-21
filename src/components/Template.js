@@ -107,6 +107,12 @@ const TemplatePage = () => {
     setErrorLoadingCompany(null);
     setCompanyData(null);
 
+    const requestHeaders = {
+      "client-id": "26",
+      "client-token": "cb93f445a9426532143cd0f3c7866421",
+      Accept: "application/json",
+    };
+
     const fetchCompanyData = async () => {
       if (!companyId) {
         if (isMounted) {
@@ -117,7 +123,11 @@ const TemplatePage = () => {
       }
       try {
         const response = await fetch(
-          `https://api.dentaluni.com.br/sae/empresa?codigo=${companyId}`
+          `https://api.dentaluni.com.br/sae/empresa?codigo=${companyId}`,
+          {
+            method: "GET",
+            headers: requestHeaders,
+          }
         );
         if (!response.ok) {
           const errorData = await response

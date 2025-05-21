@@ -27,8 +27,6 @@ const formatDate = (dateString) => {
   }
 };
 
-// **Os valores fixos do client-id e client-token são mantidos aqui**
-// ESTE É O BLOCO QUE VOCÊ QUER MANTER NO FRONTEND
 const requestHeaders = {
   "client-id": "26",
   "client-token": "cb93f445a9426532143cd0f3c7866421",
