@@ -1021,3 +1021,264 @@ form-section {
     font-size: 20px;
   }
 }
+
+/* Estilos para a Lista de Protocolos, Cards e Modal */
+
+.protocol-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.protocol-search-container {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.protocol-search-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+.protocol-search-input:focus {
+  border-color: #ac1815;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(172, 24, 21, 0.15);
+}
+
+.protocol-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  border: 1px solid #eaeaea;
+}
+
+.protocol-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.protocol-card-icon-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: #ac1815;
+  min-width: 30px;
+  height: auto;
+}
+.protocol-card-icon-area svg {
+  stroke-width: 2;
+}
+
+.protocol-card-details-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.protocol-card-title {
+  font-size: 0.95em;
+  font-weight: 600;
+  color: #333333;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.protocol-card-info {
+  font-size: 0.85em;
+  color: #555555;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.protocol-card-info svg {
+  font-size: 0.8em;
+  color: #777;
+}
+
+.protocol-card-info.protocol-ans-list {
+  font-size: 0.8em;
+  color: #333;
+  font-weight: 500;
+}
+
+.protocol-card-status-badge {
+  font-size: 0.75em;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  line-height: 1;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.protocol-card-status-badge.list-item-status {
+  margin-top: 6px;
+  align-self: flex-start;
+  /* A cor de fundo e texto são aplicadas inline com style no JSX */
+}
+
+.protocol-message {
+  padding: 20px;
+  text-align: center;
+  margin: 20px auto;
+  border-radius: 8px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.protocol-error {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+}
+.protocol-no-data {
+  color: #383d41;
+  background-color: #e2e3e5;
+  border: 1px solid #d6d8db;
+}
+
+.protocol-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.protocol-modal-content {
+  background-color: #fff;
+  padding: 25px 30px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 750px;
+  max-height: 65vh;
+  overflow-y: auto;
+  position: relative;
+  font-family: "Inter", sans-serif;
+}
+
+.protocol-modal-content h4 {
+  font-size: 1.3em;
+  color: #ac1815;
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.protocol-modal-content h5 {
+  font-size: 1.1em;
+  color: #333;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  border-bottom: 1px dashed #ddd;
+  padding-bottom: 5px;
+}
+
+.protocol-modal-close-button {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  font-size: 1.8rem;
+  color: #777;
+  cursor: pointer;
+  line-height: 1;
+  padding: 5px;
+}
+.protocol-modal-close-button:hover {
+  color: #ac1815;
+}
+
+.protocol-detail-section {
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.protocol-detail-section p {
+  margin: 6px 0;
+  line-height: 1.6;
+  color: #444;
+}
+
+.protocol-detail-section p strong {
+  color: #111;
+  min-width: 130px;
+  display: inline-block;
+}
+
+.protocol-message-entry {
+  border: 1px solid #e9e9e9;
+  padding: 12px 15px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+}
+
+.protocol-message-entry .message-meta {
+  font-size: 0.85em;
+  color: #666;
+  margin-bottom: 8px;
+  padding-bottom: 5px;
+  border-bottom: 1px dashed #eee;
+}
+
+.protocol-message-entry .message-meta strong {
+  color: #333;
+}
+
+.protocol-message-content {
+  font-size: 0.95em;
+  line-height: 1.6;
+  color: #333;
+}
+
+.protocol-message-content p {
+  margin: 0 0 10px 0;
+  line-height: 1.5;
+}
+
+.protocol-message-content p:last-child {
+  margin-bottom: 0;
+}
+
+.message-attachments {
+  font-size: 0.9em;
+  color: #555;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px dashed #eee;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.message-attachments svg {
+  color: #ac1815;
+  font-size: 1.1em;
+}

@@ -14,6 +14,7 @@ import {
 import LoadingSpinner from "./LoadingSpinner";
 import Ticket from "./Ticket";
 import CompanyDataDisplay from "./CompanyDataDisplay";
+import ProtocolsList from "./ProtocolsList";
 import AppHeader from "./AppHeader";
 
 const PlansSection = ({ companyId, companyData }) => (
@@ -189,6 +190,8 @@ const TemplatePage = () => {
         return <PlansSection {...sectionProps} />;
       case "empresa":
         return <CompanyDataDisplay companyDetails={companyData} />;
+      case "protocolos":
+        return <ProtocolsList {...sectionProps} />;
       default:
         return (
           <div className="ticket-message ticket-no-data">
