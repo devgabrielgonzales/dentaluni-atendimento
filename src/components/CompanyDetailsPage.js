@@ -11,6 +11,7 @@ import {
 import { LuMapPinCheck, LuFileSearch } from "react-icons/lu";
 import { motion } from "framer-motion";
 import LoadingSpinner from "./LoadingSpinner";
+import AppHeader from "./AppHeader"
 
 const formatUserNameDisplay = (fullName) => {
   if (!fullName || typeof fullName !== "string") return "Usuário";
@@ -202,55 +203,7 @@ const CompanyDetailsPage = () => {
 
   return (
     <div className="details-page-layout-v2">
-      <header className="details-header-curved container">
-        <div className="header-content-container">
-          <div className="user-info-container container">
-            {userAvatarUrl ? (
-              <div className="circle">
-                <img
-                  src={userAvatarUrl}
-                  alt="Avatar do Usuário"
-                  className="circle-img"
-                />
-              </div>
-            ) : (
-              <FaUserCircle className="user-avatar-icon-v2" />
-            )}
-            <div className="user-text-info">
-              <motion.p
-                className="user-welcome-text-v2"
-                {...headerAnimationProps}
-                transition={{ ...headerAnimationProps.transition, delay: 0.2 }}
-              >
-                Olá, Bem-vindo! 👋
-              </motion.p>
-              <motion.h1
-                className="user-name-text-v2"
-                {...headerAnimationProps}
-                transition={{ ...headerAnimationProps.transition, delay: 0.3 }}
-              >
-                {userName}
-              </motion.h1>
-            </div>
-          </div>
-          <motion.div
-            className="company-display-card container"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4, ease: "easeOut" }}
-          >
-            <div className="company-text-info">
-              <span className="company-label">
-                {`Código: ${companyData.id || "N/A"} | CNPJ: ${formatCNPJ(
-                  companyData.cnpj
-                )}`}
-              </span>
-              <h2 className="company-name-text">{companyData.nome}</h2>
-            </div>
-            <FaBuilding className="icon-building" />
-          </motion.div>
-        </div>
-      </header>
+      <AppHeader />
 
       <motion.main
         className="details-content-cards menu-container"

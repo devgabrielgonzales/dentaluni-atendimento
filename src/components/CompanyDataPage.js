@@ -70,9 +70,6 @@ const CompanyDataPage = () => {
   } = useCompanyDataNavigation();
 
   const handleOptionClick = (optionLabel, action) => {
-    console.log(
-      `Option clicked: ${optionLabel} (Action: ${action}) for Company ${companyId}`
-    );
     navigateToSection(action); 
   };
 

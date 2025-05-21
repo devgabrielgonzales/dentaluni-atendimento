@@ -252,10 +252,6 @@ const SearchPage = () => {
         localStorage.removeItem("selectedCompanyUf");
       }
 
-      console.log(
-        "Empresa selecionada e dados específicos salvos no localStorage:",
-        company
-      );
     } catch (error) {
       console.error(
         "Erro ao salvar dados da empresa selecionada no localStorage:",
