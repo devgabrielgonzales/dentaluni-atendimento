@@ -7,14 +7,8 @@ const GuestRoute = ({ children }) => {
 
   if (userToken) {
     if (lastCompanyId) {
-      console.log(
-        `Usuário logado, redirecionando para /menu/${lastCompanyId} a partir da rota de convidado.`
-      );
       return <Navigate to={`/menu/${lastCompanyId}`} replace />;
     } else {
-      console.log(
-        "Usuário logado, mas sem lastCompanyId. Redirecionando para /pesquisa a partir da rota de convidado."
-      );
       return <Navigate to="/pesquisa" replace />;
     }
   }

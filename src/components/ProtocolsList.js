@@ -57,7 +57,6 @@ const ProtocolsList = ({ companyId }) => {
     const fetchProtocols = async () => {
       setIsLoadingList(true);
       setListError(null);
-      console.log("fetchProtocols", companyId);
       try {
         const response = await fetch(
           `https://api.dentaluni.com.br/sae/list?cod=${companyId}`,

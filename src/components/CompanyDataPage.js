@@ -71,7 +71,6 @@ const CompanyDataPage = () => {
 
   const handleOptionClick = (optionLabel, action) => {
     navigateToSection(action)
-    console.log("btn",action)
   };
 
   const options = [
