@@ -8,7 +8,6 @@ import {
   FaPaperclip,
 } from "react-icons/fa";
 import LoadingSpinner from "./LoadingSpinner";
-import "../styles/RegisterVisitPage.css";
 
 const formatDate = (dateString) => {
   if (!dateString) return "N/D";
@@ -25,6 +24,12 @@ const formatDate = (dateString) => {
   } catch (e) {
     return dateString;
   }
+};
+
+const requestHeaders = {
+  "client-id": "26",
+  "client-token": "cb93f445a9426532143cd0f3c7866421",
+  Accept: "application/json",
 };
 
 const ProtocolsList = ({ companyId }) => {
@@ -51,20 +56,10 @@ const ProtocolsList = ({ companyId }) => {
     const fetchProtocols = async () => {
       setIsLoadingList(true);
       setListError(null);
-
-      const requestHeaders = {
-        "client-id": "26",
-        "client-token": "cb93f445a9426532143cd0f3c7866421",
-        Accept: "application/json",
-      };
-
       try {
         const response = await fetch(
           `https://api.dentaluni.com.br/sae/list?cod=${companyId}`,
-          {
-            method: "GET",
-            headers: requestHeaders,
-          }
+          { headers: requestHeaders } 
         );
         if (!response.ok) {
           const errorData = await response
@@ -110,7 +105,8 @@ const ProtocolsList = ({ companyId }) => {
       setDetailsError(null);
       try {
         const response = await fetch(
-          `https://api.dentaluni.com.br/sae/ticket?id=${selectedProtocol.id_ticket}`
+          `https://api.dentaluni.com.br/sae/ticket?id=${selectedProtocol.id_ticket}`,
+          { headers: requestHeaders }
         );
         if (!response.ok) {
           const errorData = await response
@@ -317,7 +313,7 @@ const ProtocolsList = ({ companyId }) => {
     <>
       <div className="protocol-search-container">
         <input
-          type="number"
+          type="text"
           placeholder="Buscar por Protocolo ANS..."
           className="protocol-search-input"
           value={searchTerm}
