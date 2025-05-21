@@ -1282,3 +1282,138 @@ form-section {
   color: #ac1815;
   font-size: 1.1em;
 }
+
+.request-password-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 10px;
+  width: 100%;
+  max-width: 550px;
+  margin: 0 auto;
+}
+
+.request-password-subtitle-wrapper {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  gap: 10px; 
+  margin-bottom: 30px;
+  max-width: 500px;
+  text-align: center;
+}
+
+.request-password-subtitle-wrapper .subtitle-icon {
+  font-size: 28px; 
+  color: #777; 
+}
+
+.request-password-subtitle {
+  font-size: 0.95em; 
+  color: #666;    
+  line-height: 1.65;
+  margin: 0; 
+}
+
+.request-password-button {
+  padding: 12px 30px;
+  font-size: 1em;
+  min-width: 220px;
+  min-height: 48px; 
+  height: 48px;    
+  display: inline-flex; 
+  align-items: center;  
+  justify-content: center; 
+  line-height: 1; 
+}
+
+.app-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 20px;
+  font-family: "Inter", sans-serif;
+}
+
+.app-modal-content {
+  background-color: #fff;
+  padding: 25px 30px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  width: 100%;
+  max-width: 480px;
+  text-align: center;
+  position: relative;
+}
+
+.app-modal-close-button {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 1.8rem;
+  color: #888;
+  cursor: pointer;
+  line-height: 1;
+  padding: 5px;
+}
+.app-modal-close-button:hover {
+  color: #333;
+}
+
+.app-modal-content h4 {
+  font-size: 1.3em;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.app-modal-content .modal-title-success {
+    color: #155724; 
+}
+.app-modal-content .modal-title-error {
+    color: #ac1815; 
+}
+
+.app-modal-content .modal-text-message {
+  font-size: 1em; 
+  color: #444;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  word-wrap: break-word;
+}
+
+.app-modal-content .modal-ok-button {
+  padding: 10px 35px;
+  min-width: 120px;
+}
+.app-modal-content .modal-ok-button.button-error-ok {
+    background-color: #ac1815; 
+    border-color: #ac1815;
+}
+.app-modal-content .modal-ok-button.button-error-ok:hover {
+    background-color: #8c1310;
+    border-color: #8c1310;
+}
+
+@media (min-width: 480px) {
+  .request-password-subtitle-wrapper {
+    flex-direction: row;
+    text-align: left;
+    align-items: flex-start; 
+  }
+  .request-password-subtitle-wrapper .subtitle-icon {
+    font-size: 22px;
+    margin-top: 2px;
+    margin-right: 8px;
+  }
+}
