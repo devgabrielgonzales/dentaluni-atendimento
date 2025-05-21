@@ -8,7 +8,7 @@ import {
   FaPaperclip,
 } from "react-icons/fa";
 import LoadingSpinner from "./LoadingSpinner";
-import "../styles/RegisterVisitPage.css"; // Certifique-se de que este CSS existe ou comente se não for usar
+import "../styles/RegisterVisitPage.css"; 
 
 const formatDate = (dateString) => {
   if (!dateString) return "N/D";

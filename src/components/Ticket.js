@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import {
-  FaCalendarAlt,
-  FaRegClock,
-  FaFileInvoiceDollar, 
-} from "react-icons/fa";
+import { FaCalendarAlt, FaRegClock, FaFileInvoiceDollar } from "react-icons/fa";
 import LoadingSpinner from "./LoadingSpinner";
-import "../styles/Ticket.css"; 
+import "../styles/Ticket.css";
 
 const Boleto = ({ companyId }) => {
   const [boletos, setBoletos] = useState([]);
@@ -19,12 +15,23 @@ const Boleto = ({ companyId }) => {
       setBoletos([]);
       return;
     }
+
+    const requestHeaders = {
+      "client-id": "26",
+      "client-token": "cb93f445a9426532143cd0f3c7866421",
+      Accept: "application/json",
+    };
+
     const fetchBoletos = async () => {
       setIsLoading(true);
       setError(null);
       try {
         const response = await fetch(
-          `https://api.dentaluni.com.br/sae/lista_duplicatas/cod=${companyId}`
+          `https://api.dentaluni.com.br/sae/lista_duplicatas/cod=${companyId}`,
+          {
+            method: "GET",
+            headers: requestHeaders,
+          }
         );
         if (!response.ok) {
           const errorData = await response
@@ -80,7 +87,7 @@ const Boleto = ({ companyId }) => {
           onClick={() => boleto.link && window.open(boleto.link, "_blank")}
         >
           <div className="ticket-card-icon-area">
-            <FaFileInvoiceDollar /> 
+            <FaFileInvoiceDollar />
           </div>
 
           <div className="ticket-card-details-area">
