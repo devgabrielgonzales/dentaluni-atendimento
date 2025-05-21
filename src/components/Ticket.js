@@ -8,7 +8,7 @@ import {
 import LoadingSpinner from "./LoadingSpinner";
 import "../styles/Ticket.css"; 
 
-const Ticket = ({ companyId }) => {
+const Boleto = ({ companyId }) => {
   const [boletos, setBoletos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -96,4 +96,4 @@ const Ticket = ({ companyId }) => {
   );
 };
 
-export default Ticket;
+export default Boleto;

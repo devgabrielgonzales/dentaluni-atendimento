@@ -70,26 +70,28 @@ const CompanyDataPage = () => {
   } = useCompanyDataNavigation();
 
   const handleOptionClick = (optionLabel, action) => {
-    navigateToSection(action); 
+    navigateToSection(action)
+    console.log(optionLabel); 
+    console.log(action)
   };
 
   const options = [
-    { label: "Planos", icon: LuListCheck, action: "plans" },
+    { label: "Planos", icon: LuListCheck, action: "planos" },
     {
       label: "Consultar Beneficiários",
       icon: LuUserRoundSearch,
-      action: "beneficiaries",
+      action: "consultar",
     },
-    { label: "Reajustes", icon: LuFileSliders, action: "readjustments" },
-    { label: "Contatos", icon: LuContactRound, action: "contacts" },
-    { label: "Contrato", icon: LuFilePenLine, action: "contract" },
-    { label: "Empresa", icon: LuBuilding2, action: "company_info" },
-    { label: "Cobertura", icon: LuClipboardCheck, action: "coverage" },
-    { label: "Guias", icon: LuFileHeart, action: "guides" },
-    { label: "Faturamento", icon: LuReceipt, action: "billing" },
-    { label: "Protocolos", icon: LuFileSearch, action: "protocols" },
-    { label: "Boletos", icon: LuBarcode, action: "ticket" },
-    { label: "Nova senha", icon: LuLockKeyholeOpen, action: "password" },
+    { label: "Reajustes", icon: LuFileSliders, action: "reajustes" },
+    { label: "Contatos", icon: LuContactRound, action: "contatos" },
+    { label: "Contrato", icon: LuFilePenLine, action: "contrato" },
+    { label: "Empresa", icon: LuBuilding2, action: "empresa" },
+    { label: "Cobertura", icon: LuClipboardCheck, action: "cobertura" },
+    { label: "Guias", icon: LuFileHeart, action: "guias" },
+    { label: "Faturamento", icon: LuReceipt, action: "faturamento" },
+    { label: "Protocolos", icon: LuFileSearch, action: "protocolos" },
+    { label: "Boletos", icon: LuBarcode, action: "boletos" },
+    { label: "Nova senha", icon: LuLockKeyholeOpen, action: "senha" },
   ];
 
   options.sort((a, b) => a.label.localeCompare(b.label, "pt-BR"));
