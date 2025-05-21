@@ -1,396 +1,354 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "../styles/SearchPage.css";
-import Logo from "../img/logo.png";
-import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-toastify";
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { LuFileSearch } from "react-icons/lu";
+import {
+  FaCalendarAlt,
+  FaInfoCircle,
+  FaTimes,
+  FaPaperclip,
+} from "react-icons/fa";
+import LoadingSpinner from "./LoadingSpinner";
+import "../styles/RegisterVisitPage.css"; // Certifique-se de que este CSS existe ou comente se não for usar
 
-// **Headers fixos definidos globalmente para este componente**
+const formatDate = (dateString) => {
+  if (!dateString) return "N/D";
+  try {
+    const date = new Date(dateString.replace(" ", "T"));
+    if (isNaN(date.getTime())) return dateString;
+    return date.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch (e) {
+    return dateString;
+  }
+};
+
+// **Os valores fixos do client-id e client-token são mantidos aqui**
+// ESTE É O BLOCO QUE VOCÊ QUER MANTER NO FRONTEND
 const requestHeaders = {
   "client-id": "26",
   "client-token": "cb93f445a9426532143cd0f3c7866421",
   Accept: "application/json",
 };
 
-const SearchPage = () => {
-  const [codEmpresa, setCodEmpresa] = useState("");
-  const [isSearched, setIsSearched] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+const ProtocolsList = ({ companyId }) => {
+  const [protocols, setProtocols] = useState([]);
+  const [isLoadingList, setIsLoadingList] = useState(true);
+  const [listError, setListError] = useState(null);
 
-  const formatCNPJ = (digitsOnly) => {
-    if (!digitsOnly) return "";
-    const limitedDigits = String(digitsOnly).replace(/\D/g, "").slice(0, 14);
+  const [selectedProtocol, setSelectedProtocol] = useState(null);
+  const [protocolDetails, setProtocolDetails] = useState(null);
+  const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+  const [detailsError, setDetailsError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-    if (limitedDigits.length <= 2) return limitedDigits;
-    let formatted = `${limitedDigits.slice(0, 2)}`;
-    if (limitedDigits.length > 2) formatted += `.${limitedDigits.slice(2, 5)}`;
-    if (limitedDigits.length > 5) formatted += `.${limitedDigits.slice(5, 8)}`;
-    if (limitedDigits.length > 8) formatted += `/${limitedDigits.slice(8, 12)}`;
-    if (limitedDigits.length > 12)
-      formatted += `-${limitedDigits.slice(12, 14)}`;
-    return formatted;
-  };
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const handleChangeCodEmpresa = (event) => {
-    const rawValue = event.target.value;
-    const digitsOnly = rawValue.replace(/\D/g, "");
-    if (digitsOnly.length > 7 && digitsOnly.length <= 14) {
-      setCodEmpresa(formatCNPJ(digitsOnly));
-    } else if (digitsOnly.length <= 7) {
-      setCodEmpresa(digitsOnly);
-    } else if (digitsOnly.length > 14) {
-      setCodEmpresa(formatCNPJ(digitsOnly.slice(0, 14)));
-    }
-  };
-
-  const performSearch = async () => {
-    const valorInput = codEmpresa;
-    const valorBuscaApenasDigitos = valorInput.replace(/\D/g, "");
-
-    if (!valorBuscaApenasDigitos) {
-      toast.warn("Por favor, informe o Código ou CNPJ da Empresa.");
+  useEffect(() => {
+    if (!companyId) {
+      setIsLoadingList(false);
+      setProtocols([]);
+      setListError("ID da empresa não fornecido.");
       return;
     }
 
-    setIsLoading(true);
-    setIsSearched(false);
-    setSearchResults([]);
-
-    let apiUrl = "";
-    if (valorBuscaApenasDigitos.length === 14) {
-      apiUrl = `https://api.dentaluni.com.br/sae/empresa?cnpj=${valorBuscaApenasDigitos}`;
-    } else {
-      apiUrl = `https://api.dentaluni.com.br/sae/empresa?codigo=${valorBuscaApenasDigitos}`;
-    }
-
-    try {
-      // **Requisição direta, com headers fixos**
-      const response = await fetch(apiUrl, {
-        method: "GET",
-        headers: requestHeaders,
-      });
-      const data = await response.json();
-
-      if (
-        response.ok &&
-        data.error === false &&
-        data.empresas &&
-        data.empresas.length > 0
-      ) {
-        const mappedResults = data.empresas.map((company) => ({
-          id: company.codigo,
-          nome: company.razao_social,
-          cnpj: company.cnpj,
-          logradouro: company.logradouro,
-          numero: company.numero,
-          bairro: company.bairro,
-          cidade: company.cidade,
-          uf: company.uf,
-          cep: company.cep,
-          email_fat: company.email_fat,
-          email: company.email,
-        }));
-
-        const uniqueResults = mappedResults.filter(
-          (company, index, self) =>
-            index === self.findIndex((c) => c.id === company.id)
+    const fetchProtocols = async () => {
+      setIsLoadingList(true);
+      setListError(null);
+      try {
+        const response = await fetch(
+          `https://api.dentaluni.com.br/sae/list?cod=${companyId}`,
+          {
+            method: "GET", 
+            headers: requestHeaders, 
+          }
         );
-
-        try {
-          localStorage.setItem(
-            "allSearchResults",
-            JSON.stringify(uniqueResults)
-          );
-        } catch (error) {
-          console.error(
-            "Erro ao salvar todos os resultados da busca no localStorage:",
-            error
+        if (!response.ok) {
+          const errorData = await response
+            .json()
+            .catch(() => ({ msg: `Erro HTTP: ${response.status}` }));
+          throw new Error(
+            errorData.msg || `Erro ao buscar protocolos: ${response.statusText}`
           );
         }
-
-        if (uniqueResults.length === 1) {
-          const companyToSelect = uniqueResults[0];
-          if (companyToSelect.id !== "notfound") {
-            handleSelectCompany(companyToSelect);
-            setIsLoading(false);
-            return;
+        const data = await response.json();
+        if (data.error) {
+          if (
+            data.msg &&
+            data.msg.toLowerCase().includes("nenhum") &&
+            data.msg.toLowerCase().includes("encontrado")
+          ) {
+            setProtocols([]);
           } else {
-            setSearchResults(uniqueResults);
-            setIsSearched(true);
+            throw new Error(data.msg || "Erro ao carregar protocolos.");
           }
         } else {
-          setSearchResults(uniqueResults);
-          setIsSearched(true);
+          setProtocols(data.tickets || []);
         }
-      } else if (
-        data.error === false &&
-        (!data.empresas || data.empresas.length === 0)
-      ) {
-        toast.info(
-          data.msg || "Nenhuma empresa encontrada com esses critérios."
-        );
-        const noResults = [
-          {
-            id: "notfound",
-            nome: data.msg || "Nenhuma empresa encontrada.",
-            cnpj: "",
-          },
-        ];
-        setSearchResults(noResults);
-        try {
-          localStorage.setItem("allSearchResults", JSON.stringify(noResults));
-        } catch (error) {
-          console.error(
-            "Erro ao salvar 'nenhuma empresa encontrada' no localStorage:",
-            error
-          );
-        }
-        setIsSearched(true);
-      } else {
-        const errorMessage =
-          data.msg ||
-          `Erro ao buscar empresa: ${response.status} - ${
-            response.statusText || "Erro desconhecido"
-          }`;
-        toast.error(errorMessage);
-        const errorResult = [{ id: "notfound", nome: errorMessage, cnpj: "" }];
-        setSearchResults(errorResult);
-        try {
-          localStorage.setItem("allSearchResults", JSON.stringify(errorResult));
-        } catch (error) {
-          console.error(
-            "Erro ao salvar estado de erro da API no localStorage:",
-            error
-          );
-        }
-        setIsSearched(true);
+      } catch (err) {
+        setListError(err.message);
+        setProtocols([]);
+      } finally {
+        setIsLoadingList(false);
       }
-    } catch (error) {
-      console.error("Erro de rede ou ao processar a busca:", error);
-      if (error.name === "AbortError") {
-        toast.warn("Busca cancelada.");
-      } else {
-        toast.error("Falha na comunicação com o servidor.");
-      }
-      const networkErrorResult = [
-        {
-          id: "notfound",
-          nome: "Falha na busca. Verifique sua conexão.",
-          cnpj: "",
-        },
-      ];
-      setSearchResults(networkErrorResult);
+    };
+
+    fetchProtocols();
+  }, [companyId]);
+
+  useEffect(() => {
+    if (!selectedProtocol || !selectedProtocol.id_ticket) {
+      setProtocolDetails(null);
+      return;
+    }
+
+    const fetchProtocolDetails = async () => {
+      setIsLoadingDetails(true);
+      setDetailsError(null);
       try {
-        localStorage.setItem(
-          "allSearchResults",
-          JSON.stringify(networkErrorResult)
+        const response = await fetch(
+          `https://api.dentaluni.com.br/sae/ticket?id=${selectedProtocol.id_ticket}`,
+          {
+            method: "GET", 
+            headers: requestHeaders, 
+          }
         );
-      } catch (error) {
-        console.error(
-          "Erro ao salvar estado de erro de rede no localStorage:",
-          error
-        );
+        if (!response.ok) {
+          const errorData = await response
+            .json()
+            .catch(() => ({ msg: `Erro HTTP: ${response.status}` }));
+          throw new Error(
+            errorData.msg || `Erro ao buscar detalhes: ${response.statusText}`
+          );
+        }
+        const data = await response.json();
+        if (data.error) {
+          throw new Error(data.msg || "Erro ao carregar detalhes.");
+        }
+        setProtocolDetails(data);
+      } catch (err) {
+        setDetailsError(err.message);
+        setProtocolDetails(null);
+      } finally {
+        setIsLoadingDetails(false);
       }
-      setIsSearched(true);
-    }
-    setIsLoading(false);
+    };
+
+    fetchProtocolDetails();
+  }, [selectedProtocol]);
+
+  const handleProtocolClick = (protocol) => {
+    setSelectedProtocol(protocol);
+    setIsModalOpen(true);
   };
 
-  const handleSubmitSearch = (event) => {
-    event.preventDefault();
-    performSearch();
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedProtocol(null);
+    setProtocolDetails(null);
+    setDetailsError(null);
   };
 
-  const handleSelectCompany = (company) => {
-    if (company.id === "notfound") return;
+  const filteredProtocols = protocols.filter(
+    (protocol) =>
+      protocol.protocolo_ans &&
+      protocol.protocolo_ans.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-    try {
-      if (company.id) {
-        localStorage.setItem("selectedCompanyId", company.id);
-      } else {
-        localStorage.removeItem("selectedCompanyId");
-      }
-      if (company.cnpj) {
-        localStorage.setItem("selectedCompanyCnpj", company.cnpj);
-      } else {
-        localStorage.removeItem("selectedCompanyCnpj");
-      }
-      if (company.nome) {
-        localStorage.setItem("selectedCompanyName", company.nome);
-      } else {
-        localStorage.removeItem("selectedCompanyName");
-      }
-      if (company.cep) {
-        localStorage.setItem("selectedCompanyCep", company.cep);
-      } else {
-        localStorage.removeItem("selectedCompanyCep");
-      }
-      if (company.logradouro) {
-        localStorage.setItem("selectedCompanyLogradouro", company.logradouro);
-      } else {
-        localStorage.removeItem("selectedCompanyLogradouro");
-      }
-      if (company.numero) {
-        localStorage.setItem("selectedCompanyNumero", company.numero);
-      } else {
-        localStorage.removeItem("selectedCompanyNumero");
-      }
-      if (company.bairro) {
-        localStorage.setItem("selectedCompanyBairro", company.bairro);
-      } else {
-        localStorage.removeItem("selectedCompanyBairro");
-      }
-      if (company.cidade) {
-        localStorage.setItem("selectedCompanyCidade", company.cidade);
-      } else {
-        localStorage.removeItem("selectedCompanyCidade");
-      }
-      if (company.uf) {
-        localStorage.setItem("selectedCompanyUf", company.uf);
-      } else {
-        localStorage.removeItem("selectedCompanyUf");
-      }
-    } catch (error) {
-      console.error(
-        "Erro ao salvar dados da empresa selecionada no localStorage:",
-        error
+  const renderProtocolList = () => {
+    if (isLoadingList) return <LoadingSpinner />;
+    if (listError)
+      return (
+        <div className="protocol-message protocol-error">⚠️ {listError}</div>
       );
-      toast.error(
-        "Houve um problema ao salvar os dados da empresa. Tente novamente."
+
+    const protocolsToDisplay = searchTerm ? filteredProtocols : protocols;
+
+    if (protocolsToDisplay.length === 0) {
+      return (
+        <div className="protocol-message protocol-no-data">
+          {searchTerm
+            ? "Nenhum protocolo encontrado para esta busca."
+            : "Nenhum protocolo encontrado."}
+        </div>
       );
     }
 
-    navigate(`/menu/${company.id}`, {
-      state: { companyData: company },
-    });
+    return (
+      <div className="protocol-list-container">
+        {protocolsToDisplay.map((protocol, index) => (
+          <motion.div
+            key={protocol.id_ticket || index}
+            className="protocol-card"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.05 }}
+            onClick={() => handleProtocolClick(protocol)}
+          >
+            <div className="protocol-card-icon-area">
+              <LuFileSearch />
+            </div>
+            <div className="protocol-card-details-area">
+              <p className="protocol-card-title">
+                {protocol.assunto_ticket || protocol.cod_ticket}
+              </p>
+              {protocol.protocolo_ans && (
+                <p className="protocol-card-info protocol-ans-list">
+                  ANS: {protocol.protocolo_ans}
+                </p>
+              )}
+              <p className="protocol-card-info">
+                <FaInfoCircle /> {protocol.nome_topico || "Não especificado"}
+              </p>
+              <p className="protocol-card-info">
+                <FaCalendarAlt /> {formatDate(protocol.data_ticket)}
+              </p>
+              <span
+                className="protocol-card-status-badge list-item-status"
+                style={{
+                  backgroundColor: protocol.cor_status || "#757575",
+                  color: "white",
+                }}
+              >
+                {protocol.nome_status || "N/D"}
+              </span>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    );
   };
 
-  const resultsCardVariants = {
-    hidden: { opacity: 0, y: "100%" },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.4, ease: "easeOut" },
-    },
-    exit: {
-      opacity: 0,
-      y: "100%",
-      transition: { duration: 0.3, ease: "easeIn" },
-    },
-  };
+  const renderModalContent = () => {
+    if (isLoadingDetails) return <LoadingSpinner />;
+    if (detailsError)
+      return (
+        <div className="protocol-message protocol-error">
+          ⚠️ Erro: {detailsError}
+        </div>
+      );
+    if (!protocolDetails || !protocolDetails.ticket)
+      return (
+        <div className="protocol-message protocol-no-data">
+          Detalhes não disponíveis.
+        </div>
+      );
 
-  const animationOffset = -30;
-  const baseDuration = 0.5;
-  const baseDelay = 0.1;
+    const { ticket, msgs } = protocolDetails;
+    return (
+      <>
+        <h4>Detalhes do Protocolo</h4>
+        <div className="protocol-detail-section">
+          <p>
+            <strong>Assunto:</strong> {ticket.assunto_ticket || "N/D"}
+          </p>
+          <p>
+            <strong>Abertura:</strong> {formatDate(ticket.data_ticket)}
+          </p>
+          <p>
+            <strong>Criado por:</strong> {ticket.nome_criador_ticket || "N/D"}
+          </p>
+          <p>
+            <strong>Solicitado por:</strong>{" "}
+            {ticket.protocolo_solicitado_por || "N/D"}
+          </p>
+          {ticket.protocolo_ans && (
+            <p>
+              <strong>Protocolo ANS:</strong> {ticket.protocolo_ans}
+            </p>
+          )}
+        </div>
+
+        <div className="protocol-detail-section">
+          <h5>Mensagem Inicial:</h5>
+          <div
+            className="protocol-message-content"
+            dangerouslySetInnerHTML={{
+              __html: ticket.msg_ticket || "Nenhuma mensagem inicial.",
+            }}
+          />
+        </div>
+
+        {msgs && msgs.length > 0 && (
+          <div className="protocol-detail-section">
+            <h5>Histórico de Interações:</h5>
+            {msgs.map((msg, index) => (
+              <div key={msg.id_msg || index} className="protocol-message-entry">
+                <p className="message-meta">
+                  <strong>{msg.usuario_nome || "Sistema"}</strong> em{" "}
+                  {formatDate(msg.data_msg)}
+                  <span
+                    className="protocol-card-status-badge"
+                    style={{
+                      backgroundColor: msg.cor_status || "#757575",
+                      color: "white",
+                      padding: "2px 5px",
+                      borderRadius: "3px",
+                      fontSize: "0.8em",
+                      marginLeft: "5px",
+                    }}
+                  >
+                    {msg.nome_status}
+                  </span>
+                </p>
+                <div
+                  className="protocol-message-content"
+                  dangerouslySetInnerHTML={{ __html: msg.texto_msg || "" }}
+                />
+                {msg.arquivos &&
+                  msg.arquivos.trim() !== "" &&
+                  msg.arquivos.trim() !== ";" && (
+                    <p className="message-attachments">
+                      <FaPaperclip /> Anexos:{" "}
+                      {msg.arquivos
+                        .split(";")
+                        .filter((f) => f.trim() !== "")
+                        .join(", ")}
+                    </p>
+                  )}
+              </div>
+            ))}
+          </div>
+        )}
+      </>
+    );
+  };
 
   return (
-    <div
-      className={`menu-page-fullscreen-gradient ${
-        isSearched ? "results-active" : ""
-      }`}
-    >
-      <div className="menu-search-area-wrapper">
-        <motion.img
-          src={Logo}
-          alt="Logo DentalUni"
-          className="menu-logo"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+    <>
+      <div className="protocol-search-container">
+        <input
+          type="text"
+          placeholder="Buscar por Protocolo ANS..."
+          className="protocol-search-input"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <motion.h2
-          className="menu-prompt-text"
-          initial={{ opacity: 0, x: animationOffset }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{
-            duration: baseDuration,
-            delay: baseDelay + 0.15,
-            ease: "easeOut",
-          }}
-        >
-          Qual é o código da empresa?
-        </motion.h2>
-        <form onSubmit={handleSubmitSearch} className="menu-search-form">
-          <motion.input
-            type="text"
-            className="menu-search-input"
-            value={codEmpresa}
-            onChange={handleChangeCodEmpresa}
-            placeholder="Código ou CNPJ"
-            maxLength={18}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
-            disabled={isLoading}
-          />
-          <motion.button
-            type="submit"
-            className="menu-search-button"
-            disabled={isLoading}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-          >
-            {isLoading ? (
-              <div className="button-spinner-menu"></div>
-            ) : (
-              "Pesquisar"
-            )}
-          </motion.button>
-        </form>
       </div>
-
-      <AnimatePresence>
-        {isSearched && (
-          <motion.div
-            className="search-results-card-bottom"
-            key="resultsCardBottom"
-            variants={resultsCardVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
+      {renderProtocolList()}
+      {isModalOpen && (
+        <div className="protocol-modal-overlay" onClick={closeModal}>
+          <div
+            className="protocol-modal-content"
+            onClick={(e) => e.stopPropagation()}
           >
-            <h3>Empresas Encontradas:</h3>
-            {searchResults.length > 0 ? (
-              <ul className="company-list">
-                {searchResults.map((company) => (
-                  <li
-                    key={company.id || company.cnpj || Math.random()}
-                    className={`company-list-item ${
-                      company.id === "notfound" ? "not-found" : ""
-                    }`}
-                    onClick={() =>
-                      company.id !== "notfound" && handleSelectCompany(company)
-                    }
-                    role="button"
-                    tabIndex={company.id !== "notfound" ? 0 : -1}
-                    onKeyPress={(e) =>
-                      e.key === "Enter" &&
-                      company.id !== "notfound" &&
-                      handleSelectCompany(company)
-                    }
-                  >
-                    <strong>{company.nome}</strong>
-                    {company.id !== "notfound" && (
-                      <small>
-                        {" "}
-                        (CNPJ: {company.cnpj
-                          ? formatCNPJ(company.cnpj)
-                          : "N/A"}{" "}
-                        / Cód: {company.id}){" "}
-                      </small>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+            <button
+              className="protocol-modal-close-button"
+              onClick={closeModal}
+              aria-label="Fechar"
+            >
+              <FaTimes />
+            </button>
+            {renderModalContent()}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
-export default SearchPage;
+export default ProtocolsList;
