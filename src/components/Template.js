@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import "../styles/RegisterVisitPage.css";
+import ConsultBeneficiary from "./ConsultBeneficiary";
 
 import {
   FaUserCircle,
@@ -203,7 +204,9 @@ const TemplatePage = () => {
       case "protocolos":
         return <ProtocolsList {...sectionProps} />;
       case "senha":
-      return <RequestNewPassword {...sectionProps}/>;
+        return <RequestNewPassword {...sectionProps} />;
+      case "consultar": // Ou a 'action' que você definiu
+        return <ConsultBeneficiary {...sectionProps} />;
       default:
         return (
           <div className="ticket-message ticket-no-data">

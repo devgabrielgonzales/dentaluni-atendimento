@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-// motion não é usado diretamente aqui, pode ser removido se não for para o container
-// import { motion } from 'framer-motion';
 import { FaKey, FaTimes, FaInfoCircle } from "react-icons/fa";
-import LoadingSpinner from "./LoadingSpinner"; // Embora não usado no botão, pode ser usado em outro lugar ou removido se não mais necessário aqui
+import LoadingSpinner from "./LoadingSpinner"; 
 
 const requestHeaders = {
   "client-id": "26",
@@ -13,7 +11,7 @@ const requestHeaders = {
 const RequestCompanyNewPassword = ({ companyId, companyData }) => {
   const companyName = companyData?.razao_social || "a empresa selecionada";
 
-  const [isLoading, setIsLoading] = useState(false); // Mantido para desabilitar o botão
+  const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [isErrorInModal, setIsErrorInModal] = useState(false);
@@ -26,7 +24,7 @@ const RequestCompanyNewPassword = ({ companyId, companyData }) => {
       return;
     }
 
-    setIsLoading(true); // Desabilita o botão
+    setIsLoading(true);
     setModalMessage("");
     setIsErrorInModal(false);
 
@@ -73,7 +71,6 @@ const RequestCompanyNewPassword = ({ companyId, companyData }) => {
             if (errorBody) errorMessage = errorBody;
           }
         } catch (e) {
-          // Mantém a mensagem de status
         }
         throw new Error(errorMessage);
       }
@@ -133,9 +130,7 @@ const RequestCompanyNewPassword = ({ companyId, companyData }) => {
       <button
         onClick={handleRequestPassword}
         className="button-primary request-password-button"
-        disabled={isLoading} // O botão ainda será desabilitado durante a chamada
-      >
-        {/* Conteúdo do botão agora é fixo, sem spinner */}
+        disabled={isLoading}>
         <FaKey style={{ marginRight: "8px" }} />
         Solicitar Nova Senha
       </button>

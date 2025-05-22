@@ -1022,8 +1022,6 @@ form-section {
   }
 }
 
-/* Estilos para a Lista de Protocolos, Cards e Modal */
-
 .protocol-list-container {
   display: flex;
   flex-direction: column;
@@ -1131,7 +1129,6 @@ form-section {
 .protocol-card-status-badge.list-item-status {
   margin-top: 6px;
   align-self: flex-start;
-  /* A cor de fundo e texto são aplicadas inline com style no JSX */
 }
 
 .protocol-message {
@@ -1296,36 +1293,36 @@ form-section {
 
 .request-password-subtitle-wrapper {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   align-items: center;
-  gap: 10px; 
+  gap: 10px;
   margin-bottom: 30px;
   max-width: 500px;
   text-align: center;
 }
 
 .request-password-subtitle-wrapper .subtitle-icon {
-  font-size: 28px; 
-  color: #777; 
+  font-size: 28px;
+  color: #777;
 }
 
 .request-password-subtitle {
-  font-size: 0.95em; 
-  color: #666;    
+  font-size: 0.95em;
+  color: #666;
   line-height: 1.65;
-  margin: 0; 
+  margin: 0;
 }
 
 .request-password-button {
   padding: 12px 30px;
   font-size: 1em;
   min-width: 220px;
-  min-height: 48px; 
-  height: 48px;    
-  display: inline-flex; 
-  align-items: center;  
-  justify-content: center; 
-  line-height: 1; 
+  min-height: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .app-modal-overlay {
@@ -1347,7 +1344,7 @@ form-section {
   background-color: #fff;
   padding: 25px 30px;
   border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 480px;
   text-align: center;
@@ -1378,14 +1375,14 @@ form-section {
 }
 
 .app-modal-content .modal-title-success {
-    color: #155724; 
+  color: #155724;
 }
 .app-modal-content .modal-title-error {
-    color: #ac1815; 
+  color: #ac1815;
 }
 
 .app-modal-content .modal-text-message {
-  font-size: 1em; 
+  font-size: 1em;
   color: #444;
   line-height: 1.6;
   margin-bottom: 25px;
@@ -1397,19 +1394,19 @@ form-section {
   min-width: 120px;
 }
 .app-modal-content .modal-ok-button.button-error-ok {
-    background-color: #ac1815; 
-    border-color: #ac1815;
+  background-color: #ac1815;
+  border-color: #ac1815;
 }
 .app-modal-content .modal-ok-button.button-error-ok:hover {
-    background-color: #8c1310;
-    border-color: #8c1310;
+  background-color: #8c1310;
+  border-color: #8c1310;
 }
 
 @media (min-width: 480px) {
   .request-password-subtitle-wrapper {
     flex-direction: row;
     text-align: left;
-    align-items: flex-start; 
+    align-items: flex-start;
   }
   .request-password-subtitle-wrapper .subtitle-icon {
     font-size: 22px;
@@ -1417,3 +1414,49 @@ form-section {
     margin-right: 8px;
   }
 }
+
+.consult-beneficiary-container {
+  width: 100%;
+}
+
+.consult-beneficiary-container .visit-form {
+  gap: 15px;
+}
+
+.consult-beneficiary-container .form-section legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.consult-beneficiary-container .form-actions {
+  justify-content: center;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: none;
+}
+
+.consult-beneficiary-container label {
+  margin-bottom: 10px;
+}
+.consult-beneficiary-container label:last-of-type {
+  margin-bottom: 0;
+}
+
+.consult-beneficiary-container input[type="text"] {
+}
+
+.beneficiary-card-html-container {
+  margin-top: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.beneficiary-card-html-container img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
