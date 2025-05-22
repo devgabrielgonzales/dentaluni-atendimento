@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { FaCalendarAlt, FaRegClock, FaFileInvoiceDollar } from "react-icons/fa";
+import { FaFileInvoiceDollar } from "react-icons/fa"; 
+import { LuBarcode } from "react-icons/lu";
 import LoadingSpinner from "./LoadingSpinner";
-import "../styles/Ticket.css";
+import "../styles/Ticket.css"; 
 
 const Boleto = ({ companyId }) => {
   const [boletos, setBoletos] = useState([]);
@@ -12,7 +13,6 @@ const Boleto = ({ companyId }) => {
   useEffect(() => {
     if (!companyId) {
       setIsLoading(false);
-      setBoletos([]);
       return;
     }
 
@@ -48,12 +48,12 @@ const Boleto = ({ companyId }) => {
             data.msg.toLowerCase().includes("nenhum") &&
             data.msg.toLowerCase().includes("encontrado")
           ) {
-            setBoletos([]);
+            setBoletos([]); 
           } else {
             throw new Error(data.msg || "Erro ao carregar dados dos boletos.");
           }
         } else {
-          setBoletos(data.dados || []);
+          setBoletos(data.dados || []); 
         }
       } catch (err) {
         setError(err.message);
@@ -67,39 +67,63 @@ const Boleto = ({ companyId }) => {
 
   if (isLoading) return <LoadingSpinner />;
   if (error)
-    return <div className="ticket-message ticket-error">⚠️ {error}</div>;
-  if (boletos.length === 0)
     return (
-      <div className="ticket-message ticket-no-data">
-        Nenhum boleto em aberto encontrado.
+      <div
+        className="ticket-message ticket-error"
+        style={{ margin: "20px auto" }}
+      >
+        ⚠️ {error}
       </div>
     );
 
-  return (
-    <div className="ticket-list-container">
-      {boletos.map((boleto, index) => (
-        <motion.div
-          key={boleto.codigo || index}
-          className="ticket-card"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: index * 0.05 }}
-          onClick={() => boleto.link && window.open(boleto.link, "_blank")}
-        >
-          <div className="ticket-card-icon-area">
-            <FaFileInvoiceDollar />
-          </div>
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    try {
+      const date = new Date(dateString.replace(" ", "T"));
+      if (isNaN(date.getTime())) return dateString;
+      return date.toLocaleDateString("pt-BR"); 
+    } catch (e) {
+      return dateString;
+    }
+  };
 
-          <div className="ticket-card-details-area">
-            <p className="ticket-card-title">{boleto.descricao || "Boleto"}</p>
-            <p className="ticket-card-info">
-              <FaCalendarAlt /> Venc.: {boleto.vencimento}
-            </p>
-            <p className="ticket-card-info">Valor: R$ {boleto.valorcobrado}</p>
-          </div>
-        </motion.div>
-      ))}
-    </div>
+  return (
+    <fieldset className="form-section boleto-fieldset-container">
+      <legend>
+        <LuBarcode style={{ marginRight: "8px" }} />
+        Boletos em aberto
+      </legend>
+      {boletos.length === 0 ? (
+        <div className="ticket-message ticket-no-data">
+          Nenhum boleto em aberto encontrado.
+        </div>
+      ) : (
+        <div className="ticket-list-container">
+          {boletos.map((boleto, index) => (
+            <motion.div
+              key={boleto.codigo || index}
+              className="ticket-card"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+              onClick={() => boleto.link && window.open(boleto.link, "_blank")}
+            >
+              <div className="ticket-card-icon-area">
+                <FaFileInvoiceDollar />
+              </div>
+              <div className="ticket-card-details-area">
+                <p className="ticket-card-info">
+                  Vencimento: {formatDate(boleto.vencimento)}
+                </p>
+                <p className="ticket-card-info">
+                  Valor: R$ {boleto.valorcobrado}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+    </fieldset>
   );
 };
 

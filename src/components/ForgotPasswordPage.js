@@ -20,7 +20,7 @@ const ForgotPasswordPage = () => {
     }
 
     setIsLoading(true);
-      const apiUrl = `https://api.dentaluni.com.br/esqueciMinhaSenha/${codAcesso}/2`;
+    const apiUrl = `https://api.dentaluni.com.br/esqueciMinhaSenha/${codAcesso}/2`;
 
     try {
       const response = await fetch(apiUrl, { method: "GET" });

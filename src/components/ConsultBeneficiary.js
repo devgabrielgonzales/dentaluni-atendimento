@@ -5,9 +5,12 @@ import {
   FaUser,
   FaAddressCard,
   FaFileMedicalAlt,
+  FaExternalLinkAlt,
+  FaUsers,
 } from "react-icons/fa";
 import LoadingSpinner from "./LoadingSpinner";
 import "../styles/RegisterVisitPage.css";
+import { toast } from "react-toastify";
 
 const requestHeaders = {
   "client-id": "26",
@@ -32,18 +35,18 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
   const [searchCartao, setSearchCartao] = useState("");
   const [beneficiaryResult, setBeneficiaryResult] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchNome && !searchCpf && !searchCartao) {
-      setError("Preencha ao menos um campo para busca (Nome, CPF ou Cartão).");
+      toast.warn(
+        "Preencha ao menos um campo para busca (Nome, CPF ou Cartão)."
+      );
       setBeneficiaryResult(null);
       return;
     }
 
     setIsLoading(true);
-    setError(null);
     setBeneficiaryResult(null);
 
     const baseUrl = "https://api.dentaluni.com.br/sae/empresa_beneficiario";
@@ -66,20 +69,32 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
       const data = await response.json();
 
       if (!response.ok || data.error) {
-        throw new Error(
-          data.msg || `Erro ao buscar beneficiário (Status: ${response.status})`
-        );
+        const errorMessage =
+          data.msg ||
+          `Erro ao buscar beneficiário (Status: ${response.status})`;
+        toast.error(errorMessage);
+        throw new Error(errorMessage);
       }
 
       if (data.dados_beneficiario) {
         setBeneficiaryResult(data);
+        toast.success("Beneficiário encontrado!");
       } else {
         setBeneficiaryResult(null);
-        setError("Nenhum beneficiário encontrado com os critérios informados.");
+        toast.info(
+          "Nenhum beneficiário encontrado com os critérios informados."
+        );
       }
     } catch (err) {
       console.error("Erro na busca por beneficiário:", err);
-      setError(err.message);
+      if (
+        !(
+          err.message.includes("Status:") ||
+          err.message.includes("Nenhum beneficiário")
+        )
+      ) {
+        toast.error(err.message || "Falha ao buscar beneficiário.");
+      }
       setBeneficiaryResult(null);
     } finally {
       setIsLoading(false);
@@ -95,7 +110,9 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
       const pdfUrl = `https://api.dentaluni.com.br/beneficiario/cartao/visualizar/${numeroCartao}?tipo=pdf`;
       window.open(pdfUrl, "_blank");
     } else {
-      alert("Busque um beneficiário primeiro para visualizar a carteirinha.");
+      toast.warn(
+        "Busque um beneficiário primeiro para visualizar a carteirinha."
+      );
     }
   };
 
@@ -124,7 +141,9 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
         style={{ gap: "15px" }}
       >
         <fieldset className="form-section">
-          <legend>Consultar Beneficiário</legend>
+          <legend>
+            <FaUsers /> Consultar Beneficiário
+          </legend>
           <label>
             {" "}
             Nome do Beneficiário:
@@ -174,7 +193,7 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
               disabled={isLoading}
             >
               {isLoading ? (
-                <LoadingSpinner size="sm" />
+                <LoadingSpinner />
               ) : (
                 <>
                   <FaSearch style={{ marginRight: "8px" }} /> Buscar
@@ -185,117 +204,122 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
         </fieldset>
       </form>
 
-      {error && (
-        <div
-          className="ticket-message ticket-error"
-          style={{ marginTop: "20px" }}
-        >
-          ⚠️ {error}
-        </div>
-      )}
-
-      {beneficiaryResult && beneficiaryResult.dados_beneficiario && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          style={{ marginTop: "20px" }}
-        >
-          <fieldset className="form-section">
-            <legend>
-              <FaUser style={{ marginRight: "8px" }} />
-              Dados do Beneficiário
-            </legend>
-            <DataRow
-              label="Nome Completo"
-              value={beneficiaryResult.dados_beneficiario.a012_nome_completo}
-            />
-            <DataRow
-              label="Nº Cartão"
-              value={beneficiaryResult.dados_beneficiario.a012_nr_cartao}
-            />
-            <DataRow
-              label="CPF (Informado)"
-              value={
-                searchCpf &&
-                beneficiaryResult.dados_beneficiario.a012_nome_completo
-                  ? searchCpf.replace(
-                      /(\d{3})(\d{3})(\d{3})(\d{2})/,
-                      "$1.$2.$3-$4"
-                    )
-                  : "N/D"
-              }
-            />
-            <DataRow
-              label="Inclusão"
-              value={formatDate(
-                beneficiaryResult.dados_beneficiario.dt_inclusao
-              )}
-            />
-            {beneficiaryResult.dados_beneficiario.a012_dt_exclusao && (
+      {beneficiaryResult &&
+        beneficiaryResult.dados_beneficiario &&
+        !isLoading && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            style={{ marginTop: "20px" }}
+          >
+            <fieldset className="form-section">
+              <legend>
+                <FaUser style={{ marginRight: "8px" }} />
+                Dados do Beneficiário
+              </legend>
               <DataRow
-                label="Exclusão"
+                label="Nome Completo"
+                value={beneficiaryResult.dados_beneficiario.a012_nome_completo}
+              />
+              <DataRow
+                label="Nº Cartão"
+                value={beneficiaryResult.dados_beneficiario.a012_nr_cartao}
+              />
+              <DataRow
+                label="CPF (Informado)"
+                value={
+                  searchCpf &&
+                  beneficiaryResult.dados_beneficiario.a012_nome_completo
+                    ? searchCpf.replace(
+                        /(\d{3})(\d{3})(\d{3})(\d{2})/,
+                        "$1.$2.$3-$4"
+                      )
+                    : "N/D"
+                }
+              />
+              <DataRow
+                label="Inclusão"
                 value={formatDate(
-                  beneficiaryResult.dados_beneficiario.a012_dt_exclusao
+                  beneficiaryResult.dados_beneficiario.dt_inclusao
                 )}
               />
-            )}
-            <DataRow
-              label="Plano do Benef."
-              value={beneficiaryResult.dados_beneficiario.a012_plano}
-            />
-            <DataRow
-              label="UF Emissão RG"
-              value={beneficiaryResult.dados_beneficiario.uf_expedicao_rg}
-            />
-          </fieldset>
+              {beneficiaryResult.dados_beneficiario.a012_dt_exclusao && (
+                <DataRow
+                  label="Exclusão"
+                  value={formatDate(
+                    beneficiaryResult.dados_beneficiario.a012_dt_exclusao
+                  )}
+                />
+              )}
+              <DataRow
+                label="Plano do Benef."
+                value={beneficiaryResult.dados_beneficiario.a012_plano}
+              />
+              <DataRow
+                label="UF Emissão RG"
+                value={beneficiaryResult.dados_beneficiario.uf_expedicao_rg}
+              />
+            </fieldset>
 
-          {beneficiaryResult.dados_plano &&
-            beneficiaryResult.dados_plano.length > 0 && (
-              <fieldset className="form-section">
-                <legend>
-                  <FaFileMedicalAlt style={{ marginRight: "8px" }} />
-                  Plano Contratado
-                </legend>
-                {beneficiaryResult.dados_plano.map((plano, index) => (
-                  <div
-                    key={index}
-                    style={
-                      beneficiaryResult.dados_plano.length > 1
-                        ? {
-                            marginBottom: "10px",
-                            borderBottom: "1px dashed #eee",
-                            paddingBottom: "10px",
-                          }
-                        : {}
-                    }
-                  >
-                    <DataRow label="Nome" value={plano.a006_nm_reduzido} />
-                    <DataRow label="Tipo" value={plano.a061_desc_tipo_plano} />
-                  </div>
-                ))}
-              </fieldset>
-            )}
+            {beneficiaryResult.dados_plano &&
+              beneficiaryResult.dados_plano.length > 0 && (
+                <fieldset className="form-section">
+                  <legend>
+                    <FaFileMedicalAlt style={{ marginRight: "8px" }} />
+                    Plano Contratado
+                  </legend>
+                  {beneficiaryResult.dados_plano.map((plano, index) => (
+                    <div
+                      key={index}
+                      style={
+                        beneficiaryResult.dados_plano.length > 1
+                          ? {
+                              marginBottom: "10px",
+                              borderBottom: "1px dashed #eee",
+                              paddingBottom: "10px",
+                            }
+                          : {}
+                      }
+                    >
+                      <DataRow label="Nome" value={plano.a006_nm_reduzido} />
+                      <DataRow
+                        label="Tipo"
+                        value={plano.a061_desc_tipo_plano}
+                      />
+                    </div>
+                  ))}
+                </fieldset>
+              )}
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginTop: "20px",
-              marginBottom: "10px",
-            }}
-          >
-            <button
-              onClick={handleViewCardPdf}
-              className="button-secondary"
-              disabled={!beneficiaryResult?.dados_beneficiario?.a012_nr_cartao}
-            >
-              <FaAddressCard style={{ marginRight: "8px" }} />
-              Visualizar Carteirinha (PDF)
-            </button>
-          </div>
-        </motion.div>
-      )}
+            <fieldset className="form-section">
+              <legend>
+                <FaAddressCard style={{ marginRight: "8px" }} />
+                Carteirinha Virtual
+              </legend>
+              <div
+                className="form-actions"
+                style={{
+                  justifyContent: "center",
+                  marginTop: "10px",
+                  paddingTop: "10px",
+                  borderTop: "none",
+                }}
+              >
+                <button
+                  onClick={handleViewCardPdf}
+                  className="button-secondary"
+                  disabled={
+                    !beneficiaryResult?.dados_beneficiario?.a012_nr_cartao
+                  }
+                >
+                  <FaExternalLinkAlt style={{ marginRight: "8px" }} />{" "}
+                  Visualizar Carteirinha (PDF)
+                </button>
+              </div>
+            </fieldset>
+          </motion.div>
+        )}
     </div>
   );
 };

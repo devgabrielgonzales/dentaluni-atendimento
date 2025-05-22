@@ -1,9 +1,9 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom"; 
+import { useNavigate, useParams } from "react-router-dom";
 import { FaHome, FaSearch, FaSignOutAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
-import "../styles/CompanyDataPage.css"; 
-import AppHeader from "./AppHeader"; 
+import "../styles/CompanyDataPage.css";
+import AppHeader from "./AppHeader";
 
 import {
   LuClipboardCheck,
@@ -22,7 +22,7 @@ import {
 
 export const useCompanyDataNavigation = () => {
   const navigate = useNavigate();
-  const { companyId } = useParams(); 
+  const { companyId } = useParams();
 
   const navigateToSection = (sectionAction) => {
     if (companyId && sectionAction) {
@@ -31,7 +31,7 @@ export const useCompanyDataNavigation = () => {
       console.error(
         "Company ID ou Section Action não fornecidos para navegação."
       );
-      navigate("/pesquisa"); 
+      navigate("/pesquisa");
     }
   };
 
@@ -70,7 +70,7 @@ const CompanyDataPage = () => {
   } = useCompanyDataNavigation();
 
   const handleOptionClick = (optionLabel, action) => {
-    navigateToSection(action)
+    navigateToSection(action);
   };
 
   const options = [
@@ -100,13 +100,18 @@ const CompanyDataPage = () => {
       <AppHeader />
       <main className="content-area menu-container">
         {" "}
-        <div className="options-grid">
+        <motion.div
+          className="options-grid"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
           {" "}
           {options.map((option) => (
             <button
               key={option.action}
               type="button"
-              className="option-button" 
+              className="option-button"
               onClick={() => handleOptionClick(option.label, option.action)}
             >
               <option.icon className="option-icon" />{" "}
@@ -114,9 +119,9 @@ const CompanyDataPage = () => {
             </button>
           ))}
           {options.length % 2 !== 0 && (
-            <div className="option-placeholder"></div> 
+            <div className="option-placeholder"></div>
           )}
-        </div>
+        </motion.div>
       </main>
       <motion.footer
         className="new-bottom-menu"

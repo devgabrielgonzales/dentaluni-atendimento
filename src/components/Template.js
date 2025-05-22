@@ -2,28 +2,19 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import "../styles/RegisterVisitPage.css";
-import ConsultBeneficiary from "./ConsultBeneficiary";
-
-import {
-  FaUserCircle,
-  FaHome,
-  FaSearch,
-  FaSignOutAlt,
-  FaBuilding,
-} from "react-icons/fa";
+import { FaHome, FaSearch, FaSignOutAlt } from "react-icons/fa";
 
 import LoadingSpinner from "./LoadingSpinner";
 import Ticket from "./Ticket";
 import CompanyDataDisplay from "./CompanyDataDisplay";
 import ProtocolsList from "./ProtocolsList";
 import RequestNewPassword from "./RequestNewPassword";
+import ConsultBeneficiary from "./ConsultBeneficiary";
+import ConsultCoverage from "./ConsultCoverage";
+import ListInvoices from "./ListInvoices";
+import CompanyContacts from "./CompanyContacts";
 import AppHeader from "./AppHeader";
-
-const PlansSection = ({ companyId, companyData }) => (
-  <div>
-    <p>Conteúdo de Planos para {companyData?.razao_social || companyId}.</p>
-  </div>
-);
+import Button from "./BtnBack";
 
 const formatUserNameDisplay = (fullName) => {
   if (!fullName || typeof fullName !== "string") return "Usuário";
@@ -205,8 +196,14 @@ const TemplatePage = () => {
         return <ProtocolsList {...sectionProps} />;
       case "senha":
         return <RequestNewPassword {...sectionProps} />;
-      case "consultar": // Ou a 'action' que você definiu
+      case "consultar":
         return <ConsultBeneficiary {...sectionProps} />;
+      case "cobertura":
+        return <ConsultCoverage {...sectionProps} />;
+      case "faturamento":
+        return <ListInvoices {...sectionProps} />;
+      case "contatos":
+        return <CompanyContacts {...sectionProps} />;
       default:
         return (
           <div className="ticket-message ticket-no-data">
@@ -277,9 +274,6 @@ const TemplatePage = () => {
         transition={{ duration: 0.5, delay: 0.1 }}
       >
         <div className="template-content-card">
-          <div className="template-title-container">
-            <h2 className="template-section-title">{pageTitle}</h2>
-          </div>
           <div className="template-dynamic-content">
             {renderSectionComponent()}
           </div>
@@ -292,6 +286,7 @@ const TemplatePage = () => {
               Voltar
             </button>
           )}
+
         </div>
 
         {errorLoadingCompany && (

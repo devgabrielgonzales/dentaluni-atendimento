@@ -95,3 +95,16 @@
   background-color: #e2e3e5;
   border: 1px solid #d6d8db;
 }
+
+.boleto-fieldset-container {
+}
+
+.boleto-fieldset-container legend {
+  display: flex;
+  align-items: center;
+}
+
+.boleto-fieldset-container .ticket-message.ticket-no-data {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}

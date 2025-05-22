@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FaKey, FaTimes, FaInfoCircle } from "react-icons/fa";
-import LoadingSpinner from "./LoadingSpinner"; 
+import LoadingSpinner from "./LoadingSpinner";
 
 const requestHeaders = {
   "client-id": "26",
@@ -70,8 +70,7 @@ const RequestCompanyNewPassword = ({ companyId, companyData }) => {
           } catch (parseError) {
             if (errorBody) errorMessage = errorBody;
           }
-        } catch (e) {
-        }
+        } catch (e) {}
         throw new Error(errorMessage);
       }
     } catch (error) {
@@ -82,7 +81,7 @@ const RequestCompanyNewPassword = ({ companyId, companyData }) => {
       );
       setIsErrorInModal(true);
     } finally {
-      setIsLoading(false); // Reabilita o botão
+      setIsLoading(false);
       setIsModalOpen(true);
     }
   };
@@ -130,7 +129,8 @@ const RequestCompanyNewPassword = ({ companyId, companyData }) => {
       <button
         onClick={handleRequestPassword}
         className="button-primary request-password-button"
-        disabled={isLoading}>
+        disabled={isLoading}
+      >
         <FaKey style={{ marginRight: "8px" }} />
         Solicitar Nova Senha
       </button>

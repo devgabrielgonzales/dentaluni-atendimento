@@ -2,11 +2,9 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import "../styles/CompanyDetailsPage.css";
 import {
-  FaUserCircle,
   FaHome,
   FaSearch,
   FaSignOutAlt,
-  FaBuilding,
 } from "react-icons/fa";
 import { LuMapPinCheck, LuFileSearch } from "react-icons/lu";
 import { motion } from "framer-motion";
