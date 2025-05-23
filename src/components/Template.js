@@ -2,19 +2,25 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import "../styles/RegisterVisitPage.css";
-import { FaHome, FaSearch, FaSignOutAlt } from "react-icons/fa";
+
+import {
+  FaUserCircle,
+  FaHome,
+  FaSearch,
+  FaSignOutAlt,
+  FaBuilding,
+} from "react-icons/fa";
 
 import LoadingSpinner from "./LoadingSpinner";
 import Ticket from "./Ticket";
 import CompanyDataDisplay from "./CompanyDataDisplay";
+import CompanyContacts from "./CompanyContacts";
 import ProtocolsList from "./ProtocolsList";
 import RequestNewPassword from "./RequestNewPassword";
 import ConsultBeneficiary from "./ConsultBeneficiary";
 import ConsultCoverage from "./ConsultCoverage";
-import ListInvoices from "./ListInvoices";
-import CompanyContacts from "./CompanyContacts";
+import InvoicesList from "./ListInvoices";
 import AppHeader from "./AppHeader";
-import Button from "./BtnBack";
 
 const formatUserNameDisplay = (fullName) => {
   if (!fullName || typeof fullName !== "string") return "Usuário";
@@ -64,6 +70,7 @@ const formatCNPJ = (digitsOnly) => {
   )}/${cleaned.slice(8, 12)}-${cleaned.slice(12, 14)}`;
 };
 
+// Configuração das seções (sem ícones de título, conforme último ajuste)
 const sectionConfig = {
   boletos: { title: "Boletos em aberto" },
   planos: { title: "Planos da Empresa" },
@@ -74,17 +81,22 @@ const sectionConfig = {
   empresa: { title: "Dados da Empresa" },
   cobertura: { title: "Cobertura" },
   guias: { title: "Guias" },
-  faturamento: { title: "Faturamento" },
+  faturamento: { title: "Notas Fiscais" },
   protocolos: { title: "Protocolos" },
   senha: { title: "Nova Senha" },
   default: { title: "Detalhes" },
 };
 
+
+const PlansSection = ({ companyId, companyData }) => (
+  <div>
+    <p>Conteúdo de Planos para {companyData?.razao_social || companyId}.</p>
+  </div>
+);
+
 const TemplatePage = () => {
   const { companyId, section } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
-
   const [companyData, setCompanyData] = useState(null);
   const [userName, setUserName] = useState("Usuário");
   const [userAvatarUrl, setUserAvatarUrl] = useState(null);
@@ -95,64 +107,45 @@ const TemplatePage = () => {
     const storedUserName = localStorage.getItem("userName");
     setUserName(formatUserNameDisplay(storedUserName));
     setUserAvatarUrl(localStorage.getItem("userImg"));
-    let isMounted = true;
+
     setIsLoadingCompany(true);
     setErrorLoadingCompany(null);
     setCompanyData(null);
 
-    const requestHeaders = {
-      "client-id": "26",
-      "client-token": "cb93f445a9426532143cd0f3c7866421",
-      Accept: "application/json",
-    };
+    if (!companyId) {
+      setErrorLoadingCompany("ID da empresa não fornecido.");
+      setIsLoadingCompany(false);
+      return;
+    }
 
-    const fetchCompanyData = async () => {
-      if (!companyId) {
-        if (isMounted) {
-          setIsLoadingCompany(false);
-          setErrorLoadingCompany("ID da empresa não fornecido.");
-        }
-        return;
-      }
-      try {
-        const response = await fetch(
-          `https://api.dentaluni.com.br/sae/empresa?codigo=${companyId}`,
-          {
-            method: "GET",
-            headers: requestHeaders,
-          }
+    try {
+      const localStorageKey = "selectedCompanyId";
+      const companyDataString = localStorage.getItem(localStorageKey);
+
+      if (companyDataString) {
+        const parsedData = JSON.parse(companyDataString);
+        setCompanyData(parsedData);
+      } else {
+        console.warn(
+          `Dados para a empresa ${companyId} não encontrados no localStorage com a chave: ${localStorageKey}`
         );
-        if (!response.ok) {
-          const errorData = await response
-            .json()
-            .catch(() => ({ msg: "Erro de rede ou formato inválido." }));
-          throw new Error(
-            errorData?.msg || `HTTP error! status: ${response.status}`
-          );
-        }
-        const data = await response.json();
-        if (isMounted) {
-          if (!data.error && data.empresas && data.empresas.length > 0) {
-            setCompanyData(data.empresas[0]);
-          } else {
-            setErrorLoadingCompany(
-              data.msg || "Dados da empresa não encontrados."
-            );
-            setCompanyData(null);
-          }
-        }
-      } catch (error) {
-        console.error("Erro ao buscar dados da empresa:", error);
-        if (isMounted) setErrorLoadingCompany(error.message);
-        if (isMounted) setCompanyData(null);
-      } finally {
-        if (isMounted) setIsLoadingCompany(false);
+        setErrorLoadingCompany(
+          `Dados da empresa ${companyId} não encontrados localmente.`
+        );
+        setCompanyData(null);
       }
-    };
-    fetchCompanyData();
-    return () => {
-      isMounted = false;
-    };
+    } catch (e) {
+      console.error(
+        "Erro ao ler ou parsear dados da empresa do localStorage:",
+        e
+      );
+      setErrorLoadingCompany(
+        "Erro ao processar dados locais da empresa. Verifique o formato JSON no localStorage."
+      );
+      setCompanyData(null);
+    } finally {
+      setIsLoadingCompany(false);
+    }
   }, [companyId]);
 
   const handleNavigateToCompanyOptionsMenu = () =>
@@ -170,17 +163,26 @@ const TemplatePage = () => {
   const pageTitle = currentConfig.title;
 
   const renderSectionComponent = () => {
+    if (isLoadingCompany) {
+      return <LoadingSpinner />;
+    }
     if (errorLoadingCompany) {
       return (
-        <div className="ticket-message ticket-error">
+        <div
+          className="ticket-message ticket-error"
+          style={{ marginTop: "20px" }}
+        >
           ⚠️ {errorLoadingCompany}
         </div>
       );
     }
     if (!companyData) {
       return (
-        <div className="ticket-message ticket-no-data">
-          Detalhes da empresa não disponíveis no momento.
+        <div
+          className="ticket-message ticket-no-data"
+          style={{ marginTop: "20px" }}
+        >
+          Não foi possível carregar os dados da empresa localmente.
         </div>
       );
     }
@@ -191,22 +193,27 @@ const TemplatePage = () => {
       case "boletos":
         return <Ticket {...sectionProps} />;
       case "empresa":
-        return <CompanyDataDisplay companyDetails={companyData} />;
+        return <CompanyDataDisplay companyDetails={companyData} />; 
       case "protocolos":
-        return <ProtocolsList {...sectionProps} />;
+        return <ProtocolsList companyId={companyId} />; 
       case "senha":
         return <RequestNewPassword {...sectionProps} />;
       case "consultar":
         return <ConsultBeneficiary {...sectionProps} />;
       case "cobertura":
-        return <ConsultCoverage {...sectionProps} />;
+        return <ConsultCoverage {...sectionProps} />; 
       case "faturamento":
-        return <ListInvoices {...sectionProps} />;
+        return <InvoicesList companyId={companyId} />; 
       case "contatos":
-        return <CompanyContacts {...sectionProps} />;
+        return <CompanyContacts companyId={companyId} />;
+      case "planos":
+        return <PlansSection {...sectionProps} />;
       default:
         return (
-          <div className="ticket-message ticket-no-data">
+          <div
+            className="ticket-message ticket-no-data"
+            style={{ marginTop: "20px" }}
+          >
             <p>Conteúdo para "{pageTitle}" ainda não implementado.</p>
             <Link to={`/documentos/${companyId}`}>Escolher outra opção</Link>
           </div>
@@ -215,44 +222,105 @@ const TemplatePage = () => {
   };
 
   if (isLoadingCompany) {
-    return <LoadingSpinner />;
-  }
-
-  if (errorLoadingCompany && !isLoadingCompany) {
     return (
       <div className="details-page-layout-v2">
         <AppHeader
           userName={userName}
           userAvatarUrl={userAvatarUrl}
           companyData={null}
+          formatCNPJ={formatCNPJ}
+          toTitleCase={toTitleCase}
         />
-        <div className="error-message-fullscreen">
-          <p>Erro ao carregar dados da empresa: {errorLoadingCompany}</p>
-          <Link to="/pesquisa" className="button-secondary">
-            Voltar para a busca
-          </Link>
+        <div
+          className="section-spinner-container"
+          style={{
+            flexGrow: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <LoadingSpinner />
         </div>
+        <motion.footer
+          className="new-bottom-menu"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <button
+            className="menu-item"
+            onClick={handleNavigateToCompanyOptionsMenu}
+            aria-label="Opções da Empresa"
+          >
+            <FaHome />
+          </button>
+          <button
+            className="menu-item-principal"
+            onClick={handleSearchClick}
+            aria-label="Pesquisar Empresa"
+          >
+            <FaSearch />
+          </button>
+          <button
+            className="menu-item"
+            onClick={handleLogoutClick}
+            aria-label="Sair"
+          >
+            <FaSignOutAlt />
+          </button>
+        </motion.footer>
       </div>
     );
   }
 
-  if (!companyData && !isLoadingCompany && companyId) {
+  if (errorLoadingCompany || (!companyData && !isLoadingCompany && companyId)) {
     return (
       <div className="details-page-layout-v2">
         <AppHeader
           userName={userName}
           userAvatarUrl={userAvatarUrl}
-          companyData={null}
+          companyData={null} 
+          formatCNPJ={formatCNPJ}
+          toTitleCase={toTitleCase}
         />
         <div className="error-message-fullscreen">
           <p>
-            Informações da empresa ({companyId}) não puderam ser carregadas ou
-            não foram encontradas.
+            {errorLoadingCompany ||
+              `Informações da empresa (${companyId}) não encontradas localmente.`}
           </p>
           <Link to="/pesquisa" className="button-secondary">
             Voltar para a busca
           </Link>
         </div>
+        <motion.footer
+          className="new-bottom-menu"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <button
+            className="menu-item"
+            onClick={handleNavigateToCompanyOptionsMenu}
+            aria-label="Opções da Empresa"
+          >
+            <FaHome />
+          </button>
+          <button
+            className="menu-item-principal"
+            onClick={handleSearchClick}
+            aria-label="Pesquisar Empresa"
+          >
+            <FaSearch />
+          </button>
+          <button
+            className="menu-item"
+            onClick={handleLogoutClick}
+            aria-label="Sair"
+          >
+            <FaSignOutAlt />
+          </button>
+        </motion.footer>
       </div>
     );
   }
@@ -277,7 +345,6 @@ const TemplatePage = () => {
           <div className="template-dynamic-content">
             {renderSectionComponent()}
           </div>
-          {!errorLoadingCompany && companyData && (
             <button
               type="button"
               onClick={handleGoBack}
@@ -285,19 +352,7 @@ const TemplatePage = () => {
             >
               Voltar
             </button>
-          )}
-
         </div>
-
-        {errorLoadingCompany && (
-          <button
-            type="button"
-            onClick={() => navigate("/pesquisa")}
-            className="button-secondary template-back-button"
-          >
-            Voltar para Pesquisa
-          </button>
-        )}
       </motion.main>
 
       <motion.footer

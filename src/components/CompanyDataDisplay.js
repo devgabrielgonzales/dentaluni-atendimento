@@ -1,5 +1,23 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import LoadingSpinner from "./LoadingSpinner";
+import { toast } from "react-toastify";
+import {
+  FaBuilding,
+  FaMapMarkerAlt,
+  FaEnvelope,
+  FaUserTie,
+  FaUsers,
+  FaPhone,
+  FaWhatsapp,
+} from "react-icons/fa";
+import "../styles/RegisterVisitPage.css"
+
+const requestHeaders = {
+  "client-id": "26",
+  "client-token": "cb93f445a9426532143cd0f3c7866421",
+  Accept: "application/json",
+};
 
 const formatCNPJ = (digitsOnly) => {
   if (!digitsOnly || typeof digitsOnly !== "string") return "N/A";
@@ -33,15 +51,25 @@ const formatCep = (cepStr) => {
   return cepStr;
 };
 
-const DataRow = ({ label, value }) => {
-  const val = String(value || "").trim();
-  if (val === "" || val === "-") {
-    return null;
-  }
+const hasContent = (value) => {
+  return !(
+    value === null ||
+    value === undefined ||
+    String(value).trim() === "" ||
+    String(value).trim() === "-"
+  );
+};
+
+const DataRow = ({ label, value, children }) => {
+  const hasValueProp = hasContent(value);
+  const hasChildren = children !== null && children !== undefined;
+  if (!hasValueProp && !hasChildren) return null;
   return (
     <div className="data-row">
       <span className="data-label">{label}:</span>
-      <span className="data-value">{String(value)}</span>
+      <span className="data-value">
+        {hasChildren ? children : String(value)}
+      </span>
     </div>
   );
 };
@@ -49,23 +77,97 @@ const DataRow = ({ label, value }) => {
 DataRow.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  children: PropTypes.node,
 };
 
-const hasContent = (...values) => {
-  return values.some(
-    (val) =>
-      val !== null &&
-      val !== undefined &&
-      String(val).trim() !== "" &&
-      String(val).trim() !== "-"
+const hasDisplayableListContent = (items, fieldsToCheck) => {
+  if (!items || !Array.isArray(items) || items.length === 0) return false;
+  return items.some(
+    (item) => item && fieldsToCheck.some((field) => hasContent(item[field]))
   );
 };
 
-const CompanyDataDisplay = ({ companyDetails }) => {
+const hasDisplayableObjectContent = (item, fieldsToCheck) => {
+  if (!item) return false;
+  return fieldsToCheck.some((field) => hasContent(item[field]));
+};
+
+const CompanyDataDisplay = () => {
+  const [companyDetails, setCompanyDetails] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    const currentCompanyId = localStorage.getItem("selectedCompanyId");
+
+    if (!currentCompanyId) {
+      setIsLoading(false);
+      toast.error("ID da empresa não encontrado no armazenamento local.");
+      setCompanyDetails(null);
+      return;
+    }
+
+    const fetchCompanyDetails = async () => {
+      setIsLoading(true);
+      setCompanyDetails(null);
+      try {
+        const response = await fetch(
+          `https://api.dentaluni.com.br/sae/empresa?codigo=${currentCompanyId}`,
+          { headers: requestHeaders }
+        );
+        if (!response.ok) {
+          const errorData = await response
+            .json()
+            .catch(() => ({ msg: "Erro de rede ou formato inválido." }));
+          throw new Error(
+            errorData?.msg || `HTTP error! status: ${response.status}`
+          );
+        }
+        const data = await response.json();
+        if (isMounted) {
+          if (!data.error && data.empresas && data.empresas.length > 0) {
+            setCompanyDetails(data.empresas[0]);
+          } else {
+            toast.warn(data.msg || "Dados da empresa não encontrados na API.");
+            setCompanyDetails(null);
+          }
+        }
+      } catch (err) {
+        console.error("Erro ao buscar dados da empresa:", err);
+        if (isMounted) {
+          toast.error(err.message || "Falha ao buscar dados da empresa.");
+          setCompanyDetails(null);
+        }
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+
+    fetchCompanyDetails();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const cleanPhoneNumber = (phone) => {
+    if (!phone) return "";
+    return String(phone).replace(/\D/g, "");
+  };
+
+  if (isLoading) {
+    return (
+      <div
+        style={{ display: "flex", justifyContent: "center", padding: "20px" }}
+      >
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   if (!companyDetails) {
     return (
       <div className="company-data-container ticket-message ticket-no-data">
-        <p>Dados da empresa não disponíveis.</p>
+        <p>Não foi possível carregar os dados da empresa.</p>
       </div>
     );
   }
@@ -82,8 +184,8 @@ const CompanyDataDisplay = ({ companyDetails }) => {
     cep,
     nome_consultor,
     desativado,
-    email_fat,
     email,
+    email_fat,
     contatos,
   } = companyDetails;
 
@@ -95,47 +197,32 @@ const CompanyDataDisplay = ({ companyDetails }) => {
     nome_consultor,
   ];
   const enderecoFields = [logradouro, numero, bairro, cidade, uf, cep];
-  const contatosEmpresaFields = [email, email_fat];
+  const emailsEmpresaFields = [email, email_fat];
 
-  let hasContatoPrincipal = false;
-  if (contatos) {
-    hasContatoPrincipal = hasContent(
-      contatos.nome_contato,
-      contatos.cargo_contato
-    );
-  }
-
-  let hasTelefones = false;
-  if (contatos?.telefones && contatos.telefones.length > 0) {
-    hasTelefones = contatos.telefones.some((tel) =>
-      hasContent(tel.a033_tp_fone, tel.telefone, tel.a033_obs)
-    );
-  }
-
-  let hasEmailsAdicionais = false;
-  if (contatos?.emails && contatos.emails.length > 0) {
-    hasEmailsAdicionais = contatos.emails.some((em) =>
-      hasContent(
-        em.a196_nome_contato,
-        em.a196_cargo,
-        em.a196_departamento,
-        em.a196_email
-      )
-    );
-  }
-
-  let hasResponsaveis = false;
-  if (contatos?.responsaveis && contatos.responsaveis.length > 0) {
-    hasResponsaveis = contatos.responsaveis.some((resp) =>
-      hasContent(resp.nome, resp.cargo)
-    );
-  }
+  const showContatoPrincipal =
+    contatos &&
+    hasDisplayableObjectContent(contatos, ["nome_contato", "cargo_contato"]);
+  const showResponsaveis =
+    contatos?.responsaveis &&
+    hasDisplayableListContent(contatos.responsaveis, [
+      "a273_nome",
+      "a273_cargo",
+    ]);
+  const showTelefones =
+    contatos?.telefones &&
+    hasDisplayableListContent(contatos.telefones, ["telefone"]);
+  const showEmailsAdicionais =
+    contatos?.emails &&
+    hasDisplayableListContent(contatos.emails, ["a196_email"]);
 
   return (
     <div className="company-data-container">
       {hasContent(...dadosGeraisFields) && (
         <fieldset className="form-section">
-          <legend>Dados Gerais da Empresa</legend>
+          <legend>
+            <FaBuilding style={{ marginRight: "8px" }} /> Dados Gerais da
+            Empresa
+          </legend>
           <DataRow label="Código" value={codigo} />
           <DataRow label="Razão Social" value={toTitleCase(razao_social)} />
           <DataRow label="CNPJ" value={formatCNPJ(cnpj)} />
@@ -151,7 +238,9 @@ const CompanyDataDisplay = ({ companyDetails }) => {
 
       {hasContent(...enderecoFields) && (
         <fieldset className="form-section">
-          <legend>Endereço</legend>
+          <legend>
+            <FaMapMarkerAlt style={{ marginRight: "8px" }} /> Endereço
+          </legend>
           <DataRow
             label="Logradouro"
             value={`${toTitleCase(logradouro || "")}${
@@ -169,90 +258,139 @@ const CompanyDataDisplay = ({ companyDetails }) => {
         </fieldset>
       )}
 
-      {hasContent(...contatosEmpresaFields) && (
+      {hasContent(...emailsEmpresaFields) && (
         <fieldset className="form-section">
-          <legend>Contatos da Empresa</legend>
-          <DataRow label="E-mail Principal" value={email?.toLowerCase()} />
-          <DataRow
-            label="E-mail Faturamento"
-            value={email_fat?.toLowerCase()}
-          />
+          <legend>
+            <FaEnvelope style={{ marginRight: "8px" }} /> E-mails Principais da
+            Empresa
+          </legend>
+          <DataRow label="E-mail Principal" value={email?.toLowerCase()}>
+            {hasContent(email) && (
+              <a
+                href={`mailto:${email.toLowerCase()}`}
+                className="contact-link"
+              >
+                {email.toLowerCase()}
+              </a>
+            )}
+          </DataRow>
+          <DataRow label="E-mail Faturamento" value={email_fat?.toLowerCase()}>
+            {hasContent(email_fat) && (
+              <a
+                href={`mailto:${email_fat.toLowerCase()}`}
+                className="contact-link"
+              >
+                {email_fat.toLowerCase()}
+              </a>
+            )}
+          </DataRow>
         </fieldset>
       )}
 
-      {contatos && hasContatoPrincipal && (
+      {contatos && showContatoPrincipal && (
         <fieldset className="form-section">
-          <legend>Responsável Principal</legend>
+          <legend>
+            <FaUserTie style={{ marginRight: "8px" }} /> Contato Principal na
+            Empresa
+          </legend>
           <DataRow label="Nome" value={toTitleCase(contatos.nome_contato)} />
           <DataRow label="Cargo" value={toTitleCase(contatos.cargo_contato)} />
         </fieldset>
       )}
 
-      {hasTelefones && (
+      {showResponsaveis && (
         <fieldset className="form-section">
-          <legend>Telefones Adicionais</legend>
-          {contatos.telefones.map(
-            (tel, index) =>
-              hasContent(tel.a033_tp_fone, tel.telefone, tel.a033_obs) && (
-                <div key={`tel-${index}`} className="contact-item">
-                  <DataRow
-                    label={`Tipo`}
-                    value={toTitleCase(tel.a033_tp_fone)}
-                  />
-                  <DataRow label={`Número`} value={tel.telefone} />
-                  <DataRow label={`Observação`} value={tel.a033_obs} />
-                </div>
-              )
-          )}
-        </fieldset>
-      )}
-
-      {hasEmailsAdicionais && (
-        <fieldset className="form-section">
-          <legend>E-mails Adicionais</legend>
-          {contatos.emails.map(
-            (em, index) =>
-              hasContent(
-                em.a196_nome_contato,
-                em.a196_cargo,
-                em.a196_departamento,
-                em.a196_email
-              ) && (
-                <div key={`email-${index}`} className="contact-item">
-                  <DataRow
-                    label={`Nome`}
-                    value={toTitleCase(em.a196_nome_contato)}
-                  />
-                  <DataRow label={`Cargo`} value={toTitleCase(em.a196_cargo)} />
-                  <DataRow
-                    label={`Departamento`}
-                    value={toTitleCase(em.a196_departamento)}
-                  />
-                  <DataRow
-                    label={`Email`}
-                    value={em.a196_email?.toLowerCase()}
-                  />
-                </div>
-              )
-          )}
-        </fieldset>
-      )}
-
-      {hasResponsaveis && (
-        <fieldset className="form-section">
-          <legend>Outros Responsáveis</legend>
+          <legend>
+            <FaUsers style={{ marginRight: "8px" }} /> Outros Responsáveis
+          </legend>
           {contatos.responsaveis.map(
             (resp, index) =>
-              hasContent(resp.nome, resp.cargo) && (
+              (hasContent(resp.a273_nome) || hasContent(resp.a273_cargo)) && (
                 <div key={`resp-${index}`} className="contact-item">
+                  <DataRow label="Nome" value={toTitleCase(resp.a273_nome)} />
+                  <DataRow label="Cargo" value={toTitleCase(resp.a273_cargo)} />
+                </div>
+              )
+          )}
+        </fieldset>
+      )}
+
+      {showTelefones && (
+        <fieldset className="form-section">
+          <legend>
+            <FaPhone style={{ marginRight: "8px" }} /> Telefones de Contato
+          </legend>
+          {contatos.telefones.map((tel, index) => {
+            const numeroLimpo = cleanPhoneNumber(tel.telefone);
+            const whatsappLink = numeroLimpo
+              ? `https://wa.me/55${numeroLimpo}`
+              : null; // Adiciona 55 para Brasil
+            const callLink = numeroLimpo ? `tel:${numeroLimpo}` : null;
+
+            return (
+              hasContent(tel.telefone) && (
+                <div key={`tel-${index}`} className="contact-item">
+                  <DataRow label="Tipo" value={toTitleCase(tel.a033_tp_fone)} />
+                  <DataRow label="Número" value={tel.telefone}>
+                    <span>{tel.telefone}</span>
+                    {callLink && (
+                      <a
+                        href={callLink}
+                        className="contact-action-icon"
+                        title="Ligar"
+                      >
+                        <FaPhone />
+                      </a>
+                    )}
+                    {whatsappLink && (
+                      <a
+                        href={whatsappLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="contact-action-icon"
+                        title="WhatsApp"
+                      >
+                        <FaWhatsapp />
+                      </a>
+                    )}
+                  </DataRow>
+                  <DataRow label="Observação" value={tel.a033_obs} />
+                </div>
+              )
+            );
+          })}
+        </fieldset>
+      )}
+
+      {showEmailsAdicionais && (
+        <fieldset className="form-section">
+          <legend>
+            <FaEnvelope style={{ marginRight: "8px" }} /> E-mails Adicionais de
+            Contato
+          </legend>
+          {contatos.emails.map(
+            (em, index) =>
+              hasContent(em.a196_email) && (
+                <div key={`email-${index}`} className="contact-item">
                   <DataRow
-                    label={`Nome`}
-                    value={toTitleCase(resp.nome) || "Não informado"}
+                    label="Nome Contato"
+                    value={toTitleCase(em.a196_nome_contato)}
                   />
+                  <DataRow label="Cargo" value={toTitleCase(em.a196_cargo)} />
                   <DataRow
-                    label={`Cargo`}
-                    value={toTitleCase(resp.cargo) || "Não informado"}
+                    label="Departamento"
+                    value={toTitleCase(em.a196_departamento)}
                   />
+                  <DataRow label="Email" value={em.a196_email?.toLowerCase()}>
+                    {hasContent(em.a196_email) && (
+                      <a
+                        href={`mailto:${em.a196_email.toLowerCase()}`}
+                        className="contact-link"
+                      >
+                        {em.a196_email.toLowerCase()}
+                      </a>
+                    )}
+                  </DataRow>
                 </div>
               )
           )}
@@ -264,4 +402,5 @@ const CompanyDataDisplay = ({ companyDetails }) => {
 
 CompanyDataDisplay.propTypes = {
 };
+
 export default CompanyDataDisplay;

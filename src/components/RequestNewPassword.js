@@ -1,11 +1,29 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { FaKey, FaTimes, FaInfoCircle } from "react-icons/fa";
 import LoadingSpinner from "./LoadingSpinner";
+import '../styles/RegisterVisitPage.css'
 
 const requestHeaders = {
   "client-id": "26",
   "client-token": "cb93f445a9426532143cd0f3c7866421",
   Accept: "application/json",
+};
+
+
+const toTitleCase = (str) => {
+  if (!str || typeof str !== "string") return "";
+  const articles = ["de", "do", "da", "dos", "das", "e", "a", "o", "um", "uma"];
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map((word, index) => {
+      if (word.length > 1 && word === word.toUpperCase()) return word;
+      if (index > 0 && articles.includes(word.toLowerCase()))
+        return word.toLowerCase();
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
 };
 
 const RequestCompanyNewPassword = ({ companyId, companyData }) => {
@@ -32,11 +50,9 @@ const RequestCompanyNewPassword = ({ companyId, companyData }) => {
 
     try {
       const response = await fetch(apiUrl, { headers: requestHeaders });
-
       if (response.ok) {
         const contentType = response.headers.get("content-type");
         let successMessage;
-
         if (contentType && contentType.includes("application/json")) {
           const data = await response.json();
           if (data.error) {
@@ -90,50 +106,37 @@ const RequestCompanyNewPassword = ({ companyId, companyData }) => {
     setIsModalOpen(false);
   };
 
-  const toTitleCase = (str) => {
-    if (!str || typeof str !== "string") return "";
-    const articles = [
-      "de",
-      "do",
-      "da",
-      "dos",
-      "das",
-      "e",
-      "a",
-      "o",
-      "um",
-      "uma",
-    ];
-    return str
-      .toLowerCase()
-      .split(" ")
-      .map((word, index) => {
-        if (word.length > 1 && word === word.toUpperCase()) return word;
-        if (index > 0 && articles.includes(word.toLowerCase()))
-          return word.toLowerCase();
-        return word.charAt(0).toUpperCase() + word.slice(1);
-      })
-      .join(" ");
-  };
-
   return (
     <div className="request-password-container">
-      <div className="request-password-subtitle-wrapper">
-        <FaInfoCircle className="subtitle-icon" />
-        <p className="request-password-subtitle">
-          Ao clicar no botão abaixo, uma nova senha temporária será gerada e
-          enviada para o e-mail de contato principal cadastrado para{" "}
-          {toTitleCase(companyName)}.
-        </p>
-      </div>
-      <button
-        onClick={handleRequestPassword}
-        className="button-primary request-password-button"
-        disabled={isLoading}
-      >
-        <FaKey style={{ marginRight: "8px" }} />
-        Solicitar Nova Senha
-      </button>
+      <fieldset className="form-section">
+        <legend style={{ display: "flex", alignItems: "center" }}>
+          <FaInfoCircle style={{ marginRight: "8px" }} /> Instruções
+        </legend>
+        <div className="request-password-subtitle-wrapper">
+          <p className="request-password-subtitle">
+            Ao clicar no botão abaixo, uma nova senha temporária será gerada e
+            enviada para o e-mail de contato principal cadastrado para{" "}
+            {toTitleCase(companyName)}.
+          </p>
+        </div>
+        <div
+          className="form-actions"
+          style={{
+            justifyContent: "center",
+            borderTop: "none",
+            paddingTop: "15px",
+          }}
+        >
+          <button
+            onClick={handleRequestPassword}
+            className="button-primary request-password-button"
+            disabled={isLoading}
+          >
+            <FaKey style={{ marginRight: "8px" }} />
+            Solicitar Nova Senha
+          </button>
+        </div>
+      </fieldset>
 
       {isModalOpen && (
         <div className="app-modal-overlay" onClick={closeModal}>

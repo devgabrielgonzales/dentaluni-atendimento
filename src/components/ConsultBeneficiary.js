@@ -8,7 +8,6 @@ import {
   FaExternalLinkAlt,
   FaUsers,
 } from "react-icons/fa";
-import LoadingSpinner from "./LoadingSpinner";
 import "../styles/RegisterVisitPage.css";
 import { toast } from "react-toastify";
 
@@ -71,7 +70,7 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
       if (!response.ok || data.error) {
         const errorMessage =
           data.msg ||
-          `Erro ao buscar beneficiário (Status: ${response.status})`;
+          `Nenhum beneficiário encontrado com os dados informados.`;
         toast.error(errorMessage);
         throw new Error(errorMessage);
       }
@@ -193,10 +192,14 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
               disabled={isLoading}
             >
               {isLoading ? (
-                <LoadingSpinner />
+                (
+                <>
+                  <FaSearch style={{ marginRight: "8px" }} /> Buscando...{" "}
+                </>
+              )
               ) : (
                 <>
-                  <FaSearch style={{ marginRight: "8px" }} /> Buscar
+                  <FaSearch style={{ marginRight: "8px" }} /> Buscar{" "}
                 </>
               )}
             </button>

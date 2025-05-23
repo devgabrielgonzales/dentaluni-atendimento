@@ -1271,7 +1271,6 @@ form-section {
   padding-top: 8px;
   border-top: 1px dashed #eee;
   display: flex;
-  align-items: center;
   gap: 6px;
 }
 
@@ -1283,12 +1282,7 @@ form-section {
 .request-password-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 10px;
   width: 100%;
-  max-width: 550px;
-  margin: 0 auto;
 }
 
 .request-password-subtitle-wrapper {
@@ -1711,3 +1705,4 @@ form-section {
 .data-row .data-value span + .contact-action-icon {
   white-space: nowrap;
 }
+
