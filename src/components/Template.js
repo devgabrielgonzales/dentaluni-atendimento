@@ -20,6 +20,7 @@ import RequestNewPassword from "./RequestNewPassword";
 import ConsultBeneficiary from "./ConsultBeneficiary";
 import ConsultCoverage from "./ConsultCoverage";
 import InvoicesList from "./ListInvoices";
+import ConsultGuides from "./ConsultGuides";
 import AppHeader from "./AppHeader";
 
 const formatUserNameDisplay = (fullName) => {
@@ -208,6 +209,8 @@ const TemplatePage = () => {
         return <CompanyContacts companyId={companyId} />;
       case "planos":
         return <PlansSection {...sectionProps} />;
+        case "guias": 
+      return <ConsultGuides companyId={companyId}/>;
       default:
         return (
           <div

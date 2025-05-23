@@ -7,7 +7,9 @@ import {
   FaFileMedicalAlt,
   FaExternalLinkAlt,
   FaUsers,
+  FaCalendarAlt,
 } from "react-icons/fa";
+import LoadingSpinner from "./LoadingSpinner";
 import "../styles/RegisterVisitPage.css";
 import { toast } from "react-toastify";
 
@@ -28,6 +30,29 @@ const formatDate = (dateString) => {
   }
 };
 
+const hasContent = (value) => {
+  return !(
+    value === null ||
+    value === undefined ||
+    String(value).trim() === "" ||
+    String(value).trim() === "-"
+  );
+};
+
+const DataRow = ({ label, value, children }) => {
+  const hasValueProp = hasContent(value);
+  const hasChildren = children !== null && children !== undefined;
+  if (!hasValueProp && !hasChildren) return null;
+  return (
+    <div className="data-row">
+      <span className="data-label">{label}:</span>
+      <span className="data-value">
+        {hasChildren ? children : String(value)}
+      </span>
+    </div>
+  );
+};
+
 const ConsultBeneficiary = ({ companyId, companyData }) => {
   const [searchNome, setSearchNome] = useState("");
   const [searchCpf, setSearchCpf] = useState("");
@@ -44,37 +69,30 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
       setBeneficiaryResult(null);
       return;
     }
-
     setIsLoading(true);
     setBeneficiaryResult(null);
-
     const baseUrl = "https://api.dentaluni.com.br/sae/empresa_beneficiario";
     const params = new URLSearchParams({ codigo: String(companyId) });
-
     if (searchNome.trim())
       params.append("nome", searchNome.trim().toUpperCase());
     if (searchCpf.replace(/\D/g, "").trim())
       params.append("cpf", searchCpf.replace(/\D/g, ""));
     if (searchCartao.replace(/\D/g, "").trim())
       params.append("cartao", searchCartao.replace(/\D/g, ""));
-
     const searchApiUrl = `${baseUrl}?${params.toString()}`;
-
     try {
       const response = await fetch(searchApiUrl, {
         method: "GET",
         headers: requestHeaders,
       });
       const data = await response.json();
-
       if (!response.ok || data.error) {
         const errorMessage =
-          data.msg ||
-          `Nenhum beneficiário encontrado com os dados informados.`;
+          data.msg || `Nenhum beneficiário encontrado com os dados informados.`;
         toast.error(errorMessage);
-        throw new Error(errorMessage);
+        setBeneficiaryResult(null);
+        return;
       }
-
       if (data.dados_beneficiario) {
         setBeneficiaryResult(data);
         toast.success("Beneficiário encontrado!");
@@ -86,14 +104,7 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
       }
     } catch (err) {
       console.error("Erro na busca por beneficiário:", err);
-      if (
-        !(
-          err.message.includes("Status:") ||
-          err.message.includes("Nenhum beneficiário")
-        )
-      ) {
-        toast.error(err.message || "Falha ao buscar beneficiário.");
-      }
+      toast.error(err.message || "Falha ao buscar beneficiário.");
       setBeneficiaryResult(null);
     } finally {
       setIsLoading(false);
@@ -115,21 +126,17 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
     }
   };
 
-  const DataRow = ({ label, value }) => {
-    if (
-      value === null ||
-      value === undefined ||
-      String(value).trim() === "" ||
-      String(value).trim() === "-"
-    ) {
-      return null;
-    }
-    return (
-      <div className="data-row">
-        <span className="data-label">{label}:</span>
-        <span className="data-value">{String(value)}</span>
-      </div>
-    );
+  const handleCopyText = (textToCopy, successMessage) => {
+    if (!textToCopy) return;
+    navigator.clipboard
+      .writeText(String(textToCopy).replace(/\D/g, ""))
+      .then(() => {
+        toast.success(successMessage || "Texto copiado!");
+      })
+      .catch((err) => {
+        console.error("Erro ao copiar: ", err);
+        toast.error("Falha ao copiar.");
+      });
   };
 
   return (
@@ -144,7 +151,6 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
             <FaUsers /> Consultar Beneficiário
           </legend>
           <label>
-            {" "}
             Nome do Beneficiário:
             <input
               type="text"
@@ -154,7 +160,6 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
             />
           </label>
           <label>
-            {" "}
             CPF do Beneficiário:
             <input
               type="text"
@@ -167,7 +172,6 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
             />
           </label>
           <label>
-            {" "}
             Número do Cartão:
             <input
               type="text"
@@ -192,14 +196,12 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
               disabled={isLoading}
             >
               {isLoading ? (
-                (
                 <>
-                  <FaSearch style={{ marginRight: "8px" }} /> Buscando...{" "}
+                  <FaSearch style={{ marginRight: "8px" }} /> Buscando...
                 </>
-              )
               ) : (
                 <>
-                  <FaSearch style={{ marginRight: "8px" }} /> Buscar{" "}
+                  <FaSearch style={{ marginRight: "8px" }} /> Buscar
                 </>
               )}
             </button>
@@ -225,10 +227,31 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
                 label="Nome Completo"
                 value={beneficiaryResult.dados_beneficiario.a012_nome_completo}
               />
-              <DataRow
-                label="Nº Cartão"
-                value={beneficiaryResult.dados_beneficiario.a012_nr_cartao}
-              />
+
+              <DataRow label="Nº Cartão">
+                <div className="value-with-action">
+                  <span>
+                    {beneficiaryResult.dados_beneficiario.a012_nr_cartao ||
+                      "N/D"}
+                  </span>
+                  {beneficiaryResult.dados_beneficiario.a012_nr_cartao && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleCopyText(
+                          beneficiaryResult.dados_beneficiario.a012_nr_cartao,
+                          "Número do cartão copiado!"
+                        )
+                      }
+                      className="button-text-copy"
+                      title="Copiar número do cartão"
+                    >
+                      COPIAR
+                    </button>
+                  )}
+                </div>
+              </DataRow>
+
               <DataRow
                 label="CPF (Informado)"
                 value={
