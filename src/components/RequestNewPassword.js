@@ -115,8 +115,7 @@ const RequestCompanyNewPassword = ({ companyId, companyData }) => {
         <div className="request-password-subtitle-wrapper">
           <p className="request-password-subtitle">
             Ao clicar no botão abaixo, uma nova senha temporária será gerada e
-            enviada para o e-mail de contato principal cadastrado para{" "}
-            {toTitleCase(companyName)}.
+            enviada para o e-mail de contato principal cadastrado para a empresa.
           </p>
         </div>
         <div
