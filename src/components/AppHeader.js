@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { FaUserCircle, FaBuilding } from "react-icons/fa";
 import { motion } from "framer-motion";
 
-// Suas funções de formatação (mantidas como estavam no seu código)
 const formatUserNameDisplay = (fullName) => {
   if (!fullName || typeof fullName !== "string") return "Usuário";
   let mainNamePart = fullName;
@@ -52,29 +51,27 @@ const toTitleCase = (str) => {
 };
 
 const AppHeader = ({
-  companyId: companyIdProp, // Prop para o ID da empresa
-  companyName: companyNameProp, // Prop para o nome da empresa
-  companyCnpj: companyCnpjProp, // Prop para o CNPJ da empresa
-  isLoadingCompanyInfo, // Prop para indicar se os dados da empresa estão carregando
-  pageTitle, // Título da página/seção (usado como fallback para nome da empresa)
+  companyId: companyIdProp, 
+  companyName: companyNameProp, 
+  companyCnpj: companyCnpjProp, 
+  isLoadingCompanyInfo, 
+  pageTitle, 
 }) => {
   const [userName, setUserName] = useState("Usuário");
   const [userAvatarUrl, setUserAvatarUrl] = useState(null);
 
-  // Estados para os dados efetivos da empresa, considerando props e localStorage
   const [effectiveCompanyId, setEffectiveCompanyId] = useState(companyIdProp);
   const [effectiveCompanyName, setEffectiveCompanyName] =
     useState(companyNameProp);
   const [effectiveCompanyCnpj, setEffectiveCompanyCnpj] =
     useState(companyCnpjProp);
-  const [isCompanyInactive, setIsCompanyInactive] = useState(false); // Novo estado
+  const [isCompanyInactive, setIsCompanyInactive] = useState(false);
 
   useEffect(() => {
     const storedUserName = localStorage.getItem("userName");
     if (storedUserName) {
       setUserName(formatUserNameDisplay(storedUserName));
     } else {
-      // Fallback se não houver nome no localStorage (você pode ajustar ou remover)
       setUserName(formatUserNameDisplay("Gabriel Gonzales"));
     }
     const storedUserImg = localStorage.getItem("userImg");
@@ -84,7 +81,6 @@ const AppHeader = ({
       setUserAvatarUrl(null);
     }
 
-    // Lógica para dados da empresa, priorizando props e depois localStorage
     const currentId =
       companyIdProp !== undefined
         ? companyIdProp
@@ -103,10 +99,9 @@ const AppHeader = ({
         : localStorage.getItem("selectedCompanyCnpj");
     setEffectiveCompanyCnpj(currentCnpj || null);
 
-    // **NOVA LÓGICA PARA LER O STATUS DE DESATIVADO**
     const desativadoStatus = localStorage.getItem("selectedCompanyDesativado");
     setIsCompanyInactive(desativadoStatus === "1");
-  }, [companyIdProp, companyNameProp, companyCnpjProp]); // Dependências do efeito
+  }, [companyIdProp, companyNameProp, companyCnpjProp]);
 
   const headerAnimationProps = {
     initial: { opacity: 0, x: -20 },
@@ -120,13 +115,12 @@ const AppHeader = ({
     transition: { duration: 0.5, delay: 0.4, ease: "easeOut" },
   };
 
-  // Lógica para exibição dos textos, considerando isLoadingCompanyInfo
   const displayCompanyIdText = isLoadingCompanyInfo
     ? "..."
     : effectiveCompanyId || "N/A";
   const displayCompanyCnpjText = isLoadingCompanyInfo
     ? "..."
-    : formatCNPJ(effectiveCompanyCnpj || ""); // Garante que formatCNPJ receba string
+    : formatCNPJ(effectiveCompanyCnpj || "");
   const displayCompanyNameText = isLoadingCompanyInfo
     ? "Carregando..."
     : effectiveCompanyName || pageTitle || "Detalhes";

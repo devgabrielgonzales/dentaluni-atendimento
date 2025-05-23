@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import "../styles/CompanyDetailsPage.css";
-import { FaHome, FaSearch, FaSignOutAlt } from "react-icons/fa";
+import {
+  FaHome,
+  FaSearch,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import { LuMapPinCheck, LuFileSearch } from "react-icons/lu";
 import { motion } from "framer-motion";
 import LoadingSpinner from "./LoadingSpinner";
@@ -217,22 +221,6 @@ const CompanyDetailsPage = () => {
       >
         <div
           className="action-card-container"
-          onClick={handleNavigateToRegisterVisit}
-          role="button"
-          tabIndex={0}
-          onKeyPress={(e) =>
-            e.key === "Enter" && handleNavigateToRegisterVisit()
-          }
-        >
-          <LuMapPinCheck className="card-icon" />
-          <h2 className="card-title">Registro de Visitas</h2>
-          <p className="card-description">
-            Clique para registrar os detalhes da sua visita.
-          </p>
-          <span className="card-action-button">Registrar</span>
-        </div>
-        <div
-          className="action-card-container"
           onClick={handleNavigateToCompanyDataGrid}
           role="button"
           tabIndex={0}
@@ -247,6 +235,22 @@ const CompanyDetailsPage = () => {
             Acesse informações cadastrais e outros dados relevantes.
           </p>
           <span className="card-action-button">Acessar Dados</span>
+        </div>
+        <div
+          className="action-card-container"
+          onClick={handleNavigateToRegisterVisit}
+          role="button"
+          tabIndex={0}
+          onKeyPress={(e) =>
+            e.key === "Enter" && handleNavigateToRegisterVisit()
+          }
+        >
+          <LuMapPinCheck className="card-icon" />
+          <h2 className="card-title">Registro de Visitas</h2>
+          <p className="card-description">
+            Clique para registrar os detalhes da sua visita.
+          </p>
+          <span className="card-action-button">Registrar</span>
         </div>
       </motion.main>
 
