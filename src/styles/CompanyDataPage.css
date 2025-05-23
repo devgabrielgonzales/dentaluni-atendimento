@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  font-family: "Inter", sans-serif;
   background-color: #e9e9f0;
 }
 
@@ -222,7 +221,6 @@ input[type="number"] {
   flex-direction: column;
   min-height: 100vh;
   background-color: #ac1815;
-  font-family: "Inter", sans-serif;
   padding-bottom: 70px;
   box-sizing: border-box;
 }

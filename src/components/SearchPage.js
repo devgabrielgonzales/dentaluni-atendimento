@@ -88,6 +88,7 @@ const SearchPage = () => {
           cep: company.cep,
           email_fat: company.email_fat,
           email: company.email,
+          desativado: company.desativado
         }));
 
         const uniqueResults = mappedResults.filter(
@@ -245,9 +246,9 @@ const SearchPage = () => {
         localStorage.removeItem("selectedCompanyCidade");
       }
       if (company.uf) {
-        localStorage.setItem("selectedCompanyUf", company.uf);
+        localStorage.setItem("selectedCompanyDesativado", company.desativado);
       } else {
-        localStorage.removeItem("selectedCompanyUf");
+        localStorage.removeItem("selectedCompanyDesativado");
       }
     } catch (error) {
       console.error(

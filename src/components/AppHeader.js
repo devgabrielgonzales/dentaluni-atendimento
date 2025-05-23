@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaUserCircle, FaBuilding } from "react-icons/fa";
 import { motion } from "framer-motion";
 
+// Suas funções de formatação (mantidas como estavam no seu código)
 const formatUserNameDisplay = (fullName) => {
   if (!fullName || typeof fullName !== "string") return "Usuário";
   let mainNamePart = fullName;
@@ -51,26 +52,29 @@ const toTitleCase = (str) => {
 };
 
 const AppHeader = ({
-  companyId: companyIdProp,
-  companyName: companyNameProp,
-  companyCnpj: companyCnpjProp,
-  isLoadingCompanyInfo,
-  pageTitle,
+  companyId: companyIdProp, // Prop para o ID da empresa
+  companyName: companyNameProp, // Prop para o nome da empresa
+  companyCnpj: companyCnpjProp, // Prop para o CNPJ da empresa
+  isLoadingCompanyInfo, // Prop para indicar se os dados da empresa estão carregando
+  pageTitle, // Título da página/seção (usado como fallback para nome da empresa)
 }) => {
   const [userName, setUserName] = useState("Usuário");
   const [userAvatarUrl, setUserAvatarUrl] = useState(null);
 
+  // Estados para os dados efetivos da empresa, considerando props e localStorage
   const [effectiveCompanyId, setEffectiveCompanyId] = useState(companyIdProp);
   const [effectiveCompanyName, setEffectiveCompanyName] =
     useState(companyNameProp);
   const [effectiveCompanyCnpj, setEffectiveCompanyCnpj] =
     useState(companyCnpjProp);
+  const [isCompanyInactive, setIsCompanyInactive] = useState(false); // Novo estado
 
   useEffect(() => {
     const storedUserName = localStorage.getItem("userName");
     if (storedUserName) {
       setUserName(formatUserNameDisplay(storedUserName));
     } else {
+      // Fallback se não houver nome no localStorage (você pode ajustar ou remover)
       setUserName(formatUserNameDisplay("Gabriel Gonzales"));
     }
     const storedUserImg = localStorage.getItem("userImg");
@@ -80,19 +84,29 @@ const AppHeader = ({
       setUserAvatarUrl(null);
     }
 
-    if (companyIdProp !== undefined) setEffectiveCompanyId(companyIdProp);
-    else setEffectiveCompanyId(localStorage.getItem("selectedCompanyId"));
+    // Lógica para dados da empresa, priorizando props e depois localStorage
+    const currentId =
+      companyIdProp !== undefined
+        ? companyIdProp
+        : localStorage.getItem("selectedCompanyId");
+    setEffectiveCompanyId(currentId || null);
 
-    if (companyNameProp !== undefined)
-      setEffectiveCompanyName(toTitleCase(companyNameProp));
-    else
-      setEffectiveCompanyName(
-        toTitleCase(localStorage.getItem("selectedCompanyName"))
-      );
+    const currentName =
+      companyNameProp !== undefined
+        ? companyNameProp
+        : localStorage.getItem("selectedCompanyName");
+    setEffectiveCompanyName(currentName ? toTitleCase(currentName) : "");
 
-    if (companyCnpjProp !== undefined) setEffectiveCompanyCnpj(companyCnpjProp);
-    else setEffectiveCompanyCnpj(localStorage.getItem("selectedCompanyCnpj"));
-  }, [companyIdProp, companyNameProp, companyCnpjProp]);
+    const currentCnpj =
+      companyCnpjProp !== undefined
+        ? companyCnpjProp
+        : localStorage.getItem("selectedCompanyCnpj");
+    setEffectiveCompanyCnpj(currentCnpj || null);
+
+    // **NOVA LÓGICA PARA LER O STATUS DE DESATIVADO**
+    const desativadoStatus = localStorage.getItem("selectedCompanyDesativado");
+    setIsCompanyInactive(desativadoStatus === "1");
+  }, [companyIdProp, companyNameProp, companyCnpjProp]); // Dependências do efeito
 
   const headerAnimationProps = {
     initial: { opacity: 0, x: -20 },
@@ -106,12 +120,13 @@ const AppHeader = ({
     transition: { duration: 0.5, delay: 0.4, ease: "easeOut" },
   };
 
+  // Lógica para exibição dos textos, considerando isLoadingCompanyInfo
   const displayCompanyIdText = isLoadingCompanyInfo
     ? "..."
     : effectiveCompanyId || "N/A";
   const displayCompanyCnpjText = isLoadingCompanyInfo
     ? "..."
-    : formatCNPJ(effectiveCompanyCnpj || "");
+    : formatCNPJ(effectiveCompanyCnpj || ""); // Garante que formatCNPJ receba string
   const displayCompanyNameText = isLoadingCompanyInfo
     ? "Carregando..."
     : effectiveCompanyName || pageTitle || "Detalhes";
@@ -148,20 +163,38 @@ const AppHeader = ({
             </motion.h1>
           </div>
         </div>
-        <motion.div
-          className="company-display-card container"
-          {...companyCardAnimationProps}
-        >
-          <div className="company-text-info">
-            <span className="company-label">
-              {`Código: ${displayCompanyIdText} | CNPJ: ${displayCompanyCnpjText}`}
-            </span>
-            <h2 className="company-name-text">{displayCompanyNameText}</h2>
-          </div>
-          {effectiveCompanyId && !isLoadingCompanyInfo && (
-            <FaBuilding className="icon-building" />
-          )}
-        </motion.div>
+
+        {/* Renderiza o card da empresa se houver um ID efetivo ou se não estiver carregando (para evitar mostrar "N/A" rapidamente) */}
+        {effectiveCompanyId && (
+          <motion.div
+            // Adiciona classe 'inactive-company' se a empresa estiver inativa
+            className={`company-display-card container ${
+              isCompanyInactive ? "inactive-company" : ""
+            }`}
+            {...companyCardAnimationProps}
+          >
+            <div className="company-text-info">
+              <span className="company-label">
+                {`Código: ${displayCompanyIdText} | CNPJ: ${displayCompanyCnpjText}`}
+              </span>
+              <h2 className="company-name-text">
+                {displayCompanyNameText}
+                {/* Adiciona o texto "(Inativa)" se a empresa estiver inativa */}
+                {isCompanyInactive && (
+                  <span className="inactive-status-label"> (Inativa)</span>
+                )}
+              </h2>
+            </div>
+            {/* Mostra o ícone do prédio apenas se houver ID e não estiver no estado de carregamento explícito */}
+            {effectiveCompanyId && !isLoadingCompanyInfo && (
+              <FaBuilding
+                className={`icon-building ${
+                  isCompanyInactive ? "inactive-icon" : ""
+                }`}
+              />
+            )}
+          </motion.div>
+        )}
       </div>
     </header>
   );

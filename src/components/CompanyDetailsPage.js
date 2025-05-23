@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import "../styles/CompanyDetailsPage.css";
-import {
-  FaHome,
-  FaSearch,
-  FaSignOutAlt,
-} from "react-icons/fa";
+import { FaHome, FaSearch, FaSignOutAlt } from "react-icons/fa";
 import { LuMapPinCheck, LuFileSearch } from "react-icons/lu";
 import { motion } from "framer-motion";
 import LoadingSpinner from "./LoadingSpinner";

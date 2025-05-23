@@ -524,7 +524,7 @@ const RegisterVisitPage = () => {
   };
   const formatDataToHtml = (data, labels) => {
     const corDentalUni = "#ac1815";
-    let html = `<h1 style="color: ${corDentalUni}; font-family: Arial, sans-serif; text-align: center;"></h1>`;
+    let html = `<h1 style="color: ${corDentalUni}; text-align: center;"></h1>`;
     let sectionsAdded = 0;
     const addSection = (title, content) => {
       if (content && String(content).trim() !== "") {
@@ -532,7 +532,7 @@ const RegisterVisitPage = () => {
           html +=
             '<hr style="border: 0; border-top: 1px solid #ccc; margin: 25px 0;">';
         }
-        html += `<h3 style="color: ${corDentalUni}; font-family: Arial, sans-serif; margin-top: 20px; margin-bottom: 10px;">${title}</h3><div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.6;">${content}</div>`;
+        html += `<h3 style="color: ${corDentalUni}; margin-top: 20px; margin-bottom: 10px;">${title}</h3><div style="font-size: 14px; line-height: 1.6;">${content}</div>`;
         sectionsAdded++;
       }
     };
