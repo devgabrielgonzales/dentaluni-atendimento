@@ -3,19 +3,18 @@ import { motion } from "framer-motion";
 import { LuFileSearch } from "react-icons/lu";
 import {
   FaSearch,
-  FaCalendarAlt,
-  FaInfoCircle,
-  FaUserMd,
   FaNotesMedical,
+  FaCalendarAlt,
+  FaKey,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
-import "../styles/RegisterVisitPage.css";
+import '../styles/RegisterVisitPage.css';
 
-const requestHeaders = {
+const requestHeadersBase = {
   "client-id": "26",
   "client-token": "cb93f445a9426532143cd0f3c7866421",
   Accept: "application/json",
-  "Content-Type": "application/json",
 };
 
 const formatDate = (dateString, includeTime = false) => {
@@ -58,25 +57,37 @@ const DataRow = ({ label, value }) => {
 const ConsultGuides = () => {
   const [cardNumber, setCardNumber] = useState("");
   const [guides, setGuides] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingGuides, setIsLoadingGuides] = useState(false);
+  const [isTokenLoading, setIsTokenLoading] = useState(false);
   const [searchAttempted, setSearchAttempted] = useState(false);
 
-  const handleSearchGuides = async (e) => {
-    e.preventDefault();
+  const validateCardNumber = () => {
     const cleanedCardNumber = cardNumber.replace(/\D/g, "");
-    setSearchAttempted(true);
     if (!cleanedCardNumber) {
-      toast.warn("Por favor, insira um número de cartão válido.");
+      toast.warn("Por favor, insira o número do cartão.");
+      return false;
+    }
+    return cleanedCardNumber;
+  };
+
+  const handleSearchGuides = async (e) => {
+    if (e) e.preventDefault();
+
+    const cleanedCardNumber = validateCardNumber();
+    if (!cleanedCardNumber) {
+      setSearchAttempted(true);
       setGuides([]);
       return;
     }
-    setIsLoading(true);
+
+    setSearchAttempted(true);
+    setIsLoadingGuides(true);
     setGuides([]);
     const apiUrl = `https://api.dentaluni.com.br/beneficiario/guias`;
     try {
       const response = await fetch(apiUrl, {
         method: "POST",
-        headers: requestHeaders,
+        headers: { ...requestHeadersBase, "Content-Type": "application/json" },
         body: JSON.stringify({ ncartao: cleanedCardNumber }),
       });
       const data = await response.json();
@@ -103,7 +114,36 @@ const ConsultGuides = () => {
       toast.error(err.message || "Falha ao buscar guias.");
       setGuides([]);
     } finally {
-      setIsLoading(false);
+      setIsLoadingGuides(false);
+    }
+  };
+
+  const handleRequestToken = async () => {
+    const cleanedCardNumber = validateCardNumber();
+    if (!cleanedCardNumber) {
+      return;
+    }
+
+    setIsTokenLoading(true);
+    const apiUrl = `https://api.dentaluni.com.br/beneficiario/gerar-token`;
+    try {
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: { ...requestHeadersBase, "Content-Type": "application/json" },
+        body: JSON.stringify({ cartao: cleanedCardNumber }),
+      });
+      const data = await response.json();
+      if (!response.ok || data.erro || !data.status) {
+        throw new Error(
+          data.msg || `Erro ao gerar token (Status: ${response.status})`
+        );
+      }
+      toast.success("Token gerado com sucesso!");
+    } catch (err) {
+      console.error("Erro ao gerar token:", err);
+      toast.error(err.message || "Falha ao gerar token.");
+    } finally {
+      setIsTokenLoading(false);
     }
   };
 
@@ -116,7 +156,7 @@ const ConsultGuides = () => {
       >
         <fieldset className="form-section">
           <legend>
-            <FaNotesMedical style={{ marginRight: "8px" }} /> Consultar Guias
+            <LuFileSearch style={{ marginRight: "8px" }} /> Consultar Guias
           </legend>
           <label htmlFor="cardNumberGuidesInput">
             Número do Cartão do Beneficiário:
@@ -134,7 +174,7 @@ const ConsultGuides = () => {
             />
           </label>
           <div
-            className="form-actions"
+            className="form-actions-group"
             style={{
               justifyContent: "center",
               marginTop: "20px",
@@ -145,23 +185,27 @@ const ConsultGuides = () => {
             <button
               type="submit"
               className="button-primary"
-              disabled={isLoading || !cardNumber.trim()}
+              disabled={isLoadingGuides || isTokenLoading}
+              style={{ minWidth: "180px" }}
             >
-              {isLoading ? (
-                <>
-                  <FaSearch style={{ marginRight: "8px" }} /> Buscando Guias...
-                </>
-              ) : (
-                <>
-                  <FaSearch style={{ marginRight: "8px" }} /> Buscar Guias
-                </>
-              )}
+              <FaSearch style={{ marginRight: "8px" }} />
+              {isLoadingGuides ? "Buscando..." : "Buscar Guias"}
+            </button>
+            <button
+              type="button"
+              onClick={handleRequestToken}
+              className="button-secondary"
+              disabled={isLoadingGuides || isTokenLoading}
+              style={{ minWidth: "180px" }}
+            >
+              <FaKey style={{ marginRight: "8px" }} />
+              {isTokenLoading ? "Gerando..." : "Gerar Token"}
             </button>
           </div>
         </fieldset>
       </form>
 
-      {!isLoading && searchAttempted && guides.length === 0 && (
+      {!isLoadingGuides && searchAttempted && guides.length === 0 && (
         <div
           className="list-message list-no-data"
           style={{ marginTop: "20px" }}
@@ -170,15 +214,18 @@ const ConsultGuides = () => {
         </div>
       )}
 
-      {guides.length > 0 && !isLoading && (
+      {guides.length > 0 && !isLoadingGuides && (
         <div className="list-cards-container" style={{ marginTop: "25px" }}>
           {guides.map((guia, index) => {
             const statusText = guia.a221_desc_status_orc;
             const statusSigla = guia.a221_status_orc;
+            const uniqueKey = guia.rn
+              ? `guia-rn-${guia.rn}-${guia.a026_num_formulario}`
+              : `guia-idx-${index}-${guia.a026_num_formulario}`;
 
             return (
               <motion.div
-                key={guia.a026_num_formulario || index}
+                key={uniqueKey}
                 className="info-card"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -209,7 +256,7 @@ const ConsultGuides = () => {
                       style={{
                         backgroundColor:
                           statusSigla === "X"
-                            ? "#ac1815"
+                            ? "#E53935"
                             : statusSigla === "L" || statusSigla === "A"
                             ? "#4CAF50"
                             : "#757575",

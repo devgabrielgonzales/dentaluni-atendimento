@@ -1788,3 +1788,22 @@ form-section {
   align-items: center;
   font-size: 1.1em;
 }
+
+.form-actions-group {
+  display: flex;
+  justify-content: center;
+  gap: 15px; 
+  flex-wrap: wrap;
+  margin-top: 20px;
+  padding-top: 10px;
+  border-top: none;
+}
+
+.button-primary,
+.button-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px; 
+  text-align: center;
+}
