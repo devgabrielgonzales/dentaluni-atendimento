@@ -1,3 +1,4 @@
+// src/App.js
 import React, { Suspense, lazy } from "react";
 import {
   BrowserRouter as Router,
@@ -7,25 +8,42 @@ import {
 } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "./styles/App.css";
+import "./styles/App.css"; 
 import ProtectedRoute from "./components/ProtectedRoute";
 import GuestRoute from "./components/GuestRoute";
 
-const LoadingSpinner = lazy(() => import("./components/LoadingSpinner")); 
+import ScrollToTop from "./components/ScrollToTop"; 
+
+const LoadingSpinner = lazy(() => import("./components/LoadingSpinner"));
 const SigninPage = lazy(() => import("./components/LoginPage"));
 const SearchPage = lazy(() => import("./components/SearchPage"));
-const ForgotPasswordPage = lazy(() => import("./components/ForgotPasswordPage"));
-const CompanyDataPage = lazy(() => import("./components/CompanyDataPage")); 
-const CompanyDetailsPage = lazy(() => import("./components/CompanyDetailsPage")); 
+const ForgotPasswordPage = lazy(() =>
+  import("./components/ForgotPasswordPage")
+);
+const CompanyDataPage = lazy(() => import("./components/CompanyDataPage"));
+const CompanyDetailsPage = lazy(() =>
+  import("./components/CompanyDetailsPage")
+);
 const RegisterVisitPage = lazy(() => import("./components/RegisterVisitPage"));
-const TemplatePage = lazy(() => import("./components/Template"));
+const TemplatePage = lazy(() => import("./components/Template")); 
 
 function App() {
   return (
     <Router>
-      <ToastContainer/>
+      <ScrollToTop />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <Suspense fallback={<LoadingSpinner />}>
-        {" "}
         <Routes>
           <Route
             path="/login"
@@ -43,6 +61,7 @@ function App() {
               </GuestRoute>
             }
           />
+
           <Route
             path="/pesquisa"
             element={
@@ -68,6 +87,14 @@ function App() {
             }
           />
           <Route
+            path="/dados/:companyId/:section"
+            element={
+              <ProtectedRoute>
+                <TemplatePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/visita/:companyId"
             element={
               <ProtectedRoute>
@@ -83,14 +110,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route
-            path="/dados/:companyId/:section"
-            element={
-              <ProtectedRoute>
-                <TemplatePage />
-              </ProtectedRoute>
-            }
-          />
+
           <Route
             path="/"
             element={

@@ -23,6 +23,7 @@ import InvoicesList from "./ListInvoices";
 import ConsultGuides from "./ConsultGuides";
 import ContractDetails from "./ContractDetails";
 import CompanyPlans from "./CompanyPlans";
+import ReadjustmentsInfo from "./ReadjustmentsInfo";
 import AppHeader from "./AppHeader";
 
 const formatUserNameDisplay = (fullName) => {
@@ -213,6 +214,8 @@ const TemplatePage = () => {
         return <ContractDetails companyId={companyId} />;
       case "planos":
         return <CompanyPlans companyId={companyId} />;
+      case "reajustes":
+        return <ReadjustmentsInfo companyId={companyId} />;
       default:
         return (
           <div

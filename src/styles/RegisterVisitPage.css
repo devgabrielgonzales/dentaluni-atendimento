@@ -1759,14 +1759,32 @@ form-section {
 }
 
 .company-plans-container .form-section {
-  margin-bottom: 25px; 
+  margin-bottom: 25px;
 }
 .company-plans-container .form-section:last-child {
-  margin-bottom: 10px; 
+  margin-bottom: 10px;
 }
 
 .company-plans-container .form-section legend {
   display: flex;
   align-items: center;
   font-size: 1.15em;
+}
+
+.readjustments-info-container {
+  width: 100%;
+  padding-top: 10px;
+}
+
+.readjustments-info-container .form-section {
+  margin-bottom: 25px;
+}
+.readjustments-info-container .form-section:last-child {
+  margin-bottom: 10px;
+}
+
+.readjustments-info-container .form-section legend {
+  display: flex;
+  align-items: center;
+  font-size: 1.1em;
 }

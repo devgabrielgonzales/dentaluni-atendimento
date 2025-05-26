@@ -334,13 +334,13 @@ const ConsultBeneficiary = ({ companyId, companyData }) => {
               >
                 <button
                   onClick={handleViewCardPdf}
-                  className="button-secondary"
+                  className="button-primary"
                   disabled={
                     !beneficiaryResult?.dados_beneficiario?.a012_nr_cartao
                   }
                 >
                   <FaExternalLinkAlt style={{ marginRight: "8px" }} />{" "}
-                  Visualizar Carteirinha (PDF)
+                  Baixar Carteirinha (PDF)
                 </button>
               </div>
             </fieldset>
