@@ -21,6 +21,8 @@ import ConsultBeneficiary from "./ConsultBeneficiary";
 import ConsultCoverage from "./ConsultCoverage";
 import InvoicesList from "./ListInvoices";
 import ConsultGuides from "./ConsultGuides";
+import ContractDetails from "./ContractDetails";
+import CompanyPlans from "./CompanyPlans";
 import AppHeader from "./AppHeader";
 
 const formatUserNameDisplay = (fullName) => {
@@ -71,7 +73,6 @@ const formatCNPJ = (digitsOnly) => {
   )}/${cleaned.slice(8, 12)}-${cleaned.slice(12, 14)}`;
 };
 
-// Configuração das seções (sem ícones de título, conforme último ajuste)
 const sectionConfig = {
   boletos: { title: "Boletos em aberto" },
   planos: { title: "Planos da Empresa" },
@@ -87,7 +88,6 @@ const sectionConfig = {
   senha: { title: "Nova Senha" },
   default: { title: "Detalhes" },
 };
-
 
 const PlansSection = ({ companyId, companyData }) => (
   <div>
@@ -194,23 +194,25 @@ const TemplatePage = () => {
       case "boletos":
         return <Ticket {...sectionProps} />;
       case "empresa":
-        return <CompanyDataDisplay companyDetails={companyData} />; 
+        return <CompanyDataDisplay companyDetails={companyData} />;
       case "protocolos":
-        return <ProtocolsList companyId={companyId} />; 
+        return <ProtocolsList companyId={companyId} />;
       case "senha":
         return <RequestNewPassword {...sectionProps} />;
       case "consultar":
         return <ConsultBeneficiary {...sectionProps} />;
       case "cobertura":
-        return <ConsultCoverage {...sectionProps} />; 
+        return <ConsultCoverage {...sectionProps} />;
       case "faturamento":
-        return <InvoicesList companyId={companyId} />; 
+        return <InvoicesList companyId={companyId} />;
       case "contatos":
         return <CompanyContacts companyId={companyId} />;
+      case "guias":
+        return <ConsultGuides companyId={companyId} />;
+      case "contrato":
+        return <ContractDetails companyId={companyId} />;
       case "planos":
-        return <PlansSection {...sectionProps} />;
-        case "guias": 
-      return <ConsultGuides companyId={companyId}/>;
+        return <CompanyPlans companyId={companyId} />;
       default:
         return (
           <div
@@ -283,7 +285,7 @@ const TemplatePage = () => {
         <AppHeader
           userName={userName}
           userAvatarUrl={userAvatarUrl}
-          companyData={null} 
+          companyData={null}
           formatCNPJ={formatCNPJ}
           toTitleCase={toTitleCase}
         />
@@ -348,13 +350,13 @@ const TemplatePage = () => {
           <div className="template-dynamic-content">
             {renderSectionComponent()}
           </div>
-            <button
-              type="button"
-              onClick={handleGoBack}
-              className="button-secondary template-back-button"
-            >
-              Voltar
-            </button>
+          <button
+            type="button"
+            onClick={handleGoBack}
+            className="button-secondary template-back-button"
+          >
+            Voltar
+          </button>
         </div>
       </motion.main>
 

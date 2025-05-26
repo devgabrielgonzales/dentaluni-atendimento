@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import "../styles/CompanyDetailsPage.css";
-import {
-  FaHome,
-  FaSearch,
-  FaSignOutAlt,
-} from "react-icons/fa";
+import { FaHome, FaSearch, FaSignOutAlt } from "react-icons/fa";
 import { LuMapPinCheck, LuFileSearch } from "react-icons/lu";
 import { motion } from "framer-motion";
 import LoadingSpinner from "./LoadingSpinner";
@@ -253,37 +249,34 @@ const CompanyDetailsPage = () => {
           <span className="card-action-button">Registrar</span>
         </div>
       </motion.main>
-
-      <div className="container">
-        <motion.footer
-          className="new-bottom-menu"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.6, ease: "easeOut" }}
+      <motion.footer
+        className="new-bottom-menu"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.6, ease: "easeOut" }}
+      >
+        <button
+          className="menu-item"
+          onClick={handleHomeClick}
+          aria-label="Início"
         >
-          <button
-            className="menu-item"
-            onClick={handleHomeClick}
-            aria-label="Início"
-          >
-            <FaHome />
-          </button>
-          <button
-            className="menu-item-principal"
-            onClick={handleSearchClick}
-            aria-label="Pesquisar Empresa"
-          >
-            <FaSearch />
-          </button>
-          <button
-            className="menu-item"
-            onClick={handleLogoutClick}
-            aria-label="Sair"
-          >
-            <FaSignOutAlt />
-          </button>
-        </motion.footer>
-      </div>
+          <FaHome />
+        </button>
+        <button
+          className="menu-item-principal"
+          onClick={handleSearchClick}
+          aria-label="Pesquisar Empresa"
+        >
+          <FaSearch />
+        </button>
+        <button
+          className="menu-item"
+          onClick={handleLogoutClick}
+          aria-label="Sair"
+        >
+          <FaSignOutAlt />
+        </button>
+      </motion.footer>
     </div>
   );
 };

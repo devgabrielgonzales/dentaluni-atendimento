@@ -223,11 +223,15 @@ input[type="number"] {
   background-color: #ac1815;
   padding-bottom: 70px;
   box-sizing: border-box;
+  justify-content: center;
+  align-items: center;
+  padding-right: 15px;
+  padding-left: 15px;
 }
 
 .details-header-curved {
   color: white;
-  padding: 30px 15px 40px 15px;
+  padding: 30px 0 40px 0;
   position: relative;
   z-index: 1;
   display: flex;
@@ -281,10 +285,11 @@ input[type="number"] {
   padding-bottom: calc(5px + env(safe-area-inset-bottom));
   position: fixed;
   bottom: 0;
-  left: 0;
+  border-radius: 5px;
   width: 100%;
   z-index: 1000;
   height: 65px;
+  max-width: 1100px;
 }
 
 .menu-item,
@@ -373,6 +378,14 @@ input[type="number"] {
 }
 
 @media (max-width: 680px) {
+  .details-page-layout-v2 {
+    padding-bottom: 65px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .details-header-curved {
+    padding: 30px 15px 40px 15px;
+  }
   .company-display-card {
     padding: 10px 12px;
     margin-top: 12px;

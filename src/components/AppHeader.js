@@ -158,10 +158,8 @@ const AppHeader = ({
           </div>
         </div>
 
-        {/* Renderiza o card da empresa se houver um ID efetivo ou se não estiver carregando (para evitar mostrar "N/A" rapidamente) */}
         {effectiveCompanyId && (
           <motion.div
-            // Adiciona classe 'inactive-company' se a empresa estiver inativa
             className={`company-display-card container ${
               isCompanyInactive ? "inactive-company" : ""
             }`}
@@ -173,13 +171,11 @@ const AppHeader = ({
               </span>
               <h2 className="company-name-text">
                 {displayCompanyNameText}
-                {/* Adiciona o texto "(Inativa)" se a empresa estiver inativa */}
                 {isCompanyInactive && (
                   <span className="inactive-status-label"> (Inativa)</span>
                 )}
               </h2>
             </div>
-            {/* Mostra o ícone do prédio apenas se houver ID e não estiver no estado de carregamento explícito */}
             {effectiveCompanyId && !isLoadingCompanyInfo && (
               <FaBuilding
                 className={`icon-building ${
