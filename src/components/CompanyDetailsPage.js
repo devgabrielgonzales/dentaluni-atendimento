@@ -217,6 +217,22 @@ const CompanyDetailsPage = () => {
       >
         <div
           className="action-card-container"
+          onClick={handleNavigateToRegisterVisit}
+          role="button"
+          tabIndex={0}
+          onKeyPress={(e) =>
+            e.key === "Enter" && handleNavigateToRegisterVisit()
+          }
+        >
+          <LuMapPinCheck className="card-icon" />
+          <h2 className="card-title">Registro de Visitas</h2>
+          <p className="card-description">
+            Clique para registrar os detalhes da sua visita.
+          </p>
+          <span className="card-action-button">Registrar</span>
+        </div>
+        <div
+          className="action-card-container"
           onClick={handleNavigateToCompanyDataGrid}
           role="button"
           tabIndex={0}
@@ -231,22 +247,6 @@ const CompanyDetailsPage = () => {
             Acesse informações cadastrais e outros dados relevantes.
           </p>
           <span className="card-action-button">Acessar Dados</span>
-        </div>
-        <div
-          className="action-card-container"
-          onClick={handleNavigateToRegisterVisit}
-          role="button"
-          tabIndex={0}
-          onKeyPress={(e) =>
-            e.key === "Enter" && handleNavigateToRegisterVisit()
-          }
-        >
-          <LuMapPinCheck className="card-icon" />
-          <h2 className="card-title">Registro de Visitas</h2>
-          <p className="card-description">
-            Clique para registrar os detalhes da sua visita.
-          </p>
-          <span className="card-action-button">Registrar</span>
         </div>
       </motion.main>
       <motion.footer
