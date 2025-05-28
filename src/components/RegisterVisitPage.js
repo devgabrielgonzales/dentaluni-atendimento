@@ -959,7 +959,7 @@ const RegisterVisitPage = () => {
         isLoadingCompanyInfo={false}
         showCompanyBuildingIcon={!!companyId}
       />
-      <main className="new-menu-content-area menu-container">
+      <main className="new-menu-content-area menu-container template-dynamic-content">
         <motion.div
           className="register-visit-form-container"
           initial={{ opacity: 0, y: 20 }}
