@@ -1,3 +1,23 @@
+.template-dynamic-content {
+
+  &::-webkit-scrollbar {
+    width: 0px; 
+    height: 0px;
+    background: transparent; 
+  }
+
+  &::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
+}
+
 .new-menu-page {
   display: flex;
   flex-direction: column;
@@ -76,7 +96,7 @@
   position: relative;
   z-index: 2;
   margin-top: -20px;
-  border-radius: 25px 25px 0 0;
+  border-radius: 15px 15px 0 0;
   justify-content: space-evenly;
 }
 
@@ -88,6 +108,8 @@
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   width: 85%;
+  overflow-y: auto;
+  height: 100%;
 }
 
 .option-button {
@@ -96,7 +118,7 @@
   border: 1px solid #e0e0e0;
   padding: 12px 15px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
@@ -150,7 +172,7 @@
   }
 
   .option-button {
-    font-size: 13px;
+    font-size: 15px;
     padding: 10px 12px;
     gap: 8px;
   }
@@ -206,6 +228,8 @@ input[type="number"] {
   padding-right: 15px;
   box-sizing: border-box;
   display: flex;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .icon-building {
@@ -227,6 +251,8 @@ input[type="number"] {
   align-items: center;
   padding-right: 15px;
   padding-left: 15px;
+  height: 100vh;
+  overflow-y: hidden;
 }
 
 .details-header-curved {

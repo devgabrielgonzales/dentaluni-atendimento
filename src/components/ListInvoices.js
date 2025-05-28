@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import { LuReceipt } from "react-icons/lu";
 import { FaCalendarAlt, FaRegCopy, FaFilter } from "react-icons/fa";
 import LoadingSpinner from "./LoadingSpinner";
+import { toast } from "react-toastify";
+import '../styles/RegisterVisitPage.css';
 
 const requestHeaders = {
   "client-id": "26",
@@ -36,24 +38,21 @@ const formatCurrency = (value) => {
 const ListInvoices = ({ companyId }) => {
   const [allInvoices, setAllInvoices] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [copiedLink, setCopiedLink] = useState(null);
 
   const [searchTermNFe, setSearchTermNFe] = useState("");
   const [searchMonth, setSearchMonth] = useState("");
   const [searchYear, setSearchYear] = useState("");
-  const [copiedLink, setCopiedLink] = useState(null);
 
   useEffect(() => {
     if (!companyId) {
       setIsLoading(false);
       setAllInvoices([]);
-      setError("ID da empresa não fornecido.");
+      toast.warn("ID da empresa não fornecido para buscar notas fiscais.");
       return;
     }
-
     const fetchInvoices = async () => {
       setIsLoading(true);
-      setError(null);
       try {
         const response = await fetch(
           `https://api.dentaluni.com.br/sae/listar_nfes/${companyId}`,
@@ -70,23 +69,14 @@ const ListInvoices = ({ companyId }) => {
         }
         const data = await response.json();
         if (data.error) {
-          throw new Error(
-            data.msg || "Erro ao carregar notas fiscais (API retornou erro)."
-          );
+          throw new Error(data.msg || "Erro ao carregar notas fiscais.");
         }
-
         const invoicesArray = data.dados || [];
-
         if (!Array.isArray(invoicesArray)) {
-          console.error(
-            "DEBUG: A API não retornou um array de notas fiscais na chave 'dados'."
-          );
-          setAllInvoices([]);
           throw new Error(
             "Formato de resposta da API inesperado para notas fiscais."
           );
         }
-
         invoicesArray.sort((a, b) => {
           const dateA = a.a063_dt_emissao
             ? new Date(a.a063_dt_emissao.replace(" ", "T"))
@@ -101,32 +91,65 @@ const ListInvoices = ({ companyId }) => {
           if (isNaN(dateB.getTime())) return -1;
           return dateB - dateA;
         });
-
         setAllInvoices(invoicesArray);
+        if (invoicesArray.length === 0 && !data.error) {
+          toast.info("Nenhuma nota fiscal encontrada para esta empresa.");
+        }
       } catch (err) {
-        setError(err.message);
+        toast.error(err.message || "Falha ao buscar notas fiscais.");
         setAllInvoices([]);
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchInvoices();
   }, [companyId]);
 
-  const handleCopyLink = (link) => {
+  const handleCopyNFeLink = (link, event) => {
+    event.stopPropagation();
+    if (!link) {
+      toast.warn("Não há link de NF-e para copiar.");
+      return;
+    }
     navigator.clipboard
       .writeText(link)
       .then(() => {
         setCopiedLink(link);
+        toast.success("Link da NF-e copiado!");
         setTimeout(() => setCopiedLink(null), 2000);
       })
-      .catch((err) => console.error("Erro ao copiar link: ", err));
+      .catch((err) => {
+        console.error("Erro ao copiar link da NF-e: ", err);
+        toast.error("Falha ao copiar o link da NF-e.");
+      });
+  };
+
+  const handleBoletoAction = (nf) => {
+    const statusDescricao = nf.a245_desc_sit_duplicata || "";
+    if (statusDescricao.toUpperCase() === "ABERTA") {
+      if (nf.a063_cd_duplicata && nf.a063_seq_duplicata && nf.a005_cd_cli) {
+        const codigoDuplicata = nf.a063_cd_duplicata;
+        const sequencia = nf.a063_seq_duplicata;
+        const codigoEmpresa = nf.a005_cd_cli;
+        const boletoUrl = `https://www.dentaluni.com.br/boleto/gerar/${codigoDuplicata}/${sequencia}/${codigoEmpresa}/0/E`;
+        window.open(boletoUrl, "_blank");
+        toast.info("Seu boleto está sendo aberto em uma nova aba...");
+      } else {
+        toast.warn(
+          "Informações insuficientes para gerar o link do boleto desta nota fiscal."
+        );
+      }
+    } else {
+      toast.info(
+        `Este boleto não pode ser aberto pois o status é: ${
+          statusDescricao || "Indefinido"
+        }.`
+      );
+    }
   };
 
   const displayedInvoices = useMemo(() => {
     let filtered = [...allInvoices];
-
     const trimmedSearchNFe = searchTermNFe.trim();
     const monthQuery = searchMonth.trim();
     const yearQuery = searchYear.trim();
@@ -141,7 +164,6 @@ const ListInvoices = ({ companyId }) => {
         (inv) => inv.a062_nfe && inv.a062_nfe.includes(trimmedSearchNFe)
       );
     }
-
     if (hasMonthFilter && hasYearFilter) {
       const paddedMonth = monthQuery.padStart(2, "0");
       filtered = filtered.filter((inv) => {
@@ -156,12 +178,9 @@ const ListInvoices = ({ companyId }) => {
         return emissionDate.startsWith(yearQuery);
       });
     }
-
     if (!anyFilterActive) {
-      const initialDisplay = allInvoices.slice(0, 10);
-      return initialDisplay;
+      return filtered.slice(0, 10);
     }
-
     return filtered;
   }, [allInvoices, searchTermNFe, searchMonth, searchYear]);
 
@@ -169,14 +188,13 @@ const ListInvoices = ({ companyId }) => {
     if (searchTermNFe.trim() || searchMonth.trim() || searchYear.trim()) {
       return "Nenhuma nota fiscal encontrada para os filtros aplicados.";
     }
-    if (allInvoices.length === 0 && !isLoading && !error) {
+    if (allInvoices.length === 0 && !isLoading) {
       return "Nenhuma nota fiscal emitida para esta empresa até o momento.";
     }
     return "";
   };
 
   if (isLoading) return <LoadingSpinner />;
-  if (error) return <div className="list-message list-error">⚠️ {error}</div>;
 
   return (
     <div className="listar-notasfiscais-container">
@@ -197,7 +215,6 @@ const ListInvoices = ({ companyId }) => {
           </label>
           <div className="date-filter-group">
             <label className="filter-label">
-              {" "}
               Mês Emissão (MM):
               <input
                 type="text"
@@ -211,7 +228,6 @@ const ListInvoices = ({ companyId }) => {
               />
             </label>
             <label className="filter-label">
-              {" "}
               Ano Emissão (AAAA):
               <input
                 type="text"
@@ -228,7 +244,7 @@ const ListInvoices = ({ companyId }) => {
         </div>
       </fieldset>
 
-      {displayedInvoices.length === 0 && !isLoading && !error && (
+      {displayedInvoices.length === 0 && !isLoading && (
         <div className="list-message list-no-data">{getNoResultsMessage()}</div>
       )}
 
@@ -236,10 +252,16 @@ const ListInvoices = ({ companyId }) => {
         {displayedInvoices.map((nf, index) => (
           <motion.div
             key={nf.a062_nfe || nf.a062_seq_nota || index}
-            className="info-card"
+            className="info-card clickable-card"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.05 }}
+            onClick={() => handleBoletoAction(nf)}
+            role="button"
+            tabIndex={0}
+            onKeyPress={(e) =>
+              (e.key === "Enter" || e.key === " ") && handleBoletoAction(nf)
+            }
           >
             <div className="info-card-icon-area">
               <LuReceipt />
@@ -267,9 +289,10 @@ const ListInvoices = ({ companyId }) => {
                   backgroundColor:
                     nf.a063_sit_duplicata === "C"
                       ? "#E53935"
-                      : nf.a063_sit_duplicata === "A" ||
-                        nf.a063_sit_duplicata === "Q"
+                      : nf.a063_sit_duplicata === "A"
                       ? "#43A047"
+                      : nf.a063_sit_duplicata === "Q"
+                      ? "#1976D2"
                       : "#757575",
                   color: "white",
                 }}
@@ -278,12 +301,14 @@ const ListInvoices = ({ companyId }) => {
               </span>
               {nf.a062_nfe_link && (
                 <button
-                  onClick={() => handleCopyLink(nf.a062_nfe_link)}
+                  onClick={(e) => handleCopyNFeLink(nf.a062_nfe_link, e)}
                   className="button-icon-copy"
-                  title="Copiar link da NF-e"
+                  title="Copiar link da NF-e (Prefeitura)"
                 >
                   <FaRegCopy />{" "}
-                  {copiedLink === nf.a062_nfe_link ? "Copiado!" : "Copiar Link"}
+                  {copiedLink === nf.a062_nfe_link
+                    ? "Copiado!"
+                    : "Copiar Link NF-e"}
                 </button>
               )}
             </div>

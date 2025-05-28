@@ -966,7 +966,6 @@ const RegisterVisitPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <h1>Registrar Visita</h1>
           <form onSubmit={handleSubmit} className="visit-form">
             <fieldset className="form-section">
               <legend>Motivo da Visita</legend>

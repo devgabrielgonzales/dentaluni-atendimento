@@ -101,7 +101,7 @@ const CompanyDataPage = () => {
       <main className="content-area menu-container">
         {" "}
         <motion.div
-          className="options-grid"
+          className="options-grid template-dynamic-content"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: "easeOut" }}
